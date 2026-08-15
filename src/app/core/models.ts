@@ -175,8 +175,33 @@ export interface AtsAnalysis {
   suggestions: string[];
 }
 
+export interface AiProviderInfo {
+  key: string;
+  name: string;
+  baseUrl: string;
+}
+
+export const AI_PROVIDERS: AiProviderInfo[] = [
+  { key: "openrouter", name: "OpenRouter", baseUrl: "https://openrouter.ai/api/v1" },
+  { key: "openai", name: "OpenAI", baseUrl: "https://api.openai.com/v1" },
+  { key: "groq", name: "Groq", baseUrl: "https://api.groq.com/openai/v1" },
+  { key: "together", name: "Together AI", baseUrl: "https://api.together.xyz/v1" },
+  { key: "mistral", name: "Mistral AI", baseUrl: "https://api.mistral.ai/v1" },
+  { key: "deepseek", name: "DeepSeek", baseUrl: "https://api.deepseek.com/v1" },
+  { key: "perplexity", name: "Perplexity", baseUrl: "https://api.perplexity.ai" },
+  { key: "custom", name: "Personalizado", baseUrl: "" },
+];
+
+export function baseUrlForProvider(key: string): string {
+  return AI_PROVIDERS.find((p) => p.key === key)?.baseUrl ?? "";
+}
+
 export interface AppSettings {
-  openrouterApiKey: string;
+  provider: string;
+  baseUrl: string;
+  apiKey: string;
   model: string;
   theme: "light" | "dark";
 }
+
+export type SidebarMode = "expanded" | "collapsed" | "hidden";

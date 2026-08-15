@@ -7,3 +7,25 @@
 .alert {
   margin-top: 12px;
 }
+
+.model-row {
+  display: flex;
+  gap: 8px;
+}
+
+.model-row input {
+  flex: 1;
+}
+
+.model-row .btn {
+  flex-shrink: 0;
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--success-text);
+}

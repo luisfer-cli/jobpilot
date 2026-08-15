@@ -1,21 +1,23 @@
-use crate::ai::{AiProvider, OpenRouter};
+use crate::ai::{AiProvider, OpenAiCompatible};
 use crate::models::{
     AtsAnalysis, CoverLetter, CvData, GeneratedCv, JobOfferStructured, TechnicalTest,
 };
 
 async fn ask_json(
+    base_url: &str,
     api_key: &str,
     model: &str,
     system: &str,
     user: &str,
 ) -> Result<serde_json::Value, String> {
-    let provider = OpenRouter::new();
+    let provider = OpenAiCompatible::new();
     let mut last_err = String::new();
     let mut sys = system.to_string();
 
     for _ in 0..3 {
         let raw = provider
             .chat(crate::ai::ChatRequest {
+                base_url: base_url.to_string(),
                 api_key: api_key.to_string(),
                 model: model.to_string(),
                 system: sys.clone(),
@@ -67,8 +69,16 @@ fn parse_json_lenient(raw: &str) -> Result<serde_json::Value, String> {
 }
 
 #[tauri::command]
-pub async fn test_connection(api_key: String, model: String) -> Result<String, String> {
+pub async fn list_models(base_url: String, api_key: String) -> Result<Vec<String>, String> {
+    OpenAiCompatible::new()
+        .list_models(&base_url, &api_key)
+        .await
+}
+
+#[tauri::command]
+pub async fn test_connection(base_url: String, api_key: String, model: String) -> Result<String, String> {
     let v = ask_json(
+        &base_url,
         &api_key,
         &model,
         "Responde SIEMPRE con JSON válido con la estructura {\"ok\": true}.",
@@ -84,6 +94,7 @@ pub async fn test_connection(api_key: String, model: String) -> Result<String, S
 
 #[tauri::command]
 pub async fn parse_job_offer(
+    base_url: String,
     api_key: String,
     model: String,
     text: String,
@@ -92,12 +103,13 @@ pub async fn parse_job_offer(
 {"title":"","company":"","location":"","salary":"","jobType":"","seniority":"","description":"","requirements":[],"responsibilities":[],"niceToHave":[],"skills":[],"applicationUrl":""}
 Rellena cada campo con la información encontrada en la oferta. Usa arrays de strings para requirements, responsibilities, niceToHave y skills. Si un dato no aparece, deja el campo como cadena vacía o array vacío. Mantén el idioma original de la oferta."#;
     let user = format!("Analiza la siguiente oferta de trabajo y extrae los datos:\n\n{text}");
-    let v = ask_json(&api_key, &model, system, &user).await?;
+    let v = ask_json(&base_url, &api_key, &model, system, &user).await?;
     serde_json::from_value(v).map_err(|e| format!("No se pudo interpretar la oferta: {e}"))
 }
 
 #[tauri::command]
 pub async fn generate_cv(
+    base_url: String,
     api_key: String,
     model: String,
     cv_data: CvData,
@@ -111,12 +123,13 @@ En el campo "description" de cada experiencia escribe de 2 a 5 logros o responsa
         serde_json::to_string_pretty(&cv_data).unwrap_or_default(),
         serde_json::to_string_pretty(&offer).unwrap_or_default()
     );
-    let v = ask_json(&api_key, &model, system, &user).await?;
+    let v = ask_json(&base_url, &api_key, &model, system, &user).await?;
     serde_json::from_value(v).map_err(|e| format!("No se pudo interpretar el currículum: {e}"))
 }
 
 #[tauri::command]
 pub async fn generate_cover_letter(
+    base_url: String,
     api_key: String,
     model: String,
     cv_data: CvData,
@@ -130,12 +143,13 @@ El campo "body" contiene los párrafos de la carta separados por doble salto de 
         serde_json::to_string_pretty(&cv_data).unwrap_or_default(),
         serde_json::to_string_pretty(&offer).unwrap_or_default()
     );
-    let v = ask_json(&api_key, &model, system, &user).await?;
+    let v = ask_json(&base_url, &api_key, &model, system, &user).await?;
     serde_json::from_value(v).map_err(|e| format!("No se pudo interpretar la carta: {e}"))
 }
 
 #[tauri::command]
 pub async fn generate_technical_test(
+    base_url: String,
     api_key: String,
     model: String,
     offer: JobOfferStructured,
@@ -145,12 +159,13 @@ pub async fn generate_technical_test(
         "Oferta de trabajo:\n{}\n\nCrea la prueba técnica de práctica.",
         serde_json::to_string_pretty(&offer).unwrap_or_default()
     );
-    let v = ask_json(&api_key, &model, system, &user).await?;
+    let v = ask_json(&base_url, &api_key, &model, system, &user).await?;
     serde_json::from_value(v).map_err(|e| format!("No se pudo interpretar la prueba técnica: {e}"))
 }
 
 #[tauri::command]
 pub async fn generate_test_from_topic(
+    base_url: String,
     api_key: String,
     model: String,
     topic: String,
@@ -159,7 +174,7 @@ pub async fn generate_test_from_topic(
     let user = format!(
         "Crea una prueba técnica de práctica sobre el siguiente tema/puesto:\n\n{topic}"
     );
-    let v = ask_json(&api_key, &model, system, &user).await?;
+    let v = ask_json(&base_url, &api_key, &model, system, &user).await?;
     serde_json::from_value(v).map_err(|e| format!("No se pudo interpretar la prueba técnica: {e}"))
 }
 
@@ -180,6 +195,7 @@ Incluye de 5 a 8 preguntas variadas (mezcla tipos) y al menos una de tipo "codin
 
 #[tauri::command]
 pub async fn analyze_ats(
+    base_url: String,
     api_key: String,
     model: String,
     cv_data: CvData,
@@ -193,7 +209,7 @@ pub async fn analyze_ats(
         serde_json::to_string_pretty(&cv_data).unwrap_or_default(),
         serde_json::to_string_pretty(&offer).unwrap_or_default()
     );
-    let v = ask_json(&api_key, &model, system, &user).await?;
+    let v = ask_json(&base_url, &api_key, &model, system, &user).await?;
     serde_json::from_value(v).map_err(|e| format!("No se pudo interpretar el análisis: {e}"))
 }
 

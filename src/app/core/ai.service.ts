@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { invoke } from "@tauri-apps/api/core";
+import { SettingsService } from "./settings.service";
 import type {
   AtsAnalysis,
   CoverLetter,
@@ -11,58 +12,57 @@ import type {
 
 @Injectable({ providedIn: "root" })
 export class AiService {
-  async testConnection(apiKey: string, model: string): Promise<string> {
-    return invoke<string>("test_connection", { apiKey, model });
+  constructor(private settings: SettingsService) {}
+
+  private ctx() {
+    const s = this.settings.settings();
+    return { baseUrl: s.baseUrl, apiKey: s.apiKey, model: s.model };
   }
 
-  async parseJobOffer(
-    apiKey: string,
-    model: string,
-    text: string,
-  ): Promise<JobOfferStructured> {
-    return invoke<JobOfferStructured>("parse_job_offer", { apiKey, model, text });
+  async listModels(baseUrl: string, apiKey: string): Promise<string[]> {
+    return invoke<string[]>("list_models", { baseUrl, apiKey });
+  }
+
+  async testConnection(baseUrl: string, apiKey: string, model: string): Promise<string> {
+    return invoke<string>("test_connection", { baseUrl, apiKey, model });
+  }
+
+  async parseJobOffer(text: string): Promise<JobOfferStructured> {
+    const { baseUrl, apiKey, model } = this.ctx();
+    return invoke<JobOfferStructured>("parse_job_offer", { baseUrl, apiKey, model, text });
   }
 
   async generateCv(
-    apiKey: string,
-    model: string,
     cvData: CvData,
     offer: JobOfferStructured,
   ): Promise<GeneratedCv> {
-    return invoke<GeneratedCv>("generate_cv", { apiKey, model, cvData, offer });
+    const { baseUrl, apiKey, model } = this.ctx();
+    return invoke<GeneratedCv>("generate_cv", { baseUrl, apiKey, model, cvData, offer });
   }
 
   async generateCoverLetter(
-    apiKey: string,
-    model: string,
     cvData: CvData,
     offer: JobOfferStructured,
   ): Promise<CoverLetter> {
-    return invoke<CoverLetter>("generate_cover_letter", { apiKey, model, cvData, offer });
+    const { baseUrl, apiKey, model } = this.ctx();
+    return invoke<CoverLetter>("generate_cover_letter", { baseUrl, apiKey, model, cvData, offer });
   }
 
-  async generateTechnicalTest(
-    apiKey: string,
-    model: string,
-    offer: JobOfferStructured,
-  ): Promise<TechnicalTest> {
-    return invoke<TechnicalTest>("generate_technical_test", { apiKey, model, offer });
+  async generateTechnicalTest(offer: JobOfferStructured): Promise<TechnicalTest> {
+    const { baseUrl, apiKey, model } = this.ctx();
+    return invoke<TechnicalTest>("generate_technical_test", { baseUrl, apiKey, model, offer });
   }
 
-  async generateTestFromTopic(
-    apiKey: string,
-    model: string,
-    topic: string,
-  ): Promise<TechnicalTest> {
-    return invoke<TechnicalTest>("generate_test_from_topic", { apiKey, model, topic });
+  async generateTestFromTopic(topic: string): Promise<TechnicalTest> {
+    const { baseUrl, apiKey, model } = this.ctx();
+    return invoke<TechnicalTest>("generate_test_from_topic", { baseUrl, apiKey, model, topic });
   }
 
   async analyzeAts(
-    apiKey: string,
-    model: string,
     cvData: CvData,
     offer: JobOfferStructured,
   ): Promise<AtsAnalysis> {
-    return invoke<AtsAnalysis>("analyze_ats", { apiKey, model, cvData, offer });
+    const { baseUrl, apiKey, model } = this.ctx();
+    return invoke<AtsAnalysis>("analyze_ats", { baseUrl, apiKey, model, cvData, offer });
   }
 }

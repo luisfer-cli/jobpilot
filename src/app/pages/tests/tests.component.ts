@@ -54,9 +54,8 @@ export class TestsComponent implements OnInit {
   }
 
   async generate(): Promise<void> {
-    const { openrouterApiKey, model } = this.settings.settings();
-    if (!openrouterApiKey) {
-      this.error = "Configura tu API key de OpenRouter en Ajustes primero.";
+    if (!this.settings.isConfigured) {
+      this.error = "Configura tu proveedor de IA y API key en Ajustes primero.";
       return;
     }
     if (!this.topic.trim()) {
@@ -66,7 +65,7 @@ export class TestsComponent implements OnInit {
     this.generating = true;
     this.error = "";
     try {
-      const result = await this.ai.generateTestFromTopic(openrouterApiKey, model, this.topic.trim());
+      const result = await this.ai.generateTestFromTopic(this.topic.trim());
       const id = await this.db.addTechnicalTest(null, result.title, JSON.stringify(result));
       this.showNew = false;
       await this.router.navigate(["/tests", id]);

@@ -5,25 +5,53 @@
 <section class="card">
   <h2>Proveedor de IA</h2>
   <p class="muted">
-    JobPilot usa OpenRouter para acceder a cientos de modelos. Obtén tu API key en
-    <a href="https://openrouter.ai/keys" target="_blank">openrouter.ai/keys</a>.
+    Elige un proveedor compatible con la API de OpenAI, pega tu API key y carga los modelos
+    disponibles directamente desde el proveedor.
   </p>
 
-  <div class="field">
-    <label>API key de OpenRouter</label>
-    <input type="password" [(ngModel)]="apiKey" placeholder="sk-or-..." />
+  <div class="grid grid-2">
+    <div class="field">
+      <label>Proveedor</label>
+      <select [(ngModel)]="provider" (ngModelChange)="onProviderChange()">
+        <option *ngFor="let p of providers" [value]="p.key">{{ p.name }}</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>URL base de la API</label>
+      <input [(ngModel)]="baseUrl" placeholder="https://api.openai.com/v1" />
+    </div>
   </div>
+
+  <div class="field">
+    <label>API key</label>
+    <input type="password" [(ngModel)]="apiKey" placeholder="sk-..." />
+  </div>
+
   <div class="field">
     <label>Modelo</label>
-    <input [(ngModel)]="model" placeholder="openai/gpt-4o-mini" />
-    <p class="muted">
-      Ejemplos: openai/gpt-4o-mini, openai/gpt-4o, anthropic/claude-3.5-sonnet,
-      google/gemini-2.0-flash-001.
+    <div class="model-row">
+      <input
+        [(ngModel)]="model"
+        list="modelOptions"
+        placeholder="Selecciona o escribe un modelo..."
+      />
+      <button class="btn" (click)="loadModels()" [disabled]="loadingModels">
+        <span *ngIf="loadingModels" class="spinner"></span>
+        <span *ngIf="!loadingModels" class="nf nf-download"></span>
+        {{ loadingModels ? "Cargando..." : "Cargar modelos" }}
+      </button>
+    </div>
+    <datalist id="modelOptions">
+      <option *ngFor="let m of models" [value]="m"></option>
+    </datalist>
+    <p *ngIf="modelsLoaded" class="muted hint">
+      <span class="nf nf-check-circle"></span> Se cargaron {{ models.length }} modelos.
     </p>
+    <p *ngIf="modelsError" class="alert alert-error">{{ modelsError }}</p>
   </div>
 
   <div class="actions">
-    <button class="btn btn-primary" (click)="save()">
+    <button class="btn btn-primary" (click)="save()" [disabled]="saving">
       <span class="nf nf-save"></span> Guardar
     </button>
     <button class="btn" (click)="testConnection()" [disabled]="testing">
@@ -33,6 +61,7 @@
     </button>
   </div>
 
+  <div *ngIf="saved" class="alert alert-success">Configuración guardada.</div>
   <div *ngIf="testResult" class="alert alert-success">{{ testResult }}</div>
   <div *ngIf="testError" class="alert alert-error">{{ testError }}</div>
 </section>

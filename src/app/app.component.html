@@ -1,38 +1,80 @@
-<aside class="sidebar">
-  <div class="brand">
-    <span class="brand-mark">JP</span>
-    <span class="brand-name">JobPilot</span>
+<aside
+  class="sidebar"
+  [class.collapsed]="settings.sidebarMode() === 'collapsed'"
+  [class.hidden]="settings.sidebarMode() === 'hidden'"
+>
+  <div class="sidebar-header">
+    <div class="brand">
+      <span class="brand-mark">JP</span>
+      <span class="brand-name">JobPilot</span>
+    </div>
+    <button
+      class="collapse-btn"
+      (click)="settings.toggleSidebarCollapse()"
+      [title]="settings.sidebarMode() === 'collapsed' ? 'Expandir (Ctrl+B)' : 'Colapsar (Ctrl+B)'"
+    >
+      <span
+        class="nf"
+        [class.nf-chevron-left]="settings.sidebarMode() !== 'collapsed'"
+        [class.nf-chevron-right]="settings.sidebarMode() === 'collapsed'"
+      ></span>
+    </button>
   </div>
 
   <nav>
-    <a routerLink="/dashboard" routerLinkActive="active">
-      <span class="icon nf nf-dashboard"></span> Dashboard
-    </a>
-    <a routerLink="/cv" routerLinkActive="active">
-      <span class="icon nf nf-account"></span> Mi Currículum
-    </a>
-    <a routerLink="/offers" routerLinkActive="active">
-      <span class="icon nf nf-briefcase"></span> Ofertas
-    </a>
-    <a routerLink="/tests" routerLinkActive="active">
-      <span class="icon nf nf-flask"></span> Pruebas técnicas
-    </a>
-    <a routerLink="/settings" routerLinkActive="active">
-      <span class="icon nf nf-cog"></span> Ajustes
-    </a>
+    <div class="nav-section">
+      <span class="nav-label">Principal</span>
+      <a routerLink="/dashboard" routerLinkActive="active" title="Dashboard">
+        <span class="icon nf nf-dashboard"></span>
+        <span class="nav-text">Dashboard</span>
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <span class="nav-label">Gestión</span>
+      <a routerLink="/cv" routerLinkActive="active" title="Mi Currículum">
+        <span class="icon nf nf-account"></span>
+        <span class="nav-text">Mi Currículum</span>
+      </a>
+      <a routerLink="/offers" routerLinkActive="active" title="Ofertas">
+        <span class="icon nf nf-briefcase"></span>
+        <span class="nav-text">Ofertas</span>
+      </a>
+      <a routerLink="/tests" routerLinkActive="active" title="Pruebas técnicas">
+        <span class="icon nf nf-flask"></span>
+        <span class="nav-text">Pruebas técnicas</span>
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <span class="nav-label">Sistema</span>
+      <a routerLink="/settings" routerLinkActive="active" title="Ajustes">
+        <span class="icon nf nf-cog"></span>
+        <span class="nav-text">Ajustes</span>
+      </a>
+    </div>
   </nav>
 
   <div class="sidebar-footer">
-    <button class="theme-toggle" (click)="settings.toggleTheme()">
+    <button class="theme-toggle" (click)="settings.toggleTheme()" title="Cambiar tema">
       <span
         class="nf"
         [class.nf-sun]="settings.settings().theme === 'dark'"
         [class.nf-moon]="settings.settings().theme !== 'dark'"
       ></span>
-      {{ settings.settings().theme === "dark" ? "Modo claro" : "Modo oscuro" }}
+      <span class="theme-text">{{ settings.settings().theme === "dark" ? "Modo claro" : "Modo oscuro" }}</span>
     </button>
   </div>
 </aside>
+
+<button
+  *ngIf="settings.sidebarMode() === 'hidden'"
+  class="floating-menu"
+  (click)="settings.toggleSidebarHidden()"
+  title="Mostrar menú (Ctrl+Shift+B)"
+>
+  <span class="nf nf-menu"></span>
+</button>
 
 <main class="content">
   <div class="inner">

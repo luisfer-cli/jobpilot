@@ -16,6 +16,7 @@ pub fn run() {
                 .build(),
         )
         .invoke_handler(tauri::generate_handler![
+            commands::list_models,
             commands::test_connection,
             commands::parse_job_offer,
             commands::generate_cv,

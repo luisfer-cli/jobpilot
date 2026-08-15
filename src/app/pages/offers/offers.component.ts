@@ -102,9 +102,8 @@ export class OffersComponent implements OnInit {
   }
 
   async process(): Promise<void> {
-    const { openrouterApiKey, model } = this.settings.settings();
-    if (!openrouterApiKey) {
-      this.error = "Configura tu API key de OpenRouter en Ajustes primero.";
+    if (!this.settings.isConfigured) {
+      this.error = "Configura tu proveedor de IA y API key en Ajustes primero.";
       return;
     }
     if (!this.rawText.trim()) {
@@ -114,7 +113,7 @@ export class OffersComponent implements OnInit {
     this.loading = true;
     this.error = "";
     try {
-      this.form = await this.ai.parseJobOffer(openrouterApiKey, model, this.rawText);
+      this.form = await this.ai.parseJobOffer(this.rawText);
       this.parsed = true;
     } catch (e) {
       this.error = String(e);

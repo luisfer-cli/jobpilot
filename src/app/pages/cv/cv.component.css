@@ -61,7 +61,7 @@
 }
 
 .wizard-body {
-  max-width: 760px;
+  max-width: none;
 }
 
 .list-panel {

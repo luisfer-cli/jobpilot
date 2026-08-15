@@ -122,13 +122,12 @@ export class OfferDetailComponent implements OnInit {
     return body.split("\n\n").filter((p) => p.trim().length > 0);
   }
 
-  private requireKey(): string | null {
-    const { openrouterApiKey } = this.settings.settings();
-    if (!openrouterApiKey) {
-      this.error = "Configura tu API key de OpenRouter en Ajustes primero.";
-      return null;
+  private requireKey(): boolean {
+    if (!this.settings.isConfigured) {
+      this.error = "Configura tu proveedor de IA y API key en Ajustes primero.";
+      return false;
     }
-    return openrouterApiKey;
+    return true;
   }
 
   async changeStatus(): Promise<void> {
@@ -136,13 +135,12 @@ export class OfferDetailComponent implements OnInit {
   }
 
   async generateCv(): Promise<void> {
-    const key = this.requireKey();
-    if (!key || !this.structured) return;
+    if (!this.requireKey() || !this.structured) return;
     this.busy = "Generando CV...";
     this.error = "";
     try {
       const cvData = await this.db.getCvData();
-      const result = await this.ai.generateCv(key, this.settings.settings().model, cvData, this.structured);
+      const result = await this.ai.generateCv(cvData, this.structured);
       this.cv = result;
       await this.db.addGeneratedCv(this.offer!.id, JSON.stringify(result));
     } catch (e) {
@@ -153,13 +151,12 @@ export class OfferDetailComponent implements OnInit {
   }
 
   async generateLetter(): Promise<void> {
-    const key = this.requireKey();
-    if (!key || !this.structured) return;
+    if (!this.requireKey() || !this.structured) return;
     this.busy = "Generando carta...";
     this.error = "";
     try {
       const cvData = await this.db.getCvData();
-      const result = await this.ai.generateCoverLetter(key, this.settings.settings().model, cvData, this.structured);
+      const result = await this.ai.generateCoverLetter(cvData, this.structured);
       this.letter = result;
       await this.db.addCoverLetter(this.offer!.id, JSON.stringify(result));
     } catch (e) {
@@ -170,12 +167,11 @@ export class OfferDetailComponent implements OnInit {
   }
 
   async generateTest(): Promise<void> {
-    const key = this.requireKey();
-    if (!key || !this.structured) return;
+    if (!this.requireKey() || !this.structured) return;
     this.busy = "Generando prueba técnica...";
     this.error = "";
     try {
-      const result = await this.ai.generateTechnicalTest(key, this.settings.settings().model, this.structured);
+      const result = await this.ai.generateTechnicalTest(this.structured);
       const id = await this.db.addTechnicalTest(this.offer!.id, result.title, JSON.stringify(result));
       this.test = { ...result, id, jobOfferId: this.offer!.id };
     } catch (e) {
@@ -186,13 +182,12 @@ export class OfferDetailComponent implements OnInit {
   }
 
   async analyzeAts(): Promise<void> {
-    const key = this.requireKey();
-    if (!key || !this.structured) return;
+    if (!this.requireKey() || !this.structured) return;
     this.busy = "Analizando encaje ATS...";
     this.error = "";
     try {
       const cvData = await this.db.getCvData();
-      this.ats = await this.ai.analyzeAts(key, this.settings.settings().model, cvData, this.structured);
+      this.ats = await this.ai.analyzeAts(cvData, this.structured);
     } catch (e) {
       this.error = String(e);
     } finally {

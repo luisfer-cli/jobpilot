@@ -46,6 +46,7 @@
 .nf-clipboard::before { content: "\f0147"; }
 .nf-book::before { content: "\f05db"; }
 .nf-download::before { content: "\f01da"; }
+.nf-menu::before { content: "\f035c"; }
 
 /* ===== Tokens ===== */
 :root {
