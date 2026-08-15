@@ -1,0 +1,82 @@
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-num {
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.kanban {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  align-items: start;
+  margin-top: 12px;
+}
+
+.kanban-col {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 120px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.kanban-col.drag-over {
+  border-color: var(--primary);
+  background: rgba(59, 130, 246, 0.06);
+}
+
+.col-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.col-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.offer-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  cursor: grab;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.offer-card:active {
+  cursor: grabbing;
+}
+
+.offer-card a {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.offer-card span {
+  font-size: 12px;
+}
+
+.empty {
+  text-align: center;
+  padding: 20px 0;
+  font-size: 12px;
+}

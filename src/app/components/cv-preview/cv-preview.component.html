@@ -1,0 +1,74 @@
+<div class="paper">
+  <header class="cv-header">
+    <h1 class="cv-name">{{ cv.fullName || "Currículum" }}</h1>
+    <p class="cv-job" *ngIf="cv.jobTitle">{{ cv.jobTitle }}</p>
+    <p class="cv-contact" *ngIf="contactItems.length">
+      <ng-container *ngFor="let item of contactItems; let i = index">
+        <ng-container *ngIf="i > 0">   |   </ng-container>
+        <a *ngIf="item.link" [href]="item.link" target="_blank" rel="noopener">{{ item.label }}</a>
+        <ng-container *ngIf="!item.link">{{ item.text }}</ng-container>
+      </ng-container>
+    </p>
+    <div class="rule"></div>
+  </header>
+
+  <section class="cv-section" *ngIf="cv.summary">
+    <h2 class="sec-title">Resumen</h2>
+    <div class="rule"></div>
+    <p class="body">{{ cv.summary }}</p>
+  </section>
+
+  <section class="cv-section" *ngIf="cv.experiences.length">
+    <h2 class="sec-title">Experiencia</h2>
+    <div class="rule"></div>
+    <div class="entry" *ngFor="let e of cv.experiences">
+      <div class="entry-head">
+        <strong class="entry-title">{{ e.role }} — {{ e.company }}</strong>
+        <span class="date">{{ dateRange(e.startDate, e.endDate, e.current) }}</span>
+      </div>
+      <p class="meta" *ngIf="e.location">{{ e.location }}</p>
+      <ul class="achievements" *ngIf="asList(e.description).length">
+        <li *ngFor="let item of asList(e.description)">{{ item }}</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="cv-section" *ngIf="cv.education.length">
+    <h2 class="sec-title">Educación</h2>
+    <div class="rule"></div>
+    <div class="entry" *ngFor="let e of cv.education">
+      <div class="entry-head">
+        <strong class="entry-title">{{ e.degree }} — {{ e.institution }}</strong>
+        <span class="date">{{ dateRange(e.startDate, e.endDate, false) }}</span>
+      </div>
+      <p class="meta" *ngIf="e.field">{{ e.field }}</p>
+    </div>
+  </section>
+
+  <section class="cv-section" *ngIf="cv.skills.length">
+    <h2 class="sec-title">Competencias</h2>
+    <div class="rule"></div>
+    <p class="body">{{ cv.skills.join(", ") }}</p>
+  </section>
+
+  <section class="cv-section" *ngIf="cv.languages.length">
+    <h2 class="sec-title">Idiomas</h2>
+    <div class="rule"></div>
+    <p class="body">{{ formatLanguages(cv.languages) }}</p>
+  </section>
+
+  <section class="cv-section" *ngIf="cv.certifications.length">
+    <h2 class="sec-title">Certificaciones</h2>
+    <div class="rule"></div>
+    <p class="body">{{ formatCertifications(cv.certifications) }}</p>
+  </section>
+
+  <section class="cv-section" *ngIf="cv.projects.length">
+    <h2 class="sec-title">Proyectos</h2>
+    <div class="rule"></div>
+    <div class="entry" *ngFor="let p of cv.projects">
+      <strong class="entry-title">{{ p.name }}</strong>
+      <p class="body" *ngIf="p.description">{{ p.description }}</p>
+    </div>
+  </section>
+</div>

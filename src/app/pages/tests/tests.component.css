@@ -1,0 +1,10 @@
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.row-actions {
+  display: flex;
+  gap: 6px;
+}

@@ -1,0 +1,105 @@
+<div class="page-header">
+  <h1>Ofertas de trabajo</h1>
+  <button class="btn btn-primary" (click)="openNew()">+ Nueva oferta</button>
+</div>
+
+<!-- Lista -->
+<div *ngIf="!showNew" class="card">
+  <table *ngIf="offers.length">
+    <thead>
+      <tr>
+        <th>Puesto</th>
+        <th>Empresa</th>
+        <th>Ubicación</th>
+        <th>Estado</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let o of offers">
+        <td>
+          <a [routerLink]="['/offers', o.id]">{{ o.title || "Sin título" }}</a>
+        </td>
+        <td>{{ o.company }}</td>
+        <td class="muted">{{ o.location }}</td>
+        <td><span class="badge" [class]="'badge-' + o.status">{{ statusLabels[o.status] }}</span></td>
+        <td>
+          <button class="btn btn-sm btn-danger" (click)="remove(o.id)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p *ngIf="!offers.length" class="muted">Aún no hay ofertas. Pega tu primera oferta para empezar.</p>
+</div>
+
+<!-- Nueva oferta -->
+<div *ngIf="showNew" class="card">
+  <h2>Nueva oferta</h2>
+  <p class="muted">Pega el texto de la oferta copiado desde tu navegador. La IA extraerá los datos.</p>
+
+  <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+
+  <textarea
+    #pasteInput
+    [(ngModel)]="rawText"
+    class="paste-input"
+    rows="12"
+    placeholder="Pega aquí el contenido completo de la oferta de trabajo..."
+  ></textarea>
+
+  <div class="actions">
+    <button class="btn btn-primary" (click)="process()" [disabled]="loading">
+      <span *ngIf="loading" class="spinner"></span>
+      {{ loading ? "Procesando..." : "Procesar con IA" }}
+    </button>
+    <button class="btn" (click)="cancel()">Cancelar</button>
+  </div>
+
+  <!-- Resultado tras procesar -->
+  <div *ngIf="parsed" class="result">
+    <h3>Datos extraídos</h3>
+    <div class="grid grid-2">
+      <div class="field">
+        <label>Título</label>
+        <input [(ngModel)]="form.title" />
+      </div>
+      <div class="field">
+        <label>Empresa</label>
+        <input [(ngModel)]="form.company" />
+      </div>
+      <div class="field">
+        <label>Ubicación</label>
+        <input [(ngModel)]="form.location" />
+      </div>
+      <div class="field">
+        <label>Salario</label>
+        <input [(ngModel)]="form.salary" />
+      </div>
+      <div class="field">
+        <label>Tipo de contrato</label>
+        <input [(ngModel)]="form.jobType" />
+      </div>
+      <div class="field">
+        <label>Seniority</label>
+        <input [(ngModel)]="form.seniority" />
+      </div>
+      <div class="field" style="grid-column: 1 / -1">
+        <label>URL de aplicación</label>
+        <input [(ngModel)]="form.applicationUrl" />
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="field">
+        <label>Requisitos</label>
+        <textarea [(ngModel)]="requirementsText" rows="4"></textarea>
+      </div>
+      <div class="field">
+        <label>Responsabilidades</label>
+        <textarea [(ngModel)]="responsibilitiesText" rows="4"></textarea>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" (click)="save()" [disabled]="saving">Guardar oferta</button>
+  </div>
+</div>

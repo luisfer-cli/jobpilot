@@ -1,0 +1,90 @@
+.back {
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.status-box {
+  width: 180px;
+}
+
+.actions-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.desc {
+  white-space: pre-wrap;
+}
+
+ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.score {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 16px;
+}
+
+.score-ring {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+  background: conic-gradient(var(--primary) calc(var(--pct) * 1%), var(--border) 0);
+}
+
+.score-ring span {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  display: grid;
+  place-items: center;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--primary);
+}
+
+.chip.ok {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--success);
+}
+
+.chip.miss {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--danger);
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}

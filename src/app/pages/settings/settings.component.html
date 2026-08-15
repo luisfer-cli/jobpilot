@@ -1,0 +1,44 @@
+<div class="page-header">
+  <h1>Ajustes</h1>
+</div>
+
+<section class="card">
+  <h2>Proveedor de IA</h2>
+  <p class="muted">
+    JobPilot usa OpenRouter para acceder a cientos de modelos. Obtén tu API key en
+    <a href="https://openrouter.ai/keys" target="_blank">openrouter.ai/keys</a>.
+  </p>
+
+  <div class="field">
+    <label>API key de OpenRouter</label>
+    <input type="password" [(ngModel)]="apiKey" placeholder="sk-or-..." />
+  </div>
+  <div class="field">
+    <label>Modelo</label>
+    <input [(ngModel)]="model" placeholder="openai/gpt-4o-mini" />
+    <p class="muted">
+      Ejemplos: openai/gpt-4o-mini, openai/gpt-4o, anthropic/claude-3.5-sonnet,
+      google/gemini-2.0-flash-001.
+    </p>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" (click)="save()">Guardar</button>
+    <button class="btn" (click)="testConnection()" [disabled]="testing">
+      <span *ngIf="testing" class="spinner"></span>
+      {{ testing ? "Probando..." : "Probar conexión" }}
+    </button>
+  </div>
+
+  <div *ngIf="testResult" class="alert alert-success">{{ testResult }}</div>
+  <div *ngIf="testError" class="alert alert-error">{{ testError }}</div>
+</section>
+
+<section class="card">
+  <h2>Apariencia</h2>
+  <div class="actions">
+    <button class="btn" (click)="settings.toggleTheme()">
+      {{ settings.settings().theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro" }}
+    </button>
+  </div>
+</section>

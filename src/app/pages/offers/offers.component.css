@@ -1,0 +1,21 @@
+.paste-input {
+  font-size: 14px;
+  min-height: 220px;
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.result {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.result h3 {
+  font-size: 14px;
+}

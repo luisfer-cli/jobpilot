@@ -1,0 +1,397 @@
+<div class="page-header">
+  <h1>Mi Currículum</h1>
+  <span class="muted">Completa los datos por pasos. Se usan para generar CVs especializados.</span>
+</div>
+
+<!-- Stepper -->
+<div class="stepper">
+  <button
+    *ngFor="let s of steps; let i = index"
+    class="step"
+    [class.active]="i === step"
+    [class.done]="i < step"
+    (click)="goTo(i)"
+  >
+    <span class="step-dot">{{ i < step ? "✓" : i + 1 }}</span>
+    <span class="step-label">{{ s }}</span>
+  </button>
+</div>
+
+<div class="card wizard-body">
+  <!-- Paso 0: Datos personales -->
+  <ng-container *ngIf="step === 0">
+    <h2>Datos personales</h2>
+    <div class="grid grid-2">
+      <div class="field">
+        <label>Nombre completo</label>
+        <input [(ngModel)]="profile.fullName" placeholder="Ana García Pérez" />
+      </div>
+      <div class="field">
+        <label>Título / Puesto actual</label>
+        <input [(ngModel)]="profile.jobTitle" placeholder="Desarrolladora Frontend" />
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input [(ngModel)]="profile.email" placeholder="ana@email.com" />
+      </div>
+      <div class="field">
+        <label>Teléfono</label>
+        <input [(ngModel)]="profile.phone" placeholder="+34 600 000 000" />
+      </div>
+      <div class="field">
+        <label>Ubicación</label>
+        <input [(ngModel)]="profile.location" placeholder="Madrid, España" />
+      </div>
+      <div class="field">
+        <label>LinkedIn</label>
+        <input [(ngModel)]="profile.linkedin" placeholder="linkedin.com/in/ana" />
+      </div>
+      <div class="field">
+        <label>Sitio web / Portfolio</label>
+        <input [(ngModel)]="profile.website" placeholder="ana.dev" />
+      </div>
+    </div>
+    <div class="field">
+      <label>Resumen profesional</label>
+      <textarea [(ngModel)]="profile.summary" placeholder="2-3 frases sobre tu perfil y experiencia..."></textarea>
+    </div>
+  </ng-container>
+
+  <!-- Paso 1: Experiencia -->
+  <ng-container *ngIf="step === 1">
+    <h2>Experiencia laboral</h2>
+    <div class="list-panel">
+      <div class="item" *ngFor="let e of experiences">
+        <div class="item-body">
+          <strong>{{ e.role || "Sin cargo" }}</strong> en {{ e.company || "Sin empresa" }}
+          <span class="muted" *ngIf="e.startDate || e.endDate">
+            · {{ e.startDate }} – {{ e.current ? "Actualidad" : e.endDate }}
+          </span>
+        </div>
+        <div class="item-actions">
+          <button class="btn btn-sm" (click)="editExperience(e)">Editar</button>
+          <button class="btn btn-sm btn-danger" (click)="removeExperience(e.id!)">Eliminar</button>
+        </div>
+      </div>
+      <p *ngIf="!experiences.length" class="muted">Aún no has añadido experiencia.</p>
+    </div>
+
+    <div class="mini-form">
+      <h3>{{ expEditId != null ? "Editando experiencia" : "Añadir experiencia" }}</h3>
+      <div class="grid grid-2">
+        <div class="field">
+          <label>Empresa</label>
+          <input [(ngModel)]="expForm.company" />
+        </div>
+        <div class="field">
+          <label>Cargo</label>
+          <input [(ngModel)]="expForm.role" />
+        </div>
+        <div class="field">
+          <label>Ubicación</label>
+          <input [(ngModel)]="expForm.location" />
+        </div>
+        <div class="field">
+          <label>Periodo</label>
+          <div class="row">
+            <input [(ngModel)]="expForm.startDate" placeholder="Inicio (2020-01)" />
+            <input [(ngModel)]="expForm.endDate" placeholder="Fin (2024-06)" />
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="inline">
+          <input type="checkbox" [(ngModel)]="expForm.current" /> Puesto actual
+        </label>
+      </div>
+      <div class="field">
+        <label>Descripción / logros</label>
+        <ul class="achievement-list" *ngIf="expForm.description.length">
+          <li *ngFor="let item of expForm.description; let i = index">
+            <span>{{ item }}</span>
+            <button type="button" class="btn btn-sm btn-danger" (click)="removeAchievement(i)">×</button>
+          </li>
+        </ul>
+        <div class="row">
+          <input
+            [(ngModel)]="newAchievement"
+            placeholder="Añade un logro o responsabilidad..."
+            (keyup.enter)="addAchievement()"
+          />
+          <button type="button" class="btn btn-sm" (click)="addAchievement()">Añadir</button>
+        </div>
+      </div>
+      <div class="row">
+        <button class="btn btn-primary" (click)="saveExperience()">
+          {{ expEditId != null ? "Guardar cambios" : "Añadir" }}
+        </button>
+        <button *ngIf="expEditId != null" class="btn" (click)="cancelExpEdit()">Cancelar</button>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Paso 2: Educación -->
+  <ng-container *ngIf="step === 2">
+    <h2>Educación</h2>
+    <div class="list-panel">
+      <div class="item" *ngFor="let e of education">
+        <div class="item-body">
+          <strong>{{ e.degree || "Sin título" }}</strong> — {{ e.institution || "Sin institución" }}
+          <span class="muted" *ngIf="e.startDate || e.endDate"> · {{ e.startDate }} – {{ e.endDate }}</span>
+        </div>
+        <div class="item-actions">
+          <button class="btn btn-sm" (click)="editEducation(e)">Editar</button>
+          <button class="btn btn-sm btn-danger" (click)="removeEducation(e.id!)">Eliminar</button>
+        </div>
+      </div>
+      <p *ngIf="!education.length" class="muted">Aún no has añadido formación.</p>
+    </div>
+
+    <div class="mini-form">
+      <h3>{{ eduEditId != null ? "Editando formación" : "Añadir formación" }}</h3>
+      <div class="grid grid-2">
+        <div class="field">
+          <label>Institución</label>
+          <input [(ngModel)]="eduForm.institution" />
+        </div>
+        <div class="field">
+          <label>Título</label>
+          <input [(ngModel)]="eduForm.degree" />
+        </div>
+        <div class="field">
+          <label>Área de estudio</label>
+          <input [(ngModel)]="eduForm.field" />
+        </div>
+        <div class="field">
+          <label>Periodo</label>
+          <div class="row">
+            <input [(ngModel)]="eduForm.startDate" placeholder="Inicio" />
+            <input [(ngModel)]="eduForm.endDate" placeholder="Fin" />
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" (click)="saveEducation()">
+        {{ eduEditId != null ? "Guardar cambios" : "Añadir" }}
+      </button>
+    </div>
+  </ng-container>
+
+  <!-- Paso 3: Competencias -->
+  <ng-container *ngIf="step === 3">
+    <h2>Competencias</h2>
+    <div class="list-panel">
+      <div class="item" *ngFor="let s of skills">
+        <div class="item-body">
+          <strong>{{ s.name }}</strong>
+          <span class="muted"> · {{ s.level }}</span>
+          <span class="badge" *ngIf="s.category">{{ s.category }}</span>
+        </div>
+        <div class="item-actions">
+          <button class="btn btn-sm" (click)="editSkill(s)">Editar</button>
+          <button class="btn btn-sm btn-danger" (click)="removeSkill(s.id!)">Eliminar</button>
+        </div>
+      </div>
+      <p *ngIf="!skills.length" class="muted">Aún no has añadido competencias.</p>
+    </div>
+
+    <div class="mini-form">
+      <h3>Añadir competencia</h3>
+      <div class="grid grid-3">
+        <div class="field">
+          <label>Competencia</label>
+          <input [(ngModel)]="skillForm.name" placeholder="Angular" />
+        </div>
+        <div class="field">
+          <label>Nivel</label>
+          <input [(ngModel)]="skillForm.level" placeholder="Avanzado" />
+        </div>
+        <div class="field">
+          <label>Categoría</label>
+          <input [(ngModel)]="skillForm.category" placeholder="Frontend" />
+        </div>
+      </div>
+      <button class="btn btn-primary" (click)="saveSkill()">Añadir</button>
+    </div>
+  </ng-container>
+
+  <!-- Paso 4: Idiomas -->
+  <ng-container *ngIf="step === 4">
+    <h2>Idiomas</h2>
+    <div class="list-panel">
+      <div class="item" *ngFor="let l of languages">
+        <div class="item-body">
+          <strong>{{ l.name }}</strong>
+          <span class="muted"> · {{ l.level }}</span>
+        </div>
+        <div class="item-actions">
+          <button class="btn btn-sm" (click)="editLanguage(l)">Editar</button>
+          <button class="btn btn-sm btn-danger" (click)="removeLanguage(l.id!)">Eliminar</button>
+        </div>
+      </div>
+      <p *ngIf="!languages.length" class="muted">Aún no has añadido idiomas.</p>
+    </div>
+
+    <div class="mini-form">
+      <h3>Añadir idioma</h3>
+      <div class="grid grid-2">
+        <div class="field">
+          <label>Idioma</label>
+          <input [(ngModel)]="langForm.name" placeholder="Inglés" />
+        </div>
+        <div class="field">
+          <label>Nivel</label>
+          <input [(ngModel)]="langForm.level" placeholder="C1" />
+        </div>
+      </div>
+      <button class="btn btn-primary" (click)="saveLanguage()">Añadir</button>
+    </div>
+  </ng-container>
+
+  <!-- Paso 5: Certificaciones -->
+  <ng-container *ngIf="step === 5">
+    <h2>Certificaciones</h2>
+    <div class="list-panel">
+      <div class="item" *ngFor="let c of certifications">
+        <div class="item-body">
+          <strong>{{ c.name }}</strong>
+          <span class="muted"> · {{ c.issuer }} · {{ c.date }}</span>
+        </div>
+        <div class="item-actions">
+          <button class="btn btn-sm" (click)="editCertification(c)">Editar</button>
+          <button class="btn btn-sm btn-danger" (click)="removeCertification(c.id!)">Eliminar</button>
+        </div>
+      </div>
+      <p *ngIf="!certifications.length" class="muted">Aún no has añadido certificaciones.</p>
+    </div>
+
+    <div class="mini-form">
+      <h3>Añadir certificación</h3>
+      <div class="grid grid-3">
+        <div class="field">
+          <label>Nombre</label>
+          <input [(ngModel)]="certForm.name" />
+        </div>
+        <div class="field">
+          <label>Emisor</label>
+          <input [(ngModel)]="certForm.issuer" />
+        </div>
+        <div class="field">
+          <label>Fecha</label>
+          <input [(ngModel)]="certForm.date" />
+        </div>
+      </div>
+      <button class="btn btn-primary" (click)="saveCertification()">Añadir</button>
+    </div>
+  </ng-container>
+
+  <!-- Paso 6: Proyectos -->
+  <ng-container *ngIf="step === 6">
+    <h2>Proyectos</h2>
+    <div class="list-panel">
+      <div class="item" *ngFor="let p of projects">
+        <div class="item-body">
+          <strong>{{ p.name }}</strong>
+          <span class="muted" *ngIf="p.link"> · {{ p.link }}</span>
+        </div>
+        <div class="item-actions">
+          <button class="btn btn-sm" (click)="editProject(p)">Editar</button>
+          <button class="btn btn-sm btn-danger" (click)="removeProject(p.id!)">Eliminar</button>
+        </div>
+      </div>
+      <p *ngIf="!projects.length" class="muted">Aún no has añadido proyectos.</p>
+    </div>
+
+    <div class="mini-form">
+      <h3>Añadir proyecto</h3>
+      <div class="grid grid-2">
+        <div class="field">
+          <label>Nombre</label>
+          <input [(ngModel)]="projectForm.name" />
+        </div>
+        <div class="field">
+          <label>Enlace</label>
+          <input [(ngModel)]="projectForm.link" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Descripción</label>
+        <textarea [(ngModel)]="projectForm.description"></textarea>
+      </div>
+      <button class="btn btn-primary" (click)="saveProject()">Añadir</button>
+    </div>
+  </ng-container>
+
+  <!-- Paso 7: Resumen -->
+  <ng-container *ngIf="step === 7">
+    <div *ngIf="finished" class="done-state">
+      <div class="done-check">✓</div>
+      <h2>¡Currículum guardado!</h2>
+      <p class="muted">Tus datos están completos y guardados correctamente.</p>
+      <a class="btn btn-primary" routerLink="/dashboard">Ir al dashboard</a>
+    </div>
+
+    <ng-container *ngIf="!finished">
+      <h2>Resumen</h2>
+      <p class="muted">Revisa tu currículum. Estos datos se usarán para generar CVs especializados.</p>
+      <div class="summary">
+        <div class="summary-row">
+          <span class="label">Nombre</span>
+          <span>{{ profile.fullName || "—" }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Puesto</span>
+          <span>{{ profile.jobTitle || "—" }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Email</span>
+          <span>{{ profile.email || "—" }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Experiencia</span>
+          <span>{{ experiences.length }} puesto(s)</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Educación</span>
+          <span>{{ education.length }} registro(s)</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Competencias</span>
+          <span>{{ skills.length }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Idiomas</span>
+          <span>{{ languages.length }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Certificaciones</span>
+          <span>{{ certifications.length }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Proyectos</span>
+          <span>{{ projects.length }}</span>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <!-- Navegación -->
+  <div class="nav-row" *ngIf="step !== 7 || !finished">
+    <button class="btn" (click)="prev()" [disabled]="step === 0 || saving">← Anterior</button>
+    <button
+      *ngIf="step < steps.length - 1"
+      class="btn btn-primary"
+      (click)="next()"
+      [disabled]="saving"
+    >
+      {{ saving ? "Guardando..." : "Siguiente →" }}
+    </button>
+    <button
+      *ngIf="step === steps.length - 1"
+      class="btn btn-primary"
+      (click)="finish()"
+      [disabled]="saving"
+    >
+      {{ saving ? "Guardando..." : "✓ Guardar y finalizar" }}
+    </button>
+  </div>
+</div>

@@ -1,0 +1,39 @@
+<aside class="sidebar">
+  <div class="brand">
+    <span class="brand-mark">JP</span>
+    <span class="brand-name">JobPilot</span>
+  </div>
+
+  <nav>
+    <a routerLink="/dashboard" routerLinkActive="active">
+      <span class="icon nf nf-dashboard"></span> Dashboard
+    </a>
+    <a routerLink="/cv" routerLinkActive="active">
+      <span class="icon nf nf-account"></span> Mi Currículum
+    </a>
+    <a routerLink="/offers" routerLinkActive="active">
+      <span class="icon nf nf-briefcase"></span> Ofertas
+    </a>
+    <a routerLink="/tests" routerLinkActive="active">
+      <span class="icon nf nf-flask"></span> Pruebas técnicas
+    </a>
+    <a routerLink="/settings" routerLinkActive="active">
+      <span class="icon nf nf-cog"></span> Ajustes
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="theme-toggle" (click)="settings.toggleTheme()">
+      <span
+        class="nf"
+        [class.nf-sun]="settings.settings().theme === 'dark'"
+        [class.nf-moon]="settings.settings().theme !== 'dark'"
+      ></span>
+      {{ settings.settings().theme === "dark" ? "Modo claro" : "Modo oscuro" }}
+    </button>
+  </div>
+</aside>
+
+<main class="content">
+  <router-outlet />
+</main>

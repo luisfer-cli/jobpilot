@@ -1,0 +1,177 @@
+.back {
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.progress-card {
+  margin-bottom: 16px;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.progress-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--primary);
+  transition: width 0.3s;
+}
+
+.question {
+  margin-bottom: 16px;
+}
+
+.q-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.q-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.q-type {
+  background: rgba(100, 116, 139, 0.15);
+  color: var(--text-muted);
+}
+
+.q-text {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.15s;
+}
+
+.option:hover {
+  border-color: var(--primary);
+}
+
+.option input {
+  width: auto;
+}
+
+.option.correct {
+  border-color: var(--success);
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.option.wrong {
+  border-color: var(--danger);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.mark {
+  margin-left: auto;
+  color: var(--success);
+  font-weight: 700;
+}
+
+.code-input {
+  font-family: monospace;
+  min-height: 140px;
+}
+
+.q-actions {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.result {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.result.ok {
+  color: var(--success);
+}
+
+.result.ko {
+  color: var(--danger);
+}
+
+.explanation {
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.answer-ref {
+  margin-bottom: 6px;
+}
+
+.explanation-text {
+  color: var(--text-muted);
+}
+
+.ref {
+  white-space: pre-wrap;
+  font-family: monospace;
+  font-size: 12px;
+  margin: 6px 0 0;
+}
+
+.final-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.final-score {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.big {
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.final-actions {
+  display: flex;
+  gap: 10px;
+}

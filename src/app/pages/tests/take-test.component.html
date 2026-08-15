@@ -1,0 +1,125 @@
+<div *ngIf="!test" class="card">
+  <p class="muted">Prueba no encontrada.</p>
+  <a routerLink="/tests">Volver a pruebas</a>
+</div>
+
+<div *ngIf="test">
+  <div class="page-header">
+    <div>
+      <a routerLink="/tests" class="muted back">← Pruebas</a>
+      <h1>{{ test.title || "Prueba técnica" }}</h1>
+      <p class="muted" *ngIf="test.estimatedTime">Tiempo estimado: {{ test.estimatedTime }}</p>
+    </div>
+  </div>
+
+  <div class="card" *ngIf="test.instructions">
+    <h2>Instrucciones</h2>
+    <p>{{ test.instructions }}</p>
+  </div>
+
+  <!-- Barra de progreso -->
+  <div class="card progress-card">
+    <div class="progress-info">
+      <span>{{ answeredCount }} de {{ total }} respondidas</span>
+      <span *ngIf="allRevealed">Aciertos: {{ correctCount }}/{{ autoCount }} ({{ score }}%)</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="total ? (answeredCount / total) * 100 : 0"></div>
+    </div>
+  </div>
+
+  <!-- Preguntas -->
+  <div class="card question" *ngFor="let q of test.questions; let i = index">
+    <div class="q-head">
+      <span class="q-num">{{ i + 1 }}</span>
+      <span class="badge q-type">{{ typeLabels[q.questionType] }}</span>
+    </div>
+
+    <p class="q-text">{{ q.question }}</p>
+
+    <!-- Opción única / Verdadero-Falso -->
+    <div *ngIf="isChoice(q)" class="options">
+      <label
+        *ngFor="let opt of q.options"
+        class="option"
+        [class.correct]="revealed[i] && isOptionCorrect(i, opt)"
+        [class.wrong]="revealed[i] && isSelected(i, opt) && !isOptionCorrect(i, opt)"
+      >
+        <input
+          type="radio"
+          [name]="'q' + i"
+          [checked]="isSelected(i, opt)"
+          (change)="selectSingle(i, opt)"
+        />
+        <span>{{ opt }}</span>
+        <span *ngIf="revealed[i] && isOptionCorrect(i, opt)" class="mark">✓</span>
+      </label>
+    </div>
+
+    <!-- Selección múltiple -->
+    <div *ngIf="q.questionType === 'multiple_choice'" class="options">
+      <label
+        *ngFor="let opt of q.options"
+        class="option"
+        [class.correct]="revealed[i] && isOptionCorrect(i, opt)"
+        [class.wrong]="revealed[i] && isSelected(i, opt) && !isOptionCorrect(i, opt)"
+      >
+        <input type="checkbox" [checked]="isSelected(i, opt)" (change)="toggleMultiple(i, opt)" />
+        <span>{{ opt }}</span>
+        <span *ngIf="revealed[i] && isOptionCorrect(i, opt)" class="mark">✓</span>
+      </label>
+    </div>
+
+    <!-- Respuesta corta -->
+    <div *ngIf="q.questionType === 'short_answer'">
+      <textarea [(ngModel)]="answers[i]" rows="3" placeholder="Escribe tu respuesta..."></textarea>
+    </div>
+
+    <!-- Programación -->
+    <div *ngIf="q.questionType === 'coding'">
+      <textarea class="code-input" [(ngModel)]="answers[i]" rows="8" placeholder="Escribe tu solución..."></textarea>
+    </div>
+
+    <div class="q-actions">
+      <button *ngIf="!revealed[i]" class="btn btn-sm" (click)="reveal(i)" [disabled]="!answered(i)">
+        Revisar respuesta
+      </button>
+      <button *ngIf="q.hint && !hints[i]" class="btn btn-sm" (click)="toggleHint(i)">
+        Mostrar pista
+      </button>
+      <span *ngIf="revealed[i] && isAutoGraded(q)" class="result" [class.ok]="isCorrect(i)" [class.ko]="!isCorrect(i)">
+        {{ isCorrect(i) ? "✓ Correcto" : "✗ Incorrecto" }}
+      </span>
+    </div>
+
+    <div *ngIf="hints[i] && q.hint" class="explanation hint-box">
+      <p class="muted"><strong>Pista:</strong> {{ q.hint }}</p>
+    </div>
+
+    <div *ngIf="revealed[i]" class="explanation">
+      <p *ngIf="q.correctAnswers.length" class="answer-ref">
+        <strong>Respuesta:</strong>
+        <ng-container *ngIf="q.questionType === 'short_answer' || q.questionType === 'coding'">
+          <pre class="ref">{{ q.correctAnswers[0] }}</pre>
+        </ng-container>
+        <ng-container *ngIf="q.questionType !== 'short_answer' && q.questionType !== 'coding'">
+          {{ q.correctAnswers.join(", ") }}
+        </ng-container>
+      </p>
+      <p *ngIf="q.explanation" class="explanation-text">{{ q.explanation }}</p>
+    </div>
+  </div>
+
+  <!-- Acciones finales -->
+  <div class="card final-card" *ngIf="total">
+    <div *ngIf="allRevealed" class="final-score">
+      <span class="big">{{ score }}%</span>
+      <span class="muted">de aciertos en preguntas automáticas ({{ correctCount }}/{{ autoCount }})</span>
+    </div>
+    <div class="final-actions">
+      <button *ngIf="!allRevealed" class="btn btn-primary" (click)="revealAll()">Terminar y ver resultados</button>
+      <button *ngIf="allRevealed" class="btn" (click)="reset()">Reintentar</button>
+      <a class="btn" routerLink="/tests">Volver a pruebas</a>
+    </div>
+  </div>
+</div>

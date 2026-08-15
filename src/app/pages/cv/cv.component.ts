@@ -1,0 +1,303 @@
+import { CommonModule } from "@angular/common";
+import { Component, OnInit } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { RouterLink } from "@angular/router";
+import { DbService } from "../../core/db.service";
+import type {
+  Certification,
+  Education,
+  Language,
+  Profile,
+  Project,
+  Skill,
+  WorkExperience,
+} from "../../core/models";
+
+const emptyExp = (): WorkExperience => ({
+  company: "",
+  role: "",
+  location: "",
+  startDate: "",
+  endDate: "",
+  current: false,
+  description: [],
+});
+
+const emptyEdu = (): Education => ({
+  institution: "",
+  degree: "",
+  field: "",
+  startDate: "",
+  endDate: "",
+});
+
+const emptySkill = (): Skill => ({ name: "", level: "", category: "" });
+const emptyLang = (): Language => ({ name: "", level: "" });
+const emptyCert = (): Certification => ({ name: "", issuer: "", date: "" });
+const emptyProject = (): Project => ({ name: "", description: "", link: "" });
+
+@Component({
+  selector: "app-cv",
+  imports: [CommonModule, FormsModule, RouterLink],
+  templateUrl: "./cv.component.html",
+  styleUrl: "./cv.component.css",
+})
+export class CvComponent implements OnInit {
+  steps = [
+    "Datos personales",
+    "Experiencia",
+    "Educación",
+    "Competencias",
+    "Idiomas",
+    "Certificaciones",
+    "Proyectos",
+    "Resumen",
+  ];
+  step = 0;
+  saving = false;
+  finished = false;
+
+  profile: Profile = {
+    id: 1,
+    fullName: "",
+    jobTitle: "",
+    email: "",
+    phone: "",
+    location: "",
+    linkedin: "",
+    website: "",
+    summary: "",
+  };
+
+  experiences: WorkExperience[] = [];
+  education: Education[] = [];
+  skills: Skill[] = [];
+  languages: Language[] = [];
+  certifications: Certification[] = [];
+  projects: Project[] = [];
+
+  expForm: WorkExperience = emptyExp();
+  expEditId: number | null = null;
+  newAchievement = "";
+
+  eduForm: Education = emptyEdu();
+  eduEditId: number | null = null;
+
+  skillForm: Skill = emptySkill();
+  skillEditId: number | null = null;
+
+  langForm: Language = emptyLang();
+  langEditId: number | null = null;
+
+  certForm: Certification = emptyCert();
+  certEditId: number | null = null;
+
+  projectForm: Project = emptyProject();
+  projectEditId: number | null = null;
+
+  constructor(private db: DbService) {}
+
+  async ngOnInit(): Promise<void> {
+    await this.loadAll();
+  }
+
+  private async loadAll(): Promise<void> {
+    const [p, exp, edu, skills, langs, certs, projects] = await Promise.all([
+      this.db.getProfile(),
+      this.db.listExperiences(),
+      this.db.listEducation(),
+      this.db.listSkills(),
+      this.db.listLanguages(),
+      this.db.listCertifications(),
+      this.db.listProjects(),
+    ]);
+    this.profile = p;
+    this.experiences = exp;
+    this.education = edu;
+    this.skills = skills;
+    this.languages = langs;
+    this.certifications = certs;
+    this.projects = projects;
+  }
+
+  async next(): Promise<void> {
+    if (this.saving) return;
+    this.saving = true;
+    await this.saveProfile();
+    this.saving = false;
+    if (this.step < this.steps.length - 1) this.step++;
+  }
+
+  async prev(): Promise<void> {
+    if (this.step > 0) this.step--;
+  }
+
+  async finish(): Promise<void> {
+    if (this.saving) return;
+    this.saving = true;
+    await this.saveProfile();
+    this.saving = false;
+    this.finished = true;
+  }
+
+  goTo(i: number): void {
+    if (i >= 0 && i < this.steps.length) this.step = i;
+  }
+
+  async saveProfile(): Promise<void> {
+    await this.db.saveProfile(this.profile);
+  }
+
+  // --- Experiencia ---
+  async saveExperience(): Promise<void> {
+    if (this.expEditId != null) {
+      await this.db.updateExperience({ ...this.expForm, id: this.expEditId });
+    } else {
+      await this.db.addExperience(this.expForm);
+    }
+    this.resetExpForm();
+    this.experiences = await this.db.listExperiences();
+  }
+
+  editExperience(e: WorkExperience): void {
+    this.expForm = { ...e, description: [...e.description] };
+    this.expEditId = e.id ?? null;
+    this.newAchievement = "";
+  }
+
+  addAchievement(): void {
+    const v = this.newAchievement.trim();
+    if (!v) return;
+    this.expForm.description = [...this.expForm.description, v];
+    this.newAchievement = "";
+  }
+
+  removeAchievement(index: number): void {
+    this.expForm.description = this.expForm.description.filter((_, i) => i !== index);
+  }
+
+  cancelExpEdit(): void {
+    this.resetExpForm();
+  }
+
+  resetExpForm(): void {
+    this.expForm = emptyExp();
+    this.expEditId = null;
+    this.newAchievement = "";
+  }
+
+  async removeExperience(id: number): Promise<void> {
+    await this.db.deleteExperience(id);
+    this.experiences = await this.db.listExperiences();
+  }
+
+  // --- Educación ---
+  async saveEducation(): Promise<void> {
+    if (this.eduEditId != null) {
+      await this.db.updateEducation({ ...this.eduForm, id: this.eduEditId });
+    } else {
+      await this.db.addEducation(this.eduForm);
+    }
+    this.eduForm = emptyEdu();
+    this.eduEditId = null;
+    this.education = await this.db.listEducation();
+  }
+
+  editEducation(e: Education): void {
+    this.eduForm = { ...e };
+    this.eduEditId = e.id ?? null;
+  }
+
+  async removeEducation(id: number): Promise<void> {
+    await this.db.deleteEducation(id);
+    this.education = await this.db.listEducation();
+  }
+
+  // --- Competencias ---
+  async saveSkill(): Promise<void> {
+    if (this.skillEditId != null) {
+      await this.db.updateSkill({ ...this.skillForm, id: this.skillEditId });
+    } else {
+      await this.db.addSkill(this.skillForm);
+    }
+    this.skillForm = emptySkill();
+    this.skillEditId = null;
+    this.skills = await this.db.listSkills();
+  }
+
+  editSkill(s: Skill): void {
+    this.skillForm = { ...s };
+    this.skillEditId = s.id ?? null;
+  }
+
+  async removeSkill(id: number): Promise<void> {
+    await this.db.deleteSkill(id);
+    this.skills = await this.db.listSkills();
+  }
+
+  // --- Idiomas ---
+  async saveLanguage(): Promise<void> {
+    if (this.langEditId != null) {
+      await this.db.updateLanguage({ ...this.langForm, id: this.langEditId });
+    } else {
+      await this.db.addLanguage(this.langForm);
+    }
+    this.langForm = emptyLang();
+    this.langEditId = null;
+    this.languages = await this.db.listLanguages();
+  }
+
+  editLanguage(l: Language): void {
+    this.langForm = { ...l };
+    this.langEditId = l.id ?? null;
+  }
+
+  async removeLanguage(id: number): Promise<void> {
+    await this.db.deleteLanguage(id);
+    this.languages = await this.db.listLanguages();
+  }
+
+  // --- Certificaciones ---
+  async saveCertification(): Promise<void> {
+    if (this.certEditId != null) {
+      await this.db.updateCertification({ ...this.certForm, id: this.certEditId });
+    } else {
+      await this.db.addCertification(this.certForm);
+    }
+    this.certForm = emptyCert();
+    this.certEditId = null;
+    this.certifications = await this.db.listCertifications();
+  }
+
+  editCertification(c: Certification): void {
+    this.certForm = { ...c };
+    this.certEditId = c.id ?? null;
+  }
+
+  async removeCertification(id: number): Promise<void> {
+    await this.db.deleteCertification(id);
+    this.certifications = await this.db.listCertifications();
+  }
+
+  // --- Proyectos ---
+  async saveProject(): Promise<void> {
+    if (this.projectEditId != null) {
+      await this.db.updateProject({ ...this.projectForm, id: this.projectEditId });
+    } else {
+      await this.db.addProject(this.projectForm);
+    }
+    this.projectForm = emptyProject();
+    this.projectEditId = null;
+    this.projects = await this.db.listProjects();
+  }
+
+  editProject(p: Project): void {
+    this.projectForm = { ...p };
+    this.projectEditId = p.id ?? null;
+  }
+
+  async removeProject(id: number): Promise<void> {
+    await this.db.deleteProject(id);
+    this.projects = await this.db.listProjects();
+  }
+}

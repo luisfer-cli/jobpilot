@@ -1,0 +1,137 @@
+<div *ngIf="!offer" class="card">
+  <p class="muted">Oferta no encontrada.</p>
+  <a routerLink="/offers">Volver a ofertas</a>
+</div>
+
+<div *ngIf="offer">
+  <div class="page-header">
+    <div>
+      <a routerLink="/offers" class="muted back">← Ofertas</a>
+      <h1>{{ offer.title || "Sin título" }}</h1>
+      <p class="muted">{{ offer.company }} · {{ offer.location }} · {{ offer.salary }}</p>
+    </div>
+    <div class="status-box">
+      <label>Estado</label>
+      <select [(ngModel)]="offer.status" (ngModelChange)="changeStatus()">
+        <option *ngFor="let s of statuses" [value]="s">{{ statusLabels[s] }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+
+  <!-- Acciones IA -->
+  <section class="card">
+    <h2>Herramientas IA</h2>
+    <div class="actions-grid">
+      <button class="btn btn-primary" (click)="generateCv()" [disabled]="!!busy">
+        Generar CV especializado
+      </button>
+      <button class="btn" (click)="generateLetter()" [disabled]="!!busy">
+        Carta de presentación
+      </button>
+      <button class="btn" (click)="generateTest()" [disabled]="!!busy">
+        Prueba técnica mágica
+      </button>
+      <button class="btn" (click)="analyzeAts()" [disabled]="!!busy">
+        Análisis ATS
+      </button>
+    </div>
+    <p *ngIf="busy" class="muted">{{ busy }}</p>
+  </section>
+
+  <!-- Detalle oferta -->
+  <section class="card" *ngIf="structured">
+    <h2>Detalles de la oferta</h2>
+    <div class="meta">
+      <span *ngIf="structured.jobType"><strong>Tipo:</strong> {{ structured.jobType }}</span>
+      <span *ngIf="structured.seniority"><strong>Seniority:</strong> {{ structured.seniority }}</span>
+      <span *ngIf="structured.applicationUrl">
+        <strong>URL:</strong> <a [href]="structured.applicationUrl" target="_blank">{{ structured.applicationUrl }}</a>
+      </span>
+    </div>
+    <p *ngIf="structured.description" class="desc">{{ structured.description }}</p>
+
+    <div class="grid grid-2">
+      <div *ngIf="structured.requirements.length">
+        <h3>Requisitos</h3>
+        <ul>
+          <li *ngFor="let r of structured.requirements">{{ r }}</li>
+        </ul>
+      </div>
+      <div *ngIf="structured.responsibilities.length">
+        <h3>Responsabilidades</h3>
+        <ul>
+          <li *ngFor="let r of structured.responsibilities">{{ r }}</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Análisis ATS -->
+  <section class="card" *ngIf="ats">
+    <h2>Análisis ATS</h2>
+    <div class="score">
+      <div class="score-ring" [style.--pct]="ats.score">
+        <span>{{ ats.score }}</span>
+      </div>
+      <div>
+        <h3>Encaje con la oferta</h3>
+        <p class="muted">Puntuación estimada de 0 a 100.</p>
+      </div>
+    </div>
+    <div class="grid grid-2">
+      <div>
+        <h3>Keywords presentes</h3>
+        <div class="chips">
+          <span class="chip ok" *ngFor="let k of ats.matchedKeywords">{{ k }}</span>
+        </div>
+      </div>
+      <div>
+        <h3>Keywords que faltan</h3>
+        <div class="chips">
+          <span class="chip miss" *ngFor="let k of ats.missingKeywords">{{ k }}</span>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="ats.suggestions.length">
+      <h3>Sugerencias</h3>
+      <ul>
+        <li *ngFor="let s of ats.suggestions">{{ s }}</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CV generado -->
+  <section class="card" *ngIf="cv">
+    <div class="section-head">
+      <h2>CV especializado</h2>
+      <button class="btn btn-primary" (click)="exportCv()">Exportar PDF</button>
+    </div>
+
+    <app-cv-preview [cv]="cv" />
+  </section>
+
+  <!-- Carta -->
+  <section class="card" *ngIf="letter">
+    <div class="section-head">
+      <h2>Carta de presentación</h2>
+      <button class="btn btn-primary" (click)="exportLetter()">Exportar PDF</button>
+    </div>
+    <p *ngIf="letter.subject" class="muted"><strong>Asunto:</strong> {{ letter.subject }}</p>
+    <p>{{ letter.greeting }}</p>
+    <p *ngFor="let p of splitBody(letter.body)">{{ p }}</p>
+    <p>{{ letter.closing }}</p>
+  </section>
+
+  <!-- Prueba técnica -->
+  <section class="card" *ngIf="test">
+    <div class="section-head">
+      <h2>Prueba técnica</h2>
+      <a class="btn btn-primary" [routerLink]="['/tests', test.id]">Hacer prueba interactiva</a>
+    </div>
+    <p *ngIf="test.title"><strong>{{ test.title }}</strong></p>
+    <p *ngIf="test.estimatedTime" class="muted">Tiempo estimado: {{ test.estimatedTime }}</p>
+    <p class="muted">{{ test.questions.length }} pregunta(s)</p>
+  </section>
+</div>

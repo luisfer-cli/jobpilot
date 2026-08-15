@@ -1,0 +1,55 @@
+<div class="page-header">
+  <h1>Pruebas técnicas</h1>
+  <button class="btn btn-primary" (click)="openNew()">+ Nueva prueba</button>
+</div>
+
+<div *ngIf="showNew" class="card">
+  <h2>Nueva prueba de práctica</h2>
+  <p class="muted">
+    Escribe un puesto o tema (p. ej. "Backend Node.js mid-level") y la IA generará una prueba
+    interactiva con distintos tipos de preguntas.
+  </p>
+  <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+  <div class="field">
+    <label>Tema / puesto</label>
+    <input [(ngModel)]="topic" placeholder="Ej. Frontend React senior" />
+  </div>
+  <div class="actions">
+    <button class="btn btn-primary" (click)="generate()" [disabled]="generating">
+      <span *ngIf="generating" class="spinner"></span>
+      {{ generating ? "Generando..." : "Generar con IA" }}
+    </button>
+    <button class="btn" (click)="cancel()">Cancelar</button>
+  </div>
+</div>
+
+<div class="card" *ngIf="!showNew">
+  <table *ngIf="tests.length">
+    <thead>
+      <tr>
+        <th>Prueba</th>
+        <th>Origen</th>
+        <th>Fecha</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let t of tests">
+        <td>
+          <a [routerLink]="['/tests', t.id]">{{ t.title }}</a>
+        </td>
+        <td class="muted">{{ t.jobOfferId == null ? "Independiente" : "De oferta" }}</td>
+        <td class="muted">{{ t.createdAt }}</td>
+        <td>
+          <div class="row-actions">
+            <a class="btn btn-sm btn-primary" [routerLink]="['/tests', t.id]">Hacer</a>
+            <button class="btn btn-sm btn-danger" (click)="remove(t.id)">Eliminar</button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p *ngIf="!tests.length" class="muted">
+    Aún no hay pruebas. Crea una desde aquí o usa el botón "Prueba técnica mágica" dentro de una oferta.
+  </p>
+</div>
