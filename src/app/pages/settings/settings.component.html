@@ -23,9 +23,12 @@
   </div>
 
   <div class="actions">
-    <button class="btn btn-primary" (click)="save()">Guardar</button>
+    <button class="btn btn-primary" (click)="save()">
+      <span class="nf nf-save"></span> Guardar
+    </button>
     <button class="btn" (click)="testConnection()" [disabled]="testing">
       <span *ngIf="testing" class="spinner"></span>
+      <span *ngIf="!testing" class="nf nf-send"></span>
       {{ testing ? "Probando..." : "Probar conexión" }}
     </button>
   </div>
@@ -38,6 +41,11 @@
   <h2>Apariencia</h2>
   <div class="actions">
     <button class="btn" (click)="settings.toggleTheme()">
+      <span
+        class="nf"
+        [class.nf-sun]="settings.settings().theme === 'dark'"
+        [class.nf-moon]="settings.settings().theme !== 'dark'"
+      ></span>
       {{ settings.settings().theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro" }}
     </button>
   </div>

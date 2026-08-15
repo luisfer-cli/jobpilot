@@ -12,7 +12,10 @@
     [class.done]="i < step"
     (click)="goTo(i)"
   >
-    <span class="step-dot">{{ i < step ? "✓" : i + 1 }}</span>
+    <span class="step-dot">
+      <span class="nf nf-check" *ngIf="i < step"></span>
+      <ng-container *ngIf="i >= step">{{ i + 1 }}</ng-container>
+    </span>
     <span class="step-label">{{ s }}</span>
   </button>
 </div>
@@ -324,7 +327,7 @@
   <!-- Paso 7: Resumen -->
   <ng-container *ngIf="step === 7">
     <div *ngIf="finished" class="done-state">
-      <div class="done-check">✓</div>
+      <div class="done-check"><span class="nf nf-check-circle"></span></div>
       <h2>¡Currículum guardado!</h2>
       <p class="muted">Tus datos están completos y guardados correctamente.</p>
       <a class="btn btn-primary" routerLink="/dashboard">Ir al dashboard</a>
@@ -376,14 +379,17 @@
 
   <!-- Navegación -->
   <div class="nav-row" *ngIf="step !== 7 || !finished">
-    <button class="btn" (click)="prev()" [disabled]="step === 0 || saving">← Anterior</button>
+    <button class="btn" (click)="prev()" [disabled]="step === 0 || saving">
+      <span class="nf nf-chevron-left"></span> Anterior
+    </button>
     <button
       *ngIf="step < steps.length - 1"
       class="btn btn-primary"
       (click)="next()"
       [disabled]="saving"
     >
-      {{ saving ? "Guardando..." : "Siguiente →" }}
+      {{ saving ? "Guardando..." : "Siguiente" }}
+      <span class="nf nf-chevron-right"></span>
     </button>
     <button
       *ngIf="step === steps.length - 1"
@@ -391,7 +397,8 @@
       (click)="finish()"
       [disabled]="saving"
     >
-      {{ saving ? "Guardando..." : "✓ Guardar y finalizar" }}
+      {{ saving ? "Guardando..." : "Guardar y finalizar" }}
+      <span class="nf nf-check"></span>
     </button>
   </div>
 </div>

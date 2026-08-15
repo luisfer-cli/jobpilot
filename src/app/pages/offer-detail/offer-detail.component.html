@@ -6,7 +6,9 @@
 <div *ngIf="offer">
   <div class="page-header">
     <div>
-      <a routerLink="/offers" class="muted back">← Ofertas</a>
+      <a routerLink="/offers" class="muted back">
+        <span class="nf nf-arrow-left"></span> Ofertas
+      </a>
       <h1>{{ offer.title || "Sin título" }}</h1>
       <p class="muted">{{ offer.company }} · {{ offer.location }} · {{ offer.salary }}</p>
     </div>
@@ -25,19 +27,21 @@
     <h2>Herramientas IA</h2>
     <div class="actions-grid">
       <button class="btn btn-primary" (click)="generateCv()" [disabled]="!!busy">
-        Generar CV especializado
+        <span class="nf nf-file"></span> Generar CV especializado
       </button>
       <button class="btn" (click)="generateLetter()" [disabled]="!!busy">
-        Carta de presentación
+        <span class="nf nf-email"></span> Carta de presentación
       </button>
       <button class="btn" (click)="generateTest()" [disabled]="!!busy">
-        Prueba técnica mágica
+        <span class="nf nf-flask"></span> Prueba técnica mágica
       </button>
       <button class="btn" (click)="analyzeAts()" [disabled]="!!busy">
-        Análisis ATS
+        <span class="nf nf-chart"></span> Análisis ATS
       </button>
     </div>
-    <p *ngIf="busy" class="muted">{{ busy }}</p>
+    <p *ngIf="busy" class="muted busy-text">
+      <span class="spinner"></span> {{ busy }}
+    </p>
   </section>
 
   <!-- Detalle oferta -->
@@ -106,7 +110,9 @@
   <section class="card" *ngIf="cv">
     <div class="section-head">
       <h2>CV especializado</h2>
-      <button class="btn btn-primary" (click)="exportCv()">Exportar PDF</button>
+      <button class="btn btn-primary" (click)="exportCv()">
+        <span class="nf nf-download"></span> Exportar PDF
+      </button>
     </div>
 
     <app-cv-preview [cv]="cv" />
@@ -116,7 +122,9 @@
   <section class="card" *ngIf="letter">
     <div class="section-head">
       <h2>Carta de presentación</h2>
-      <button class="btn btn-primary" (click)="exportLetter()">Exportar PDF</button>
+      <button class="btn btn-primary" (click)="exportLetter()">
+        <span class="nf nf-download"></span> Exportar PDF
+      </button>
     </div>
     <p *ngIf="letter.subject" class="muted"><strong>Asunto:</strong> {{ letter.subject }}</p>
     <p>{{ letter.greeting }}</p>
@@ -128,7 +136,9 @@
   <section class="card" *ngIf="test">
     <div class="section-head">
       <h2>Prueba técnica</h2>
-      <a class="btn btn-primary" [routerLink]="['/tests', test.id]">Hacer prueba interactiva</a>
+      <a class="btn btn-primary" [routerLink]="['/tests', test.id]">
+        <span class="nf nf-clipboard"></span> Hacer prueba interactiva
+      </a>
     </div>
     <p *ngIf="test.title"><strong>{{ test.title }}</strong></p>
     <p *ngIf="test.estimatedTime" class="muted">Tiempo estimado: {{ test.estimatedTime }}</p>

@@ -1,41 +1,48 @@
 <div class="page-header">
   <h1>Ofertas de trabajo</h1>
-  <button class="btn btn-primary" (click)="openNew()">+ Nueva oferta</button>
+  <button class="btn btn-primary" (click)="openNew()">
+    <span class="nf nf-plus"></span> Nueva oferta
+  </button>
 </div>
 
 <!-- Lista -->
-<div *ngIf="!showNew" class="card">
-  <table *ngIf="offers.length">
-    <thead>
-      <tr>
-        <th>Puesto</th>
-        <th>Empresa</th>
-        <th>Ubicación</th>
-        <th>Estado</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let o of offers">
-        <td>
-          <a [routerLink]="['/offers', o.id]">{{ o.title || "Sin título" }}</a>
-        </td>
-        <td>{{ o.company }}</td>
-        <td class="muted">{{ o.location }}</td>
-        <td><span class="badge" [class]="'badge-' + o.status">{{ statusLabels[o.status] }}</span></td>
-        <td>
-          <button class="btn btn-sm btn-danger" (click)="remove(o.id)">Eliminar</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <p *ngIf="!offers.length" class="muted">Aún no hay ofertas. Pega tu primera oferta para empezar.</p>
+<div *ngIf="!showNew && offers.length" class="card list-card">
+  <div class="offer-row" *ngFor="let o of offers">
+    <div class="offer-row-main">
+      <a [routerLink]="['/offers', o.id]" class="offer-row-title">
+        {{ o.title || "Sin título" }}
+      </a>
+      <span class="offer-row-sub">
+        <ng-container *ngIf="o.company">{{ o.company }}</ng-container>
+        <ng-container *ngIf="o.location"> · {{ o.location }}</ng-container>
+        <ng-container *ngIf="o.salary"> · {{ o.salary }}</ng-container>
+      </span>
+    </div>
+    <div class="offer-row-right">
+      <span class="badge" [class]="'badge-' + o.status">{{ statusLabels[o.status] }}</span>
+      <button class="btn btn-sm btn-ghost btn-icon" (click)="remove(o.id)" title="Eliminar">
+        <span class="nf nf-delete"></span>
+      </button>
+    </div>
+  </div>
 </div>
+
+<p *ngIf="!showNew && !offers.length" class="empty">
+  <span class="nf nf-briefcase"></span>
+  Aún no hay ofertas. Pega tu primera oferta para empezar.
+</p>
 
 <!-- Nueva oferta -->
 <div *ngIf="showNew" class="card">
-  <h2>Nueva oferta</h2>
-  <p class="muted">Pega el texto de la oferta copiado desde tu navegador. La IA extraerá los datos.</p>
+  <div class="new-head">
+    <h2>Nueva oferta</h2>
+    <button class="btn btn-ghost btn-icon" (click)="cancel()" title="Cancelar">
+      <span class="nf nf-close"></span>
+    </button>
+  </div>
+  <p class="muted new-desc">
+    Pega el texto de la oferta copiado desde tu navegador. La IA extraerá los datos.
+  </p>
 
   <div *ngIf="error" class="alert alert-error">{{ error }}</div>
 
@@ -50,6 +57,7 @@
   <div class="actions">
     <button class="btn btn-primary" (click)="process()" [disabled]="loading">
       <span *ngIf="loading" class="spinner"></span>
+      <span *ngIf="!loading" class="nf nf-flask"></span>
       {{ loading ? "Procesando..." : "Procesar con IA" }}
     </button>
     <button class="btn" (click)="cancel()">Cancelar</button>
@@ -57,7 +65,10 @@
 
   <!-- Resultado tras procesar -->
   <div *ngIf="parsed" class="result">
-    <h3>Datos extraídos</h3>
+    <div class="result-head">
+      <span class="nf nf-check-circle"></span>
+      <h3>Datos extraídos</h3>
+    </div>
     <div class="grid grid-2">
       <div class="field">
         <label>Título</label>
@@ -100,6 +111,8 @@
       </div>
     </div>
 
-    <button class="btn btn-primary" (click)="save()" [disabled]="saving">Guardar oferta</button>
+    <button class="btn btn-primary" (click)="save()" [disabled]="saving">
+      <span class="nf nf-save"></span> Guardar oferta
+    </button>
   </div>
 </div>

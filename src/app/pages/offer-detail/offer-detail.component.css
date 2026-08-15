@@ -1,6 +1,15 @@
 .back {
   text-decoration: none;
   font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+}
+
+.back:hover {
+  color: var(--text);
+  text-decoration: none;
 }
 
 .status-box {
@@ -10,7 +19,14 @@
 .actions-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
+}
+
+.busy-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .meta {
@@ -46,7 +62,7 @@ ul {
   font-size: 26px;
   font-weight: 800;
   color: var(--text);
-  background: conic-gradient(var(--primary) calc(var(--pct) * 1%), var(--border) 0);
+  background: conic-gradient(var(--ink) calc(var(--pct) * 1%), var(--border) 0);
 }
 
 .score-ring span {
@@ -68,18 +84,18 @@ ul {
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 12px;
-  background: rgba(59, 130, 246, 0.12);
-  color: var(--primary);
+  background: var(--neutral-bg);
+  color: var(--text);
 }
 
 .chip.ok {
-  background: rgba(34, 197, 94, 0.15);
-  color: var(--success);
+  background: var(--success-bg);
+  color: var(--success-text);
 }
 
 .chip.miss {
-  background: rgba(239, 68, 68, 0.15);
-  color: var(--danger);
+  background: var(--danger-bg);
+  color: var(--danger-text);
 }
 
 .section-head {
@@ -87,4 +103,8 @@ ul {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
+}
+
+.section-head h2 {
+  margin-bottom: 0;
 }

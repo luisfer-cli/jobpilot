@@ -1,28 +1,42 @@
 <div class="page-header">
   <h1>Dashboard</h1>
-  <a class="btn btn-primary" routerLink="/offers">+ Nueva oferta</a>
+  <a class="btn btn-primary" routerLink="/offers">
+    <span class="nf nf-plus"></span> Nueva oferta
+  </a>
 </div>
 
 <div class="stats">
   <div class="stat card">
-    <span class="stat-num">{{ offers.length }}</span>
-    <span class="muted">Ofertas totales</span>
+    <span class="stat-icon nf nf-briefcase"></span>
+    <div class="stat-body">
+      <span class="stat-num">{{ offers.length }}</span>
+      <span class="stat-label">Ofertas totales</span>
+    </div>
   </div>
   <div class="stat card">
-    <span class="stat-num">{{ offersBy("entrevista").length }}</span>
-    <span class="muted">En entrevista</span>
+    <span class="stat-icon nf nf-account-group"></span>
+    <div class="stat-body">
+      <span class="stat-num">{{ offersBy("entrevista").length }}</span>
+      <span class="stat-label">En entrevista</span>
+    </div>
   </div>
   <div class="stat card">
-    <span class="stat-num">{{ offersBy("oferta").length }}</span>
-    <span class="muted">Ofertas recibidas</span>
+    <span class="stat-icon nf nf-trophy"></span>
+    <div class="stat-body">
+      <span class="stat-num">{{ offersBy("oferta").length }}</span>
+      <span class="stat-label">Ofertas recibidas</span>
+    </div>
   </div>
   <div class="stat card">
-    <span class="stat-num">{{ offersBy("aplicada").length }}</span>
-    <span class="muted">Aplicadas</span>
+    <span class="stat-icon nf nf-send"></span>
+    <div class="stat-body">
+      <span class="stat-num">{{ offersBy("aplicada").length }}</span>
+      <span class="stat-label">Aplicadas</span>
+    </div>
   </div>
 </div>
 
-<p class="muted">Arrastra las tarjetas entre columnas para actualizar el estado.</p>
+<p class="muted hint">Arrastra las tarjetas entre columnas para actualizar el estado.</p>
 
 <div class="kanban">
   <div
@@ -35,7 +49,7 @@
   >
     <div class="col-head">
       <span class="badge" [class]="'badge-' + col">{{ statusLabels[col] }}</span>
-      <span class="muted">{{ offersBy(col).length }}</span>
+      <span class="col-count">{{ offersBy(col).length }}</span>
     </div>
     <div class="col-body">
       <div
@@ -47,7 +61,7 @@
         <a [routerLink]="['/offers', o.id]">{{ o.title || "Sin título" }}</a>
         <span class="muted">{{ o.company }}</span>
       </div>
-      <p *ngIf="!offersBy(col).length" class="muted empty">Sin ofertas</p>
+      <p *ngIf="!offersBy(col).length" class="empty">Sin ofertas</p>
     </div>
   </div>
 </div>

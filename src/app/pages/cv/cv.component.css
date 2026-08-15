@@ -1,59 +1,63 @@
 .stepper {
   display: flex;
-  gap: 4px;
-  margin-bottom: 20px;
+  gap: 6px;
+  margin-bottom: 18px;
   flex-wrap: wrap;
 }
 
 .step {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   border: 1px solid var(--border);
   background: var(--bg-card);
   color: var(--text-muted);
   border-radius: 999px;
-  padding: 6px 12px 6px 6px;
+  padding: 5px 12px 5px 5px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
-  transition: all 0.15s;
+  font-family: inherit;
+  transition: border-color 0.12s, color 0.12s, background 0.12s;
 }
 
 .step:hover {
-  border-color: var(--primary);
+  border-color: var(--text-muted);
 }
 
 .step-dot {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: var(--border);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
   color: var(--text-muted);
   display: grid;
   place-items: center;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
 }
 
 .step.active {
-  border-color: var(--primary);
-  color: var(--primary);
+  border-color: var(--ink);
+  color: var(--ink);
 }
 
 .step.active .step-dot {
-  background: var(--primary);
-  color: #fff;
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--on-ink);
 }
 
 .step.done {
-  color: var(--success);
-  border-color: rgba(34, 197, 94, 0.4);
+  border-color: var(--border-strong);
+  color: var(--text-muted);
 }
 
 .step.done .step-dot {
-  background: var(--success);
-  color: #fff;
+  background: var(--bg-subtle);
+  border-color: var(--border-strong);
+  color: var(--text);
 }
 
 .wizard-body {
@@ -61,7 +65,7 @@
 }
 
 .list-panel {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .item {
@@ -69,16 +73,20 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 6px;
+  background: var(--bg-card);
 }
 
 .item:last-child {
-  border-bottom: none;
+  margin-bottom: 0;
 }
 
 .item-body {
   font-size: 13px;
+  min-width: 0;
 }
 
 .item-actions {
@@ -88,14 +96,15 @@
 }
 
 .mini-form {
-  background: var(--bg);
-  border: 1px dashed var(--border);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 16px;
+  padding: 14px;
 }
 
 .mini-form h3 {
-  font-size: 14px;
+  font-size: 13.5px;
+  margin-bottom: 10px;
 }
 
 .row {
@@ -123,8 +132,8 @@
 
 .badge {
   margin-left: 6px;
-  background: rgba(59, 130, 246, 0.12);
-  color: var(--primary);
+  background: var(--neutral-bg);
+  color: var(--text);
 }
 
 .summary {
@@ -147,25 +156,25 @@
 .nav-row {
   display: flex;
   justify-content: space-between;
-  margin-top: 24px;
-  padding-top: 16px;
+  margin-top: 20px;
+  padding-top: 14px;
   border-top: 1px solid var(--border);
 }
 
 .done-state {
   text-align: center;
-  padding: 40px 20px;
+  padding: 36px 20px;
 }
 
 .done-check {
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  background: var(--success);
-  color: #fff;
+  background: var(--ink);
+  color: var(--on-ink);
   display: grid;
   place-items: center;
-  font-size: 32px;
+  font-size: 24px;
   margin: 0 auto 16px;
 }
 
@@ -181,10 +190,10 @@
   gap: 8px;
   padding: 6px 10px;
   margin-bottom: 6px;
-  background: var(--bg);
+  background: var(--bg-subtle);
   border: 1px solid var(--border);
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 12.5px;
 }
 
 .achievement-list li::before {

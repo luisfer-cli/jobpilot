@@ -6,7 +6,9 @@
 <div *ngIf="test">
   <div class="page-header">
     <div>
-      <a routerLink="/tests" class="muted back">← Pruebas</a>
+      <a routerLink="/tests" class="muted back">
+        <span class="nf nf-arrow-left"></span> Pruebas
+      </a>
       <h1>{{ test.title || "Prueba técnica" }}</h1>
       <p class="muted" *ngIf="test.estimatedTime">Tiempo estimado: {{ test.estimatedTime }}</p>
     </div>
@@ -52,7 +54,7 @@
           (change)="selectSingle(i, opt)"
         />
         <span>{{ opt }}</span>
-        <span *ngIf="revealed[i] && isOptionCorrect(i, opt)" class="mark">✓</span>
+        <span *ngIf="revealed[i] && isOptionCorrect(i, opt)" class="mark nf nf-check"></span>
       </label>
     </div>
 
@@ -66,7 +68,7 @@
       >
         <input type="checkbox" [checked]="isSelected(i, opt)" (change)="toggleMultiple(i, opt)" />
         <span>{{ opt }}</span>
-        <span *ngIf="revealed[i] && isOptionCorrect(i, opt)" class="mark">✓</span>
+        <span *ngIf="revealed[i] && isOptionCorrect(i, opt)" class="mark nf nf-check"></span>
       </label>
     </div>
 
@@ -88,7 +90,8 @@
         Mostrar pista
       </button>
       <span *ngIf="revealed[i] && isAutoGraded(q)" class="result" [class.ok]="isCorrect(i)" [class.ko]="!isCorrect(i)">
-        {{ isCorrect(i) ? "✓ Correcto" : "✗ Incorrecto" }}
+        <span class="nf" [class.nf-check]="isCorrect(i)" [class.nf-close]="!isCorrect(i)"></span>
+        {{ isCorrect(i) ? "Correcto" : "Incorrecto" }}
       </span>
     </div>
 
@@ -117,9 +120,15 @@
       <span class="muted">de aciertos en preguntas automáticas ({{ correctCount }}/{{ autoCount }})</span>
     </div>
     <div class="final-actions">
-      <button *ngIf="!allRevealed" class="btn btn-primary" (click)="revealAll()">Terminar y ver resultados</button>
-      <button *ngIf="allRevealed" class="btn" (click)="reset()">Reintentar</button>
-      <a class="btn" routerLink="/tests">Volver a pruebas</a>
+      <button *ngIf="!allRevealed" class="btn btn-primary" (click)="revealAll()">
+        <span class="nf nf-chart"></span> Terminar y ver resultados
+      </button>
+      <button *ngIf="allRevealed" class="btn" (click)="reset()">
+        <span class="nf nf-check-circle"></span> Reintentar
+      </button>
+      <a class="btn" routerLink="/tests">
+        <span class="nf nf-book"></span> Volver a pruebas
+      </a>
     </div>
   </div>
 </div>

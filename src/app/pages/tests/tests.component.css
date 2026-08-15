@@ -4,7 +4,47 @@
   margin-top: 12px;
 }
 
-.row-actions {
+.list-card {
+  padding: 6px;
+}
+
+.test-row {
   display: flex;
-  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  transition: background 0.12s;
+}
+
+.test-row:hover {
+  background: var(--bg-subtle);
+}
+
+.test-row-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.test-row-title {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--text);
+}
+
+.test-row-title:hover {
+  text-decoration: none;
+}
+
+.test-row-sub {
+  font-size: 12px;
+}
+
+.test-row-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
 }
