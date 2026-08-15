@@ -175,6 +175,12 @@ export interface AtsAnalysis {
   suggestions: string[];
 }
 
+export interface TestConfig {
+  questionCount?: string;
+  difficulty?: string;
+  estimatedTime?: string;
+}
+
 export interface AiProviderInfo {
   key: string;
   name: string;

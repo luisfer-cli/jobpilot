@@ -24,25 +24,192 @@
 
   <!-- Acciones IA -->
   <section class="card">
-    <h2>Herramientas IA</h2>
+    <div class="ai-head">
+      <h2>Herramientas IA</h2>
+      <span class="muted">Genera contenido adaptado a esta oferta.</span>
+    </div>
+
     <div class="actions-grid">
-      <button class="btn btn-primary" (click)="generateCv()" [disabled]="!!busy">
-        <span class="nf nf-file"></span> Generar CV especializado
+      <button class="action-tile primary" (click)="openCvModal()" [disabled]="!!busy">
+        <span class="tile-icon nf nf-file"></span>
+        <span class="tile-body">
+          <span class="tile-title">Generar CV especializado</span>
+          <span class="tile-desc">Adapta tu currículum a esta oferta</span>
+        </span>
+        <span class="tile-state" *ngIf="busy === busyCv"><span class="spinner"></span></span>
+        <span class="tile-arrow nf nf-chevron-right" *ngIf="busy !== busyCv"></span>
       </button>
-      <button class="btn" (click)="generateLetter()" [disabled]="!!busy">
-        <span class="nf nf-email"></span> Carta de presentación
+
+      <button class="action-tile" (click)="openLetterModal()" [disabled]="!!busy">
+        <span class="tile-icon nf nf-email"></span>
+        <span class="tile-body">
+          <span class="tile-title">Carta de presentación</span>
+          <span class="tile-desc">Redacta una carta personalizada</span>
+        </span>
+        <span class="tile-state" *ngIf="busy === busyLetter"><span class="spinner"></span></span>
+        <span class="tile-arrow nf nf-chevron-right" *ngIf="busy !== busyLetter"></span>
       </button>
-      <button class="btn" (click)="generateTest()" [disabled]="!!busy">
-        <span class="nf nf-flask"></span> Prueba técnica mágica
+
+      <button class="action-tile" (click)="openTestModal()" [disabled]="!!busy">
+        <span class="tile-icon nf nf-flask"></span>
+        <span class="tile-body">
+          <span class="tile-title">Prueba técnica</span>
+          <span class="tile-desc">Genera una prueba de práctica</span>
+        </span>
+        <span class="tile-state" *ngIf="busy === busyTest"><span class="spinner"></span></span>
+        <span class="tile-arrow nf nf-chevron-right" *ngIf="busy !== busyTest"></span>
       </button>
-      <button class="btn" (click)="analyzeAts()" [disabled]="!!busy">
-        <span class="nf nf-chart"></span> Análisis ATS
+
+      <button class="action-tile" (click)="analyzeAts()" [disabled]="!!busy">
+        <span class="tile-icon nf nf-chart"></span>
+        <span class="tile-body">
+          <span class="tile-title">Análisis ATS</span>
+          <span class="tile-desc">Evalúa tu encaje con la oferta</span>
+        </span>
+        <span class="tile-state" *ngIf="busy === busyAts"><span class="spinner"></span></span>
       </button>
     </div>
-    <p *ngIf="busy" class="muted busy-text">
-      <span class="spinner"></span> {{ busy }}
-    </p>
   </section>
+
+  <!-- Modal: Generar CV -->
+  <div class="modal-backdrop" *ngIf="showCvModal" (mousedown)="onBackdropClick($event)">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cv-modal-title">
+      <div class="modal-head">
+        <span class="modal-icon nf nf-file"></span>
+        <h2 id="cv-modal-title">Generar CV especializado</h2>
+        <button
+          class="btn btn-icon btn-ghost"
+          (click)="closeModals()"
+          [disabled]="!!busy"
+          aria-label="Cerrar"
+        >
+          <span class="nf nf-close"></span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="muted">Adapta tu currículum a esta oferta eligiendo el idioma de salida.</p>
+        <div class="offer-summary">
+          <span class="muted">Oferta</span>
+          <strong>{{ offer.title || "Sin título" }}</strong>
+        </div>
+        <div class="field">
+          <label for="cv-language">Idioma del CV</label>
+          <select id="cv-language" [(ngModel)]="cvLanguage" [disabled]="!!busy">
+            <option *ngFor="let l of languages" [value]="l.value">{{ l.label }}</option>
+          </select>
+        </div>
+        <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+      </div>
+
+      <div class="modal-foot">
+        <button class="btn" (click)="closeModals()" [disabled]="!!busy">Cancelar</button>
+        <button class="btn btn-primary" (click)="confirmGenerateCv()" [disabled]="!!busy">
+          <span *ngIf="busy === busyCv" class="spinner"></span>
+          <span *ngIf="busy !== busyCv" class="nf nf-file"></span>
+          {{ busy === busyCv ? "Generando..." : "Generar" }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Carta de presentación -->
+  <div class="modal-backdrop" *ngIf="showLetterModal" (mousedown)="onBackdropClick($event)">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="letter-modal-title">
+      <div class="modal-head">
+        <span class="modal-icon nf nf-email"></span>
+        <h2 id="letter-modal-title">Carta de presentación</h2>
+        <button
+          class="btn btn-icon btn-ghost"
+          (click)="closeModals()"
+          [disabled]="!!busy"
+          aria-label="Cerrar"
+        >
+          <span class="nf nf-close"></span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="muted">Redacta una carta personalizada eligiendo el idioma de salida.</p>
+        <div class="offer-summary">
+          <span class="muted">Oferta</span>
+          <strong>{{ offer.title || "Sin título" }}</strong>
+        </div>
+        <div class="field">
+          <label for="letter-language">Idioma de la carta</label>
+          <select id="letter-language" [(ngModel)]="letterLanguage" [disabled]="!!busy">
+            <option *ngFor="let l of languages" [value]="l.value">{{ l.label }}</option>
+          </select>
+        </div>
+        <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+      </div>
+
+      <div class="modal-foot">
+        <button class="btn" (click)="closeModals()" [disabled]="!!busy">Cancelar</button>
+        <button class="btn btn-primary" (click)="confirmGenerateLetter()" [disabled]="!!busy">
+          <span *ngIf="busy === busyLetter" class="spinner"></span>
+          <span *ngIf="busy !== busyLetter" class="nf nf-email"></span>
+          {{ busy === busyLetter ? "Generando..." : "Generar" }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Prueba técnica -->
+  <div class="modal-backdrop" *ngIf="showTestModal" (mousedown)="onBackdropClick($event)">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="test-modal-title">
+      <div class="modal-head">
+        <span class="modal-icon nf nf-flask"></span>
+        <h2 id="test-modal-title">Prueba técnica</h2>
+        <button
+          class="btn btn-icon btn-ghost"
+          (click)="closeModals()"
+          [disabled]="!!busy"
+          aria-label="Cerrar"
+        >
+          <span class="nf nf-close"></span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="muted">Configura el tamaño y el nivel de la prueba de práctica.</p>
+        <div class="offer-summary">
+          <span class="muted">Oferta</span>
+          <strong>{{ offer.title || "Sin título" }}</strong>
+        </div>
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="test-count">Número de preguntas</label>
+            <select id="test-count" [(ngModel)]="questionCount" [disabled]="!!busy">
+              <option *ngFor="let c of questionCounts" [value]="c.value">{{ c.label }}</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="test-difficulty">Nivel</label>
+            <select id="test-difficulty" [(ngModel)]="difficulty" [disabled]="!!busy">
+              <option *ngFor="let d of difficulties" [value]="d.value">{{ d.label }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="test-time">Duración estimada</label>
+          <select id="test-time" [(ngModel)]="estimatedTime" [disabled]="!!busy">
+            <option *ngFor="let t of estimatedTimes" [value]="t.value">{{ t.label }}</option>
+          </select>
+        </div>
+        <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+      </div>
+
+      <div class="modal-foot">
+        <button class="btn" (click)="closeModals()" [disabled]="!!busy">Cancelar</button>
+        <button class="btn btn-primary" (click)="confirmGenerateTest()" [disabled]="!!busy">
+          <span *ngIf="busy === busyTest" class="spinner"></span>
+          <span *ngIf="busy !== busyTest" class="nf nf-flask"></span>
+          {{ busy === busyTest ? "Generando..." : "Generar" }}
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Detalle oferta -->
   <section class="card" *ngIf="structured">
@@ -110,8 +277,10 @@
   <section class="card" *ngIf="cv">
     <div class="section-head">
       <h2>CV especializado</h2>
-      <button class="btn btn-primary" (click)="exportCv()">
-        <span class="nf nf-download"></span> Exportar PDF
+      <button class="btn btn-primary" (click)="exportCv()" [disabled]="!!busy">
+        <span *ngIf="busy === busyPdf" class="spinner"></span>
+        <span *ngIf="busy !== busyPdf" class="nf nf-download"></span>
+        Exportar PDF
       </button>
     </div>
 
@@ -122,8 +291,10 @@
   <section class="card" *ngIf="letter">
     <div class="section-head">
       <h2>Carta de presentación</h2>
-      <button class="btn btn-primary" (click)="exportLetter()">
-        <span class="nf nf-download"></span> Exportar PDF
+      <button class="btn btn-primary" (click)="exportLetter()" [disabled]="!!busy">
+        <span *ngIf="busy === busyPdf" class="spinner"></span>
+        <span *ngIf="busy !== busyPdf" class="nf nf-download"></span>
+        Exportar PDF
       </button>
     </div>
     <p *ngIf="letter.subject" class="muted"><strong>Asunto:</strong> {{ letter.subject }}</p>

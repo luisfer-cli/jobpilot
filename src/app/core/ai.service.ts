@@ -8,6 +8,7 @@ import type {
   GeneratedCv,
   JobOfferStructured,
   TechnicalTest,
+  TestConfig,
 } from "./models";
 
 @Injectable({ providedIn: "root" })
@@ -35,22 +36,35 @@ export class AiService {
   async generateCv(
     cvData: CvData,
     offer: JobOfferStructured,
+    language = "",
   ): Promise<GeneratedCv> {
     const { baseUrl, apiKey, model } = this.ctx();
-    return invoke<GeneratedCv>("generate_cv", { baseUrl, apiKey, model, cvData, offer });
+    return invoke<GeneratedCv>("generate_cv", { baseUrl, apiKey, model, cvData, offer, language });
   }
 
   async generateCoverLetter(
     cvData: CvData,
     offer: JobOfferStructured,
+    language = "",
   ): Promise<CoverLetter> {
     const { baseUrl, apiKey, model } = this.ctx();
-    return invoke<CoverLetter>("generate_cover_letter", { baseUrl, apiKey, model, cvData, offer });
+    return invoke<CoverLetter>("generate_cover_letter", { baseUrl, apiKey, model, cvData, offer, language });
   }
 
-  async generateTechnicalTest(offer: JobOfferStructured): Promise<TechnicalTest> {
+  async generateTechnicalTest(
+    offer: JobOfferStructured,
+    config: TestConfig = {},
+  ): Promise<TechnicalTest> {
     const { baseUrl, apiKey, model } = this.ctx();
-    return invoke<TechnicalTest>("generate_technical_test", { baseUrl, apiKey, model, offer });
+    return invoke<TechnicalTest>("generate_technical_test", {
+      baseUrl,
+      apiKey,
+      model,
+      offer,
+      questionCount: config.questionCount ?? "",
+      difficulty: config.difficulty ?? "",
+      estimatedTime: config.estimatedTime ?? "",
+    });
   }
 
   async generateTestFromTopic(topic: string): Promise<TechnicalTest> {

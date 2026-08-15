@@ -114,16 +114,23 @@ pub async fn generate_cv(
     model: String,
     cv_data: CvData,
     offer: JobOfferStructured,
+    language: String,
 ) -> Result<GeneratedCv, String> {
-    let system = r#"Eres un redactor de currículums experto y optimizador ATS. Recibes (1) el perfil completo del candidato y (2) una oferta de trabajo. Crea un currículum especializado y enfocado en esa oferta: reescribe el resumen profesional y las descripciones de experiencia para resaltar los logros y habilidades más relevantes al puesto, reordena y prioriza las competencias. NO inventes experiencia que no exista; solo adapta y enfatiza lo que ya tiene el candidato. Responde SIEMPRE con JSON válido con exactamente esta estructura, sin texto adicional:
+    let lang_instruction = if language.trim().is_empty() {
+        "Mantén el idioma en que esté redactado el perfil del candidato.".to_string()
+    } else {
+        format!("Redacta el currículum completo en {language}.")
+    };
+    let mut system = r#"Eres un redactor de currículums experto y optimizador ATS. Recibes (1) el perfil completo del candidato y (2) una oferta de trabajo. Crea un currículum especializado y enfocado en esa oferta: reescribe el resumen profesional y las descripciones de experiencia para resaltar los logros y habilidades más relevantes al puesto, reordena y prioriza las competencias. NO inventes experiencia que no exista; solo adapta y enfatiza lo que ya tiene el candidato. Responde SIEMPRE con JSON válido con exactamente esta estructura, sin texto adicional:
 {"fullName":"","jobTitle":"","email":"","phone":"","location":"","linkedin":"","website":"","summary":"","experiences":[{"company":"","role":"","location":"","startDate":"","endDate":"","current":false,"description":[""]}],"education":[{"institution":"","degree":"","field":"","startDate":"","endDate":""}],"skills":[""],"languages":[{"name":"","level":""}],"certifications":[{"name":"","issuer":"","date":""}],"projects":[{"name":"","description":"","link":""}]}
-En el campo "description" de cada experiencia escribe de 2 a 5 logros o responsabilidades como lista de viñetas (array de strings), sin prosa. Mantén el idioma en que esté redactado el perfil del candidato."#;
+En el campo "description" de cada experiencia escribe de 2 a 5 logros o responsabilidades como lista de viñetas (array de strings), sin prosa. "#.to_string();
+    system.push_str(&lang_instruction);
     let user = format!(
         "Perfil del candidato:\n{}\n\nOferta de trabajo:\n{}\n\nGenera el currículum especializado.",
         serde_json::to_string_pretty(&cv_data).unwrap_or_default(),
         serde_json::to_string_pretty(&offer).unwrap_or_default()
     );
-    let v = ask_json(&base_url, &api_key, &model, system, &user).await?;
+    let v = ask_json(&base_url, &api_key, &model, &system, &user).await?;
     serde_json::from_value(v).map_err(|e| format!("No se pudo interpretar el currículum: {e}"))
 }
 
@@ -134,16 +141,23 @@ pub async fn generate_cover_letter(
     model: String,
     cv_data: CvData,
     offer: JobOfferStructured,
+    language: String,
 ) -> Result<CoverLetter, String> {
-    let system = r#"Eres un redactor de cartas de presentación. Recibes (1) el perfil del candidato y (2) una oferta de trabajo. Redacta una carta de presentación concisa y personalizada que conecte la experiencia del candidato con los requisitos del puesto. Responde SIEMPRE con JSON válido con exactamente esta estructura, sin texto adicional:
+    let lang_instruction = if language.trim().is_empty() {
+        "Mantén el idioma en que esté redactado el perfil.".to_string()
+    } else {
+        format!("Redacta la carta completa en {language}.")
+    };
+    let mut system = r#"Eres un redactor de cartas de presentación. Recibes (1) el perfil del candidato y (2) una oferta de trabajo. Redacta una carta de presentación concisa y personalizada que conecte la experiencia del candidato con los requisitos del puesto. Responde SIEMPRE con JSON válido con exactamente esta estructura, sin texto adicional:
 {"subject":"","greeting":"","body":"","closing":""}
-El campo "body" contiene los párrafos de la carta separados por doble salto de línea. Mantén el idioma en que esté redactado el perfil."#;
+El campo "body" contiene los párrafos de la carta separados por doble salto de línea. "#.to_string();
+    system.push_str(&lang_instruction);
     let user = format!(
         "Perfil del candidato:\n{}\n\nOferta de trabajo:\n{}\n\nRedacta la carta de presentación.",
         serde_json::to_string_pretty(&cv_data).unwrap_or_default(),
         serde_json::to_string_pretty(&offer).unwrap_or_default()
     );
-    let v = ask_json(&base_url, &api_key, &model, system, &user).await?;
+    let v = ask_json(&base_url, &api_key, &model, &system, &user).await?;
     serde_json::from_value(v).map_err(|e| format!("No se pudo interpretar la carta: {e}"))
 }
 
@@ -153,13 +167,16 @@ pub async fn generate_technical_test(
     api_key: String,
     model: String,
     offer: JobOfferStructured,
+    question_count: String,
+    difficulty: String,
+    estimated_time: String,
 ) -> Result<TechnicalTest, String> {
-    let system = test_system_prompt();
+    let system = test_system_prompt(&question_count, &difficulty, &estimated_time);
     let user = format!(
         "Oferta de trabajo:\n{}\n\nCrea la prueba técnica de práctica.",
         serde_json::to_string_pretty(&offer).unwrap_or_default()
     );
-    let v = ask_json(&base_url, &api_key, &model, system, &user).await?;
+    let v = ask_json(&base_url, &api_key, &model, &system, &user).await?;
     serde_json::from_value(v).map_err(|e| format!("No se pudo interpretar la prueba técnica: {e}"))
 }
 
@@ -170,16 +187,17 @@ pub async fn generate_test_from_topic(
     model: String,
     topic: String,
 ) -> Result<TechnicalTest, String> {
-    let system = test_system_prompt();
+    let system = test_system_prompt("", "", "");
     let user = format!(
         "Crea una prueba técnica de práctica sobre el siguiente tema/puesto:\n\n{topic}"
     );
-    let v = ask_json(&base_url, &api_key, &model, system, &user).await?;
+    let v = ask_json(&base_url, &api_key, &model, &system, &user).await?;
     serde_json::from_value(v).map_err(|e| format!("No se pudo interpretar la prueba técnica: {e}"))
 }
 
-fn test_system_prompt() -> &'static str {
-    r#"Eres un entrevistador técnico senior. Crea una prueba técnica realista para practicar, con preguntas variadas y un nivel adecuado al puesto/tema indicado. Responde SIEMPRE con JSON válido con exactamente esta estructura, sin texto adicional:
+fn test_system_prompt(question_count: &str, difficulty: &str, estimated_time: &str) -> String {
+    let mut system = String::from(
+        r#"Eres un entrevistador técnico senior. Crea una prueba técnica realista para practicar, con preguntas variadas y un nivel adecuado al puesto/tema indicado. Responde SIEMPRE con JSON válido con exactamente esta estructura, sin texto adicional:
 {"title":"","estimatedTime":"","instructions":"","questions":[{"questionType":"single_choice","question":"","options":[],"correctAnswers":[],"hint":"","explanation":""}]}
 
 Reglas para las preguntas:
@@ -190,7 +208,29 @@ Reglas para las preguntas:
 - Para "coding": describe el enunciado en "question" y pon una posible solución en "correctAnswers".
 - "explanation" explica brevemente por qué la respuesta es correcta.
 - "hint" es una pista opcional (puede ser "").
-Incluye de 5 a 8 preguntas variadas (mezcla tipos) y al menos una de tipo "coding". Mantén el idioma en que esté redactada la oferta o el tema."#
+Incluye al menos una pregunta de tipo "coding". "#,
+    );
+
+    if question_count.trim().is_empty() {
+        system.push_str("Incluye de 5 a 8 preguntas variadas (mezcla tipos). ");
+    } else {
+        system.push_str(&format!(
+            "Incluye exactamente {question_count} preguntas variadas (mezcla tipos). "
+        ));
+    }
+
+    if !difficulty.trim().is_empty() {
+        system.push_str(&format!("El nivel de dificultad debe ser: {difficulty}. "));
+    }
+
+    if !estimated_time.trim().is_empty() {
+        system.push_str(&format!(
+            "La duración estimada total debe ser de {estimated_time} minutos y reflejarla en el campo \"estimatedTime\". "
+        ));
+    }
+
+    system.push_str("Mantén el idioma en que esté redactada la oferta o el tema.");
+    system
 }
 
 #[tauri::command]
