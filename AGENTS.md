@@ -37,12 +37,8 @@ JobPilot — a Tauri 2 desktop app for AI-assisted job hunting (parse offers, ge
 
 ## Versioning & releases
 
-- **Conventional Commits** are mandatory: `feat:` (minor), `fix:` (patch), `feat!`/`BREAKING CHANGE` (major).
-- Branching model:
-  - `main` — production, always releasable. **release-please only watches `main`.**
-  - `development` — integration branch; all work lands here first.
-  - `feat/<desc>`, `fix/<desc>`, `chore/<desc>` — short-lived; PR **squash-merge → `development`**.
-  - To release: open a PR `development` → `main` and merge with a **merge commit** (not squash) so release-please sees the individual `feat:`/`fix:` commits.
+- **Conventional Commits** are mandatory on `main`: `feat:` (minor), `fix:` (patch), `feat!`/`BREAKING CHANGE` (major).
+- Branches: `main` (always releasable) + short-lived `feat/<desc>`, `fix/<desc>`, `chore/<desc>` → squash-merge PR to `main`.
 - Version is **SemVer** and lives in 4 synced places. Never bump by hand:
   - `package.json` (primary, bumped by release-please)
   - `src-tauri/Cargo.toml`
