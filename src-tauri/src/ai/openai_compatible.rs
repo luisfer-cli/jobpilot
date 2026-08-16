@@ -16,13 +16,11 @@ impl OpenAiCompatible {
 
     pub async fn list_models(&self, base_url: &str, api_key: &str) -> Result<Vec<String>, String> {
         let url = format!("{}/models", base_url.trim_end_matches('/'));
-        let resp = self
-            .client
-            .get(&url)
-            .header("Authorization", format!("Bearer {}", api_key))
-            .send()
-            .await
-            .map_err(|e| format!("Error de red: {e}"))?;
+        let mut req = self.client.get(&url);
+        if !api_key.is_empty() {
+            req = req.header("Authorization", format!("Bearer {}", api_key));
+        }
+        let resp = req.send().await.map_err(|e| format!("Error de red: {e}"))?;
 
         let status = resp.status();
         let text = resp.text().await.unwrap_or_default();
@@ -60,13 +58,16 @@ impl AiProvider for OpenAiCompatible {
             "response_format": { "type": "json_object" }
         });
 
-        let resp = self
+        let mut builder = self
             .client
             .post(&url)
-            .header("Authorization", format!("Bearer {}", req.api_key))
             .header("Content-Type", "application/json")
             .header("HTTP-Referer", "https://librejob.local")
-            .header("X-Title", "LibreJob")
+            .header("X-Title", "LibreJob");
+        if !req.api_key.is_empty() {
+            builder = builder.header("Authorization", format!("Bearer {}", req.api_key));
+        }
+        let resp = builder
             .json(&body)
             .send()
             .await

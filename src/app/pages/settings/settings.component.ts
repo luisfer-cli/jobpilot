@@ -6,7 +6,7 @@ import { SettingsService } from "../../core/settings.service";
 import { I18nService, type Lang } from "../../core/i18n.service";
 import { UpdaterService } from "../../core/updater.service";
 import { TranslatePipe } from "../../core/translate.pipe";
-import { AI_PROVIDERS } from "../../core/models";
+import { AI_PROVIDERS, isLocalProvider } from "../../core/models";
 
 @Component({
   selector: "app-settings",
@@ -91,6 +91,10 @@ export class SettingsComponent {
     return this.providers.find((p) => p.key === this.settings.settings().provider)?.name ?? "";
   }
 
+  get isLocalProvider(): boolean {
+    return isLocalProvider(this.provider);
+  }
+
   get loadedModelsLabel(): string {
     return this.i18n.t("settings.wizard.modelsLoaded", { n: this.models.length });
   }
@@ -123,6 +127,9 @@ export class SettingsComponent {
     if (p && p.baseUrl) {
       this.baseUrl = p.baseUrl;
     }
+    if (isLocalProvider(key)) {
+      this.apiKey = "";
+    }
     this.models = [];
     this.testResult = "";
     this.testError = "";
@@ -135,7 +142,7 @@ export class SettingsComponent {
         this.error = this.i18n.t("settings.wizard.errBaseUrl");
         return;
       }
-      if (!this.apiKey.trim()) {
+      if (!this.isLocalProvider && !this.apiKey.trim()) {
         this.error = this.i18n.t("settings.wizard.errApiKey");
         return;
       }
@@ -161,7 +168,7 @@ export class SettingsComponent {
       this.modelsError = this.i18n.t("settings.wizard.errModelsUrl");
       return;
     }
-    if (!this.apiKey.trim()) {
+    if (!this.isLocalProvider && !this.apiKey.trim()) {
       this.modelsError = this.i18n.t("settings.wizard.errModelsKey");
       return;
     }

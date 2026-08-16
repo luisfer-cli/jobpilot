@@ -466,6 +466,10 @@ const MESSAGES: Record<string, Record<Lang, string>> = {
     en: "Enter the provider base URL.",
   },
   "settings.wizard.errModelsKey": { es: "Introduce la API key.", en: "Enter the API key." },
+  "settings.wizard.localNoKey": {
+    es: "Los proveedores locales no necesitan API key. Déjala vacía.",
+    en: "Local providers don't need an API key. Leave it empty.",
+  },
 
   // ---- Actualizaciones ----
   "updates.title": { es: "Actualizaciones", en: "Updates" },

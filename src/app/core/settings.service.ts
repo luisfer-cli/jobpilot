@@ -1,6 +1,6 @@
 import { Injectable, signal } from "@angular/core";
 import { DbService } from "./db.service";
-import { baseUrlForProvider, type AppSettings, type SidebarMode } from "./models";
+import { baseUrlForProvider, isLocalProvider, type AppSettings, type SidebarMode } from "./models";
 
 const SIDEBAR_MODES: SidebarMode[] = ["expanded", "collapsed", "hidden"];
 
@@ -42,7 +42,8 @@ export class SettingsService {
 
   get isConfigured(): boolean {
     const s = this.settings();
-    return !!(s.apiKey.trim() && s.baseUrl.trim() && s.model.trim());
+    const needsKey = !isLocalProvider(s.provider);
+    return !!((!needsKey || s.apiKey.trim()) && s.baseUrl.trim() && s.model.trim());
   }
 
   async setProvider(provider: string): Promise<void> {

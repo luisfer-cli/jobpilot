@@ -145,10 +145,13 @@
           <label>{{ "settings.wizard.baseUrl" | t }}</label>
           <input [(ngModel)]="baseUrl" placeholder="https://api.openai.com/v1" />
         </div>
-        <div class="field">
+        <div class="field" *ngIf="!isLocalProvider">
           <label>{{ "settings.wizard.apiKey" | t }}</label>
           <input type="password" [(ngModel)]="apiKey" placeholder="sk-..." />
         </div>
+        <p *ngIf="isLocalProvider" class="muted hint">
+          <span class="nf nf-information"></span> {{ "settings.wizard.localNoKey" | t }}
+        </p>
       </ng-container>
 
       <!-- Paso 2: Modelo -->

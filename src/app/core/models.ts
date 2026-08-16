@@ -191,6 +191,7 @@ export interface AiProviderInfo {
   key: string;
   name: string;
   baseUrl: string;
+  local?: boolean;
 }
 
 export const AI_PROVIDERS: AiProviderInfo[] = [
@@ -201,11 +202,20 @@ export const AI_PROVIDERS: AiProviderInfo[] = [
   { key: "mistral", name: "Mistral AI", baseUrl: "https://api.mistral.ai/v1" },
   { key: "deepseek", name: "DeepSeek", baseUrl: "https://api.deepseek.com/v1" },
   { key: "perplexity", name: "Perplexity", baseUrl: "https://api.perplexity.ai" },
+  { key: "ollama", name: "Ollama (local)", baseUrl: "http://localhost:11434/v1", local: true },
+  { key: "lmstudio", name: "LM Studio (local)", baseUrl: "http://localhost:1234/v1", local: true },
+  { key: "localai", name: "LocalAI (local)", baseUrl: "http://localhost:8080/v1", local: true },
+  { key: "vllm", name: "vLLM (local)", baseUrl: "http://localhost:8000/v1", local: true },
+  { key: "llamacpp", name: "llama.cpp (local)", baseUrl: "http://localhost:8080/v1", local: true },
   { key: "custom", name: "Personalizado", baseUrl: "" },
 ];
 
 export function baseUrlForProvider(key: string): string {
   return AI_PROVIDERS.find((p) => p.key === key)?.baseUrl ?? "";
+}
+
+export function isLocalProvider(key: string): boolean {
+  return AI_PROVIDERS.find((p) => p.key === key)?.local ?? false;
 }
 
 export interface AppSettings {
