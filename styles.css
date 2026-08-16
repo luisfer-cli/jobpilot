@@ -355,6 +355,9 @@ code {
 .theme-toggle:hover { border-color: var(--text); }
 .theme-toggle .nf { font-size: 14px; }
 
+.lang-toggle { min-width: 52px; justify-content: center; }
+.lang-label { letter-spacing: 0.02em; }
+
 .github-btn .gh { margin-right: 1px; }
 
 .menu-btn {

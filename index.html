@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="light">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LibreJob — Búsqueda de empleo asistida por IA</title>
-  <meta name="description" content="LibreJob es una aplicación de escritorio de código abierto que te ayuda a buscar empleo con IA: analiza ofertas, genera CVs a medida, cartas de presentación, pruebas técnicas y análisis ATS. Todo en local." />
+  <title>LibreJob — AI-assisted job search</title>
+  <meta name="description" content="LibreJob is a free, open-source desktop app that helps you find a job with AI: it analyzes offers, generates tailored CVs, cover letters, technical tests and ATS analysis. All local." />
   <meta name="author" content="Luis Fernando Rodriguez" />
   <link rel="icon" type="image/png" href="assets/logo.png" />
   <link rel="stylesheet" href="styles.css" />
@@ -20,17 +20,20 @@
       </a>
 
       <nav class="nav" id="nav">
-        <a href="#caracteristicas" class="nav-link">Características</a>
-        <a href="#como" class="nav-link">Cómo funciona</a>
-        <a href="#instalar" class="nav-link">Instalación</a>
-        <a href="#tecnologia" class="nav-link">Tecnología</a>
-        <a href="#faq" class="nav-link">FAQ</a>
+        <a href="#caracteristicas" class="nav-link" data-i18n="nav.features">Features</a>
+        <a href="#como" class="nav-link" data-i18n="nav.how">How it works</a>
+        <a href="#instalar" class="nav-link" data-i18n="nav.install">Installation</a>
+        <a href="#tecnologia" class="nav-link" data-i18n="nav.tech">Technology</a>
+        <a href="#faq" class="nav-link" data-i18n="nav.faq">FAQ</a>
       </nav>
 
       <div class="navbar-actions">
-        <button class="theme-toggle" id="theme-toggle" title="Cambiar tema" aria-label="Cambiar tema">
+        <button class="theme-toggle lang-toggle" id="lang-toggle" type="button" title="Switch to Spanish" aria-label="Switch to Spanish" data-i18n-title="lang.switch" data-i18n-aria="lang.switch">
+          <span class="lang-label" id="lang-label">ES</span>
+        </button>
+        <button class="theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme" data-i18n-title="nav.theme.title" data-i18n-aria="nav.theme.title">
           <span class="nf nf-moon" id="theme-icon"></span>
-          <span class="theme-label" id="theme-text">Oscuro</span>
+          <span class="theme-label" id="theme-text">Dark</span>
         </button>
         <a class="btn btn-primary btn-sm github-btn" href="https://github.com/luisfer-cli/librejob" target="_blank" rel="noopener">
           <svg class="gh" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
@@ -38,7 +41,7 @@
         </a>
       </div>
 
-      <button class="menu-btn" id="menu-btn" aria-label="Abrir menú">
+      <button class="menu-btn" id="menu-btn" aria-label="Open menu" data-i18n-aria="nav.menu">
         <span class="nf nf-menu"></span>
       </button>
     </div>
@@ -50,26 +53,26 @@
       <div class="container">
         <div class="hero-badge">
           <span class="nf nf-check-circle"></span>
-          Software libre · Aplicación de escritorio
+          <span data-i18n="hero.badge">Free software · Desktop app</span>
         </div>
-        <h1 class="hero-title">Busca trabajo con IA, en local</h1>
-        <p class="hero-sub">
-          LibreJob analiza ofertas de empleo y genera CVs a medida, cartas de presentación,
-          pruebas técnicas y análisis ATS. Todo ocurre en tu equipo, sin nubes.
+        <h1 class="hero-title" data-i18n="hero.title">Find a job with AI, locally</h1>
+        <p class="hero-sub" data-i18n="hero.sub">
+          LibreJob analyzes job offers and generates tailored CVs, cover letters,
+          technical tests and ATS analysis. Everything happens on your machine, no clouds.
         </p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="#instalar">
-            <span class="nf nf-download"></span> Empezar
+            <span class="nf nf-download"></span> <span data-i18n="hero.start">Get started</span>
           </a>
           <a class="btn" href="https://github.com/luisfer-cli/librejob" target="_blank" rel="noopener">
             <svg class="gh" viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
-            Ver en GitHub
+            <span data-i18n="hero.github">View on GitHub</span>
           </a>
         </div>
-        <p class="providers muted">
-          Compatible con <strong>OpenRouter</strong> · <strong>OpenAI</strong> · <strong>Groq</strong> ·
+        <p class="providers muted" data-i18n-html="hero.providers">
+          Works with <strong>OpenRouter</strong> · <strong>OpenAI</strong> · <strong>Groq</strong> ·
           <strong>Together</strong> · <strong>Mistral</strong> · <strong>DeepSeek</strong> · <strong>Perplexity</strong>
-          o cualquier API compatible con OpenAI.
+          or any OpenAI-compatible API.
         </p>
       </div>
     </section>
@@ -82,7 +85,7 @@
             <span class="dot dot-red"></span>
             <span class="dot dot-yellow"></span>
             <span class="dot dot-green"></span>
-            <span class="window-title">LibreJob — Resumen</span>
+            <span class="window-title" data-i18n="preview.title">LibreJob — Dashboard</span>
           </div>
           <div class="window-body">
             <div class="win-sidebar">
@@ -91,44 +94,44 @@
                 <span>LibreJob</span>
               </div>
               <div class="win-nav">
-                <span class="win-label">Principal</span>
-                <span class="win-item active"><span class="nf nf-dashboard"></span>Resumen</span>
-                <span class="win-label">Gestión</span>
-                <span class="win-item"><span class="nf nf-account"></span>Mi Currículum</span>
-                <span class="win-item"><span class="nf nf-briefcase"></span>Ofertas</span>
-                <span class="win-item"><span class="nf nf-flask"></span>Pruebas</span>
-                <span class="win-label">Sistema</span>
-                <span class="win-item"><span class="nf nf-cog"></span>Ajustes</span>
+                <span class="win-label" data-i18n="preview.group.main">Main</span>
+                <span class="win-item active"><span class="nf nf-dashboard"></span><span data-i18n="preview.item.dashboard">Dashboard</span></span>
+                <span class="win-label" data-i18n="preview.group.manage">Manage</span>
+                <span class="win-item"><span class="nf nf-account"></span><span data-i18n="preview.item.cv">My CV</span></span>
+                <span class="win-item"><span class="nf nf-briefcase"></span><span data-i18n="preview.item.offers">Offers</span></span>
+                <span class="win-item"><span class="nf nf-flask"></span><span data-i18n="preview.item.tests">Tests</span></span>
+                <span class="win-label" data-i18n="preview.group.system">System</span>
+                <span class="win-item"><span class="nf nf-cog"></span><span data-i18n="preview.item.settings">Settings</span></span>
               </div>
             </div>
             <div class="win-content">
               <div class="win-stats">
-                <div class="win-stat"><span class="win-num">24</span><span class="win-lbl">Ofertas</span></div>
-                <div class="win-stat"><span class="win-num">5</span><span class="win-lbl">Entrevistas</span></div>
-                <div class="win-stat"><span class="win-num">2</span><span class="win-lbl">Ofertas recibidas</span></div>
-                <div class="win-stat"><span class="win-num">12</span><span class="win-lbl">Aplicadas</span></div>
+                <div class="win-stat"><span class="win-num">24</span><span class="win-lbl" data-i18n="preview.stat.offers">Offers</span></div>
+                <div class="win-stat"><span class="win-num">5</span><span class="win-lbl" data-i18n="preview.stat.interviews">Interviews</span></div>
+                <div class="win-stat"><span class="win-num">2</span><span class="win-lbl" data-i18n="preview.stat.received">Offers received</span></div>
+                <div class="win-stat"><span class="win-num">12</span><span class="win-lbl" data-i18n="preview.stat.applied">Applied</span></div>
               </div>
               <div class="win-kanban">
                 <div class="win-col">
-                  <span class="win-col-head"><span class="badge badge-guardada">Guardada</span><i>3</i></span>
-                  <span class="win-card">Desarrollador Backend<em>Nubank</em></span>
-                  <span class="win-card">Frontend React<em>Vercel</em></span>
+                  <span class="win-col-head"><span class="badge badge-guardada" data-i18n="preview.badge.saved">Saved</span><i>3</i></span>
+                  <span class="win-card"><span data-i18n="preview.card.backend">Backend Developer</span><em>Nubank</em></span>
+                  <span class="win-card"><span data-i18n="preview.card.react">React Frontend</span><em>Vercel</em></span>
                 </div>
                 <div class="win-col">
-                  <span class="win-col-head"><span class="badge badge-aplicada">Aplicada</span><i>1</i></span>
-                  <span class="win-card">Full-stack Engineer<em>Shopify</em></span>
+                  <span class="win-col-head"><span class="badge badge-aplicada" data-i18n="preview.badge.applied">Applied</span><i>1</i></span>
+                  <span class="win-card"><span data-i18n="preview.card.fullstack">Full-stack Engineer</span><em>Shopify</em></span>
                 </div>
                 <div class="win-col">
-                  <span class="win-col-head"><span class="badge badge-entrevista">Entrevista</span><i>1</i></span>
-                  <span class="win-card">Desarrollador Node.js<em>Red Hat</em></span>
+                  <span class="win-col-head"><span class="badge badge-entrevista" data-i18n="preview.badge.interview">Interview</span><i>1</i></span>
+                  <span class="win-card"><span data-i18n="preview.card.node">Node.js Developer</span><em>Red Hat</em></span>
                 </div>
                 <div class="win-col">
-                  <span class="win-col-head"><span class="badge badge-oferta">Oferta</span><i>1</i></span>
-                  <span class="win-card">Ingeniero de software<em>Datadog</em></span>
+                  <span class="win-col-head"><span class="badge badge-oferta" data-i18n="preview.badge.offer">Offer</span><i>1</i></span>
+                  <span class="win-card"><span data-i18n="preview.card.sw">Software Engineer</span><em>Datadog</em></span>
                 </div>
                 <div class="win-col">
-                  <span class="win-col-head"><span class="badge badge-rechazada">Rechazada</span><i>1</i></span>
-                  <span class="win-card">Ingeniero DevOps<em>OnPrem Inc.</em></span>
+                  <span class="win-col-head"><span class="badge badge-rechazada" data-i18n="preview.badge.rejected">Rejected</span><i>1</i></span>
+                  <span class="win-card"><span data-i18n="preview.card.devops">DevOps Engineer</span><em>OnPrem Inc.</em></span>
                 </div>
               </div>
             </div>
@@ -137,131 +140,131 @@
       </div>
     </section>
 
-    <!-- ===== Características ===== -->
+    <!-- ===== Features ===== -->
     <section class="section" id="caracteristicas">
       <div class="container">
         <div class="section-head">
-          <h2>Características</h2>
-          <p class="muted">Todo lo que necesitas para pasar de la oferta al contrato.</p>
+          <h2 data-i18n="features.title">Features</h2>
+          <p class="muted" data-i18n="features.sub">Everything you need to go from offer to contract.</p>
         </div>
 
         <div class="features-grid">
           <div class="feature card">
             <span class="feature-icon nf nf-clipboard"></span>
-            <h3>Extracción de ofertas</h3>
-            <p>Pega una oferta y la IA extrae título, empresa, ubicación, salario, requisitos y responsabilidades.</p>
+            <h3 data-i18n="features.1.title">Offer extraction</h3>
+            <p data-i18n="features.1.body">Paste an offer and the AI extracts title, company, location, salary, requirements and responsibilities.</p>
           </div>
           <div class="feature card">
             <span class="feature-icon nf nf-file"></span>
-            <h3>CV especializado</h3>
-            <p>Adapta tu currículum a cada oferta, en el idioma que elijas. Exporta a PDF en un clic.</p>
+            <h3 data-i18n="features.2.title">Tailored CV</h3>
+            <p data-i18n="features.2.body">Adapt your CV to each offer, in the language you choose. Export to PDF in one click.</p>
           </div>
           <div class="feature card">
             <span class="feature-icon nf nf-email"></span>
-            <h3>Carta de presentación</h3>
-            <p>Genera cartas personalizadas listas para enviar, con asunto, saludo y despedida.</p>
+            <h3 data-i18n="features.3.title">Cover letter</h3>
+            <p data-i18n="features.3.body">Generate personalized letters ready to send, with subject, greeting and sign-off.</p>
           </div>
           <div class="feature card">
             <span class="feature-icon nf nf-flask"></span>
-            <h3>Prueba técnica</h3>
-            <p>Pruebas interactivas con corrección automática y varios tipos de pregunta.</p>
+            <h3 data-i18n="features.4.title">Technical test</h3>
+            <p data-i18n="features.4.body">Interactive tests with automatic grading and multiple question types.</p>
           </div>
           <div class="feature card">
             <span class="feature-icon nf nf-chart"></span>
-            <h3>Análisis ATS</h3>
-            <p>Mide tu encaje con la oferta y detecta las keywords que faltan en tu CV.</p>
+            <h3 data-i18n="features.5.title">ATS analysis</h3>
+            <p data-i18n="features.5.body">Measure your fit against the offer and spot the keywords missing from your CV.</p>
           </div>
           <div class="feature card">
             <span class="feature-icon nf nf-briefcase"></span>
-            <h3>Pipeline kanban</h3>
-            <p>Sigue cada oferta de «Guardada» a «Oferta» con un tablero de arrastrar y soltar.</p>
+            <h3 data-i18n="features.6.title">Kanban pipeline</h3>
+            <p data-i18n="features.6.body">Track every offer from «Saved» to «Offer» with a drag-and-drop board.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ===== Cómo funciona ===== -->
+    <!-- ===== How it works ===== -->
     <section class="section alt" id="como">
       <div class="container">
         <div class="section-head">
-          <h2>Cómo funciona</h2>
-          <p class="muted">De la oferta pegada al contrato, en tres pasos.</p>
+          <h2 data-i18n="how.title">How it works</h2>
+          <p class="muted" data-i18n="how.sub">From a pasted offer to a contract, in three steps.</p>
         </div>
 
         <div class="steps">
           <div class="step">
             <span class="step-dot"><span class="nf nf-download"></span></span>
-            <h3>1. Instala y configura</h3>
-            <p class="muted">Clona el repositorio, ejecuta <code>bun run tauri dev</code> y añade tu API key.</p>
+            <h3 data-i18n="how.1.title">1. Install &amp; configure</h3>
+            <p class="muted" data-i18n-html="how.1.body">Clone the repo, run <code>bun run tauri dev</code> and add your API key.</p>
           </div>
           <div class="step">
             <span class="step-dot"><span class="nf nf-clipboard"></span></span>
-            <h3>2. Pega la oferta</h3>
-            <p class="muted">La IA la estructura automáticamente: título, empresa, requisitos y más.</p>
+            <h3 data-i18n="how.2.title">2. Paste the offer</h3>
+            <p class="muted" data-i18n="how.2.body">The AI structures it automatically: title, company, requirements and more.</p>
           </div>
           <div class="step">
             <span class="step-dot"><span class="nf nf-send"></span></span>
-            <h3>3. Genera y postula</h3>
-            <p class="muted">Crea CVs, cartas, pruebas y análisis ATS a un clic, y sigue tu progreso.</p>
+            <h3 data-i18n="how.3.title">3. Generate &amp; apply</h3>
+            <p class="muted" data-i18n="how.3.body">Create CVs, letters, tests and ATS analysis in one click, and track your progress.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ===== Instalación ===== -->
+    <!-- ===== Installation ===== -->
     <section class="section" id="instalar">
       <div class="container">
         <div class="section-head">
-          <h2>Instalación</h2>
-          <p class="muted">Necesitas Bun y Rust (para Tauri). Luego, cuatro comandos.</p>
+          <h2 data-i18n="install.title">Installation</h2>
+          <p class="muted" data-i18n="install.sub">You need Bun and Rust (for Tauri). Then, four commands.</p>
         </div>
 
         <div class="install">
           <div class="install-code">
-            <pre><code><span class="c"># 1. Clona el repositorio</span>
+            <pre><code><span class="c" data-i18n="install.c1"># 1. Clone the repository</span>
 <span class="p">git clone</span> https://github.com/luisfer-cli/librejob.git
-<span class="c"># 2. Entra en el proyecto</span>
+<span class="c" data-i18n="install.c2"># 2. Enter the project</span>
 <span class="p">cd</span> librejob
-<span class="c"># 3. Instala las dependencias</span>
+<span class="c" data-i18n="install.c3"># 3. Install dependencies</span>
 <span class="p">bun install</span>
-<span class="c"># 4. Lanza la aplicación</span>
+<span class="c" data-i18n="install.c4"># 4. Launch the app</span>
 <span class="p">bun run</span> tauri dev</code></pre>
             <button class="copy-btn" id="copy-btn" type="button">
-              <span class="nf nf-clipboard"></span> <span class="copy-label">Copiar</span>
+              <span class="nf nf-clipboard"></span> <span class="copy-label" data-i18n="install.copy">Copy</span>
             </button>
           </div>
           <div class="install-note">
             <span class="nf nf-check-circle"></span>
-            <p>Al primer arranque, abre <strong>Ajustes</strong> para configurar tu proveedor de IA y tu API key.</p>
+            <p data-i18n-html="install.note">On first launch, open <strong>Settings</strong> to configure your AI provider and API key.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ===== Tecnología ===== -->
+    <!-- ===== Technology ===== -->
     <section class="section alt" id="tecnologia">
       <div class="container">
         <div class="section-head">
-          <h2>Tecnología</h2>
-          <p class="muted">Un stack moderno, ligero y 100 % local.</p>
+          <h2 data-i18n="tech.title">Technology</h2>
+          <p class="muted" data-i18n="tech.sub">A modern, lightweight, 100% local stack.</p>
         </div>
 
         <div class="tech-grid">
           <div class="tech card">
-            <h3>Angular 20 + TypeScript</h3>
-            <p class="muted">Interfaz con componentes standalone y strict templates.</p>
+            <h3 data-i18n="tech.1.title">Angular 20 + TypeScript</h3>
+            <p class="muted" data-i18n="tech.1.body">UI with standalone components and strict templates.</p>
           </div>
           <div class="tech card">
-            <h3>Tauri 2 + Rust</h3>
-            <p class="muted">Escritorio nativo y ligero. La IA se llama desde el backend Rust.</p>
+            <h3 data-i18n="tech.2.title">Tauri 2 + Rust</h3>
+            <p class="muted" data-i18n="tech.2.body">Native, lightweight desktop. AI is called from the Rust backend.</p>
           </div>
           <div class="tech card">
-            <h3>SQLite</h3>
-            <p class="muted">Datos y ajustes almacenados localmente con migraciones versionadas.</p>
+            <h3 data-i18n="tech.3.title">SQLite</h3>
+            <p class="muted" data-i18n="tech.3.body">Data and settings stored locally with versioned migrations.</p>
           </div>
           <div class="tech card">
-            <h3>IA compatible con OpenAI</h3>
-            <p class="muted">OpenRouter, OpenAI, Groq, Together, Mistral, DeepSeek, Perplexity…</p>
+            <h3 data-i18n="tech.4.title">OpenAI-compatible AI</h3>
+            <p class="muted" data-i18n="tech.4.body">OpenRouter, OpenAI, Groq, Together, Mistral, DeepSeek, Perplexity…</p>
           </div>
         </div>
       </div>
@@ -271,25 +274,25 @@
     <section class="section" id="faq">
       <div class="container narrow">
         <div class="section-head">
-          <h2>Preguntas frecuentes</h2>
+          <h2 data-i18n="faq.title">Frequently asked questions</h2>
         </div>
 
         <div class="faq">
           <details class="faq-item">
-            <summary>¿Es gratuito? <span class="nf nf-chevron-right"></span></summary>
-            <p>Sí. LibreJob es software libre y de código abierto. Puedes usarlo, modificarlo y contribuir libremente.</p>
+            <summary><span data-i18n="faq.1.q">Is it free?</span><span class="nf nf-chevron-right"></span></summary>
+            <p data-i18n="faq.1.a">Yes. LibreJob is free and open-source software. You can use it, modify it and contribute freely.</p>
           </details>
           <details class="faq-item">
-            <summary>¿Dónde se guardan mis datos? <span class="nf nf-chevron-right"></span></summary>
-            <p>Todo se guarda en local, en una base de datos SQLite de tu equipo. Tu API key y tus ofertas no salen de tu máquina (salvo las llamadas que haces a tu proveedor de IA).</p>
+            <summary><span data-i18n="faq.2.q">Where is my data stored?</span><span class="nf nf-chevron-right"></span></summary>
+            <p data-i18n="faq.2.a">Everything is stored locally, in a SQLite database on your machine. Your API key and your offers never leave your machine (except for the calls you make to your AI provider).</p>
           </details>
           <details class="faq-item">
-            <summary>¿Necesito una API key? <span class="nf nf-chevron-right"></span></summary>
-            <p>Sí, para las funciones de IA (CVs, cartas, pruebas y análisis ATS). Puedes usar cualquier proveedor compatible con la API de OpenAI.</p>
+            <summary><span data-i18n="faq.3.q">Do I need an API key?</span><span class="nf nf-chevron-right"></span></summary>
+            <p data-i18n="faq.3.a">Yes, for the AI features (CVs, letters, tests and ATS analysis). You can use any provider compatible with the OpenAI API.</p>
           </details>
           <details class="faq-item">
-            <summary>¿En qué sistemas funciona? <span class="nf nf-chevron-right"></span></summary>
-            <p>Al estar construido con Tauri 2, funciona en Linux, Windows y macOS.</p>
+            <summary><span data-i18n="faq.4.q">Which systems does it run on?</span><span class="nf nf-chevron-right"></span></summary>
+            <p data-i18n="faq.4.a">Built with Tauri 2, it runs on Linux, Windows and macOS.</p>
           </details>
         </div>
       </div>
@@ -304,11 +307,11 @@
           <img class="brand-mark" src="assets/logo.png" alt="LibreJob" />
           <span class="brand-name">LibreJob</span>
         </div>
-        <p class="muted">Software libre · Hecho con Angular, Tauri y Rust.</p>
+        <p class="muted" data-i18n="footer.tagline">Free software · Built with Angular, Tauri and Rust.</p>
       </div>
       <div class="footer-links">
-        <a class="footer-author" href="https://luis-fer.dev" target="_blank" rel="noopener">
-          Creado por <strong>Luis Fer</strong>
+        <a class="footer-author" href="https://luis-fer.dev" target="_blank" rel="noopener" data-i18n-html="footer.author">
+          Created by <strong>Luis Fer</strong>
           <span class="nf nf-arrow-right"></span>
         </a>
         <a class="btn btn-sm" href="https://github.com/luisfer-cli/librejob" target="_blank" rel="noopener">
@@ -319,8 +322,8 @@
     </div>
   </footer>
 
-  <!-- Donación Ko-fi -->
-  <a class="kofi-float" href="https://ko-fi.com/luis_fer" target="_blank" rel="noopener" title="Apóyame en Ko-fi" aria-label="Apóyame en Ko-fi">
+  <!-- Ko-fi donation -->
+  <a class="kofi-float" href="https://ko-fi.com/luis_fer" target="_blank" rel="noopener" title="Support me on Ko-fi" aria-label="Support me on Ko-fi" data-i18n-title="kofi.title" data-i18n-aria="kofi.title">
     <svg class="kofi-cup" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
       <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z" />
@@ -328,7 +331,7 @@
       <line x1="10" y1="2" x2="10" y2="4" />
       <line x1="14" y1="2" x2="14" y2="4" />
     </svg>
-    <span class="kofi-text">Apóyame</span>
+    <span class="kofi-text" data-i18n="kofi.text">Support me</span>
   </a>
 
   <script src="script.js"></script>
