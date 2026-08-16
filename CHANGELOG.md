@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/luisfer-cli/librejob/compare/v0.2.1...v0.3.0) (2026-08-16)
+
+
+### Features
+
+* more explicit way to configure an local LLM ([bd0dced](https://github.com/luisfer-cli/librejob/commit/bd0dced969280d8fdfaa7effb7cd332fbf2b3692))
+
 ## [0.2.1](https://github.com/luisfer-cli/librejob/compare/v0.2.0...v0.2.1) (2026-08-16)
 
 
