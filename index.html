@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LibreJob — Búsqueda de empleo asistida por IA</title>
+  <meta name="description" content="LibreJob es una aplicación de escritorio de código abierto que te ayuda a buscar empleo con IA: analiza ofertas, genera CVs a medida, cartas de presentación, pruebas técnicas y análisis ATS. Todo en local." />
+  <meta name="author" content="Luis Fernando Rodriguez" />
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ===== Navbar ===== -->
+  <header class="navbar">
+    <div class="navbar-inner">
+      <a class="brand" href="#inicio">
+        <img class="brand-mark" src="assets/logo.png" alt="LibreJob" />
+        <span class="brand-name">LibreJob</span>
+      </a>
+
+      <nav class="nav" id="nav">
+        <a href="#caracteristicas" class="nav-link">Características</a>
+        <a href="#como" class="nav-link">Cómo funciona</a>
+        <a href="#instalar" class="nav-link">Instalación</a>
+        <a href="#tecnologia" class="nav-link">Tecnología</a>
+        <a href="#faq" class="nav-link">FAQ</a>
+      </nav>
+
+      <div class="navbar-actions">
+        <button class="theme-toggle" id="theme-toggle" title="Cambiar tema" aria-label="Cambiar tema">
+          <span class="nf nf-moon" id="theme-icon"></span>
+          <span class="theme-label" id="theme-text">Oscuro</span>
+        </button>
+        <a class="btn btn-primary btn-sm github-btn" href="https://github.com/luisfer-cli/librejob" target="_blank" rel="noopener">
+          <svg class="gh" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+          GitHub
+        </a>
+      </div>
+
+      <button class="menu-btn" id="menu-btn" aria-label="Abrir menú">
+        <span class="nf nf-menu"></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===== Hero ===== -->
+    <section class="section hero" id="inicio">
+      <div class="container">
+        <div class="hero-badge">
+          <span class="nf nf-check-circle"></span>
+          Software libre · Aplicación de escritorio
+        </div>
+        <h1 class="hero-title">Busca trabajo con IA, en local</h1>
+        <p class="hero-sub">
+          LibreJob analiza ofertas de empleo y genera CVs a medida, cartas de presentación,
+          pruebas técnicas y análisis ATS. Todo ocurre en tu equipo, sin nubes.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#instalar">
+            <span class="nf nf-download"></span> Empezar
+          </a>
+          <a class="btn" href="https://github.com/luisfer-cli/librejob" target="_blank" rel="noopener">
+            <svg class="gh" viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+            Ver en GitHub
+          </a>
+        </div>
+        <p class="providers muted">
+          Compatible con <strong>OpenRouter</strong> · <strong>OpenAI</strong> · <strong>Groq</strong> ·
+          <strong>Together</strong> · <strong>Mistral</strong> · <strong>DeepSeek</strong> · <strong>Perplexity</strong>
+          o cualquier API compatible con OpenAI.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== Preview ===== -->
+    <section class="section" id="preview">
+      <div class="container">
+        <div class="window">
+          <div class="window-bar">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+            <span class="window-title">LibreJob — Resumen</span>
+          </div>
+          <div class="window-body">
+            <div class="win-sidebar">
+              <div class="win-brand">
+                <img src="assets/logo.png" alt="" />
+                <span>LibreJob</span>
+              </div>
+              <div class="win-nav">
+                <span class="win-label">Principal</span>
+                <span class="win-item active"><span class="nf nf-dashboard"></span>Resumen</span>
+                <span class="win-label">Gestión</span>
+                <span class="win-item"><span class="nf nf-account"></span>Mi Currículum</span>
+                <span class="win-item"><span class="nf nf-briefcase"></span>Ofertas</span>
+                <span class="win-item"><span class="nf nf-flask"></span>Pruebas</span>
+                <span class="win-label">Sistema</span>
+                <span class="win-item"><span class="nf nf-cog"></span>Ajustes</span>
+              </div>
+            </div>
+            <div class="win-content">
+              <div class="win-stats">
+                <div class="win-stat"><span class="win-num">24</span><span class="win-lbl">Ofertas</span></div>
+                <div class="win-stat"><span class="win-num">5</span><span class="win-lbl">Entrevistas</span></div>
+                <div class="win-stat"><span class="win-num">2</span><span class="win-lbl">Ofertas recibidas</span></div>
+                <div class="win-stat"><span class="win-num">12</span><span class="win-lbl">Aplicadas</span></div>
+              </div>
+              <div class="win-kanban">
+                <div class="win-col">
+                  <span class="win-col-head"><span class="badge badge-guardada">Guardada</span><i>3</i></span>
+                  <span class="win-card">Desarrollador Backend<em>Nubank</em></span>
+                  <span class="win-card">Frontend React<em>Vercel</em></span>
+                </div>
+                <div class="win-col">
+                  <span class="win-col-head"><span class="badge badge-aplicada">Aplicada</span><i>1</i></span>
+                  <span class="win-card">Full-stack Engineer<em>Shopify</em></span>
+                </div>
+                <div class="win-col">
+                  <span class="win-col-head"><span class="badge badge-entrevista">Entrevista</span><i>1</i></span>
+                  <span class="win-card">Desarrollador Node.js<em>Red Hat</em></span>
+                </div>
+                <div class="win-col">
+                  <span class="win-col-head"><span class="badge badge-oferta">Oferta</span><i>1</i></span>
+                  <span class="win-card">Ingeniero de software<em>Datadog</em></span>
+                </div>
+                <div class="win-col">
+                  <span class="win-col-head"><span class="badge badge-rechazada">Rechazada</span><i>1</i></span>
+                  <span class="win-card">Ingeniero DevOps<em>OnPrem Inc.</em></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Características ===== -->
+    <section class="section" id="caracteristicas">
+      <div class="container">
+        <div class="section-head">
+          <h2>Características</h2>
+          <p class="muted">Todo lo que necesitas para pasar de la oferta al contrato.</p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature card">
+            <span class="feature-icon nf nf-clipboard"></span>
+            <h3>Extracción de ofertas</h3>
+            <p>Pega una oferta y la IA extrae título, empresa, ubicación, salario, requisitos y responsabilidades.</p>
+          </div>
+          <div class="feature card">
+            <span class="feature-icon nf nf-file"></span>
+            <h3>CV especializado</h3>
+            <p>Adapta tu currículum a cada oferta, en el idioma que elijas. Exporta a PDF en un clic.</p>
+          </div>
+          <div class="feature card">
+            <span class="feature-icon nf nf-email"></span>
+            <h3>Carta de presentación</h3>
+            <p>Genera cartas personalizadas listas para enviar, con asunto, saludo y despedida.</p>
+          </div>
+          <div class="feature card">
+            <span class="feature-icon nf nf-flask"></span>
+            <h3>Prueba técnica</h3>
+            <p>Pruebas interactivas con corrección automática y varios tipos de pregunta.</p>
+          </div>
+          <div class="feature card">
+            <span class="feature-icon nf nf-chart"></span>
+            <h3>Análisis ATS</h3>
+            <p>Mide tu encaje con la oferta y detecta las keywords que faltan en tu CV.</p>
+          </div>
+          <div class="feature card">
+            <span class="feature-icon nf nf-briefcase"></span>
+            <h3>Pipeline kanban</h3>
+            <p>Sigue cada oferta de «Guardada» a «Oferta» con un tablero de arrastrar y soltar.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Cómo funciona ===== -->
+    <section class="section alt" id="como">
+      <div class="container">
+        <div class="section-head">
+          <h2>Cómo funciona</h2>
+          <p class="muted">De la oferta pegada al contrato, en tres pasos.</p>
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <span class="step-dot"><span class="nf nf-download"></span></span>
+            <h3>1. Instala y configura</h3>
+            <p class="muted">Clona el repositorio, ejecuta <code>bun run tauri dev</code> y añade tu API key.</p>
+          </div>
+          <div class="step">
+            <span class="step-dot"><span class="nf nf-clipboard"></span></span>
+            <h3>2. Pega la oferta</h3>
+            <p class="muted">La IA la estructura automáticamente: título, empresa, requisitos y más.</p>
+          </div>
+          <div class="step">
+            <span class="step-dot"><span class="nf nf-send"></span></span>
+            <h3>3. Genera y postula</h3>
+            <p class="muted">Crea CVs, cartas, pruebas y análisis ATS a un clic, y sigue tu progreso.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Instalación ===== -->
+    <section class="section" id="instalar">
+      <div class="container">
+        <div class="section-head">
+          <h2>Instalación</h2>
+          <p class="muted">Necesitas Bun y Rust (para Tauri). Luego, cuatro comandos.</p>
+        </div>
+
+        <div class="install">
+          <div class="install-code">
+            <pre><code><span class="c"># 1. Clona el repositorio</span>
+<span class="p">git clone</span> https://github.com/luisfer-cli/librejob.git
+<span class="c"># 2. Entra en el proyecto</span>
+<span class="p">cd</span> librejob
+<span class="c"># 3. Instala las dependencias</span>
+<span class="p">bun install</span>
+<span class="c"># 4. Lanza la aplicación</span>
+<span class="p">bun run</span> tauri dev</code></pre>
+            <button class="copy-btn" id="copy-btn" type="button">
+              <span class="nf nf-clipboard"></span> <span class="copy-label">Copiar</span>
+            </button>
+          </div>
+          <div class="install-note">
+            <span class="nf nf-check-circle"></span>
+            <p>Al primer arranque, abre <strong>Ajustes</strong> para configurar tu proveedor de IA y tu API key.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Tecnología ===== -->
+    <section class="section alt" id="tecnologia">
+      <div class="container">
+        <div class="section-head">
+          <h2>Tecnología</h2>
+          <p class="muted">Un stack moderno, ligero y 100 % local.</p>
+        </div>
+
+        <div class="tech-grid">
+          <div class="tech card">
+            <h3>Angular 20 + TypeScript</h3>
+            <p class="muted">Interfaz con componentes standalone y strict templates.</p>
+          </div>
+          <div class="tech card">
+            <h3>Tauri 2 + Rust</h3>
+            <p class="muted">Escritorio nativo y ligero. La IA se llama desde el backend Rust.</p>
+          </div>
+          <div class="tech card">
+            <h3>SQLite</h3>
+            <p class="muted">Datos y ajustes almacenados localmente con migraciones versionadas.</p>
+          </div>
+          <div class="tech card">
+            <h3>IA compatible con OpenAI</h3>
+            <p class="muted">OpenRouter, OpenAI, Groq, Together, Mistral, DeepSeek, Perplexity…</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FAQ ===== -->
+    <section class="section" id="faq">
+      <div class="container narrow">
+        <div class="section-head">
+          <h2>Preguntas frecuentes</h2>
+        </div>
+
+        <div class="faq">
+          <details class="faq-item">
+            <summary>¿Es gratuito? <span class="nf nf-chevron-right"></span></summary>
+            <p>Sí. LibreJob es software libre y de código abierto. Puedes usarlo, modificarlo y contribuir libremente.</p>
+          </details>
+          <details class="faq-item">
+            <summary>¿Dónde se guardan mis datos? <span class="nf nf-chevron-right"></span></summary>
+            <p>Todo se guarda en local, en una base de datos SQLite de tu equipo. Tu API key y tus ofertas no salen de tu máquina (salvo las llamadas que haces a tu proveedor de IA).</p>
+          </details>
+          <details class="faq-item">
+            <summary>¿Necesito una API key? <span class="nf nf-chevron-right"></span></summary>
+            <p>Sí, para las funciones de IA (CVs, cartas, pruebas y análisis ATS). Puedes usar cualquier proveedor compatible con la API de OpenAI.</p>
+          </details>
+          <details class="faq-item">
+            <summary>¿En qué sistemas funciona? <span class="nf nf-chevron-right"></span></summary>
+            <p>Al estar construido con Tauri 2, funciona en Linux, Windows y macOS.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <div class="brand">
+          <img class="brand-mark" src="assets/logo.png" alt="LibreJob" />
+          <span class="brand-name">LibreJob</span>
+        </div>
+        <p class="muted">Software libre · Hecho con Angular, Tauri y Rust.</p>
+      </div>
+      <div class="footer-links">
+        <a class="footer-author" href="https://luis-fer.dev" target="_blank" rel="noopener">
+          Creado por <strong>Luis Fer</strong>
+          <span class="nf nf-arrow-right"></span>
+        </a>
+        <a class="btn btn-sm" href="https://github.com/luisfer-cli/librejob" target="_blank" rel="noopener">
+          <svg class="gh" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Donación Ko-fi -->
+  <a class="kofi-float" href="https://ko-fi.com/luis_fer" target="_blank" rel="noopener" title="Apóyame en Ko-fi" aria-label="Apóyame en Ko-fi">
+    <svg class="kofi-cup" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
+      <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z" />
+      <line x1="6" y1="2" x2="6" y2="4" />
+      <line x1="10" y1="2" x2="10" y2="4" />
+      <line x1="14" y1="2" x2="14" y2="4" />
+    </svg>
+    <span class="kofi-text">Apóyame</span>
+  </a>
+
+  <script src="script.js"></script>
+</body>
+</html>
