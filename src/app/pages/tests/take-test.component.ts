@@ -26,6 +26,7 @@ export class TakeTestComponent implements OnInit {
   reviewing: Record<number, boolean> = {};
   reviewError = "";
   allRevealed = false;
+  current = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -139,6 +140,18 @@ export class TakeTestComponent implements OnInit {
     this.allRevealed = true;
   }
 
+  next(): void {
+    if (this.test && this.current < this.test.questions.length - 1) this.current++;
+  }
+
+  back(): void {
+    if (this.current > 0) this.current--;
+  }
+
+  finish(): void {
+    this.revealAll();
+  }
+
   reset(): void {
     this.answers = {};
     this.revealed = {};
@@ -147,6 +160,7 @@ export class TakeTestComponent implements OnInit {
     this.reviewing = {};
     this.reviewError = "";
     this.allRevealed = false;
+    this.current = 0;
   }
 
   get answeredCount(): number {

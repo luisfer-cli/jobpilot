@@ -193,3 +193,17 @@
   display: flex;
   gap: 10px;
 }
+
+.test-nav {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.test-counter {
+  font-size: 12.5px;
+}
