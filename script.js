@@ -27,6 +27,7 @@
         "LibreJob is a free, open-source desktop app that helps you find a job with AI: it analyzes offers, generates tailored CVs, cover letters, technical tests and ATS analysis. All local.",
       "nav.features": "Features",
       "nav.how": "How it works",
+      "nav.download": "Download",
       "nav.install": "Installation",
       "nav.tech": "Technology",
       "nav.faq": "FAQ",
@@ -100,6 +101,17 @@
       "install.copied": "Copied!",
       "install.note":
         "On first launch, open <strong>Settings</strong> to configure your AI provider and API key.",
+      "download.title": "Download",
+      "download.sub": "Get the latest release for Windows and Linux, straight from GitHub.",
+      "download.windows": "Windows",
+      "download.windows.note": "x64 · Installer",
+      "download.linux": "Linux",
+      "download.linux.note": "x64 · AppImage",
+      "download.btn": "Download",
+      "download.all": "See all releases",
+      "download.source": "Prefer to build from source? <a href=\"#instalar\">Follow the instructions</a>.",
+      "download.loading": "Loading latest release…",
+      "download.error": "Couldn't load the release. Check the releases page.",
       "tech.title": "Technology",
       "tech.sub": "A modern, lightweight, 100% local stack.",
       "tech.1.title": "Angular 20 + TypeScript",
@@ -132,6 +144,7 @@
         "LibreJob es una aplicación de escritorio de código abierto que te ayuda a buscar empleo con IA: analiza ofertas, genera CVs a medida, cartas de presentación, pruebas técnicas y análisis ATS. Todo en local.",
       "nav.features": "Características",
       "nav.how": "Cómo funciona",
+      "nav.download": "Descargar",
       "nav.install": "Instalación",
       "nav.tech": "Tecnología",
       "nav.faq": "FAQ",
@@ -205,6 +218,17 @@
       "install.copied": "¡Copiado!",
       "install.note":
         "Al primer arranque, abre <strong>Ajustes</strong> para configurar tu proveedor de IA y tu API key.",
+      "download.title": "Descargar",
+      "download.sub": "Obtén la última versión para Windows y Linux, directamente desde GitHub.",
+      "download.windows": "Windows",
+      "download.windows.note": "x64 · Instalador",
+      "download.linux": "Linux",
+      "download.linux.note": "x64 · AppImage",
+      "download.btn": "Descargar",
+      "download.all": "Ver todas las releases",
+      "download.source": "¿Prefieres compilar desde el código? <a href=\"#instalar\">Sigue las instrucciones</a>.",
+      "download.loading": "Cargando la última versión…",
+      "download.error": "No se pudo cargar la release. Consulta la página de releases.",
       "tech.title": "Tecnología",
       "tech.sub": "Un stack moderno, ligero y 100 % local.",
       "tech.1.title": "Angular 20 + TypeScript",
@@ -359,6 +383,74 @@
     });
   }
 
+  // ---- Descargar última release ----
+  const downloadWin = document.querySelector("[data-download-win]");
+  const downloadLinux = document.querySelector("[data-download-linux]");
+  const downloadVersions = document.querySelectorAll("[data-download-version]");
+  const downloadSizeWin = document.querySelector("[data-download-size-win]");
+  const downloadSizeLinux = document.querySelector("[data-download-size-linux]");
+
+  function humanSize(bytes) {
+    if (bytes == null || isNaN(bytes)) return "";
+    const units = ["B", "KB", "MB", "GB"];
+    let i = 0;
+    let n = bytes;
+    while (n >= 1024 && i < units.length - 1) {
+      n /= 1024;
+      i++;
+    }
+    return (n >= 10 || i === 0 ? Math.round(n) : n.toFixed(1)) + " " + units[i];
+  }
+
+  async function loadDownload() {
+    downloadVersions.forEach(function (el) {
+      el.textContent = t("download.loading");
+    });
+    downloadSizeWin.textContent = "";
+    downloadSizeLinux.textContent = "";
+
+    try {
+      const res = await fetch(
+        "https://api.github.com/repos/luisfer-cli/librejob/releases/latest"
+      );
+      if (!res.ok) throw new Error(res.status);
+      const release = await res.json();
+      const assets = release.assets || [];
+
+      const win = assets.find(function (a) {
+        return /\.exe$/i.test(a.name);
+      });
+      const linux = assets.find(function (a) {
+        return /\.appimage$/i.test(a.name);
+      });
+
+      const version = release.tag_name || release.name || "";
+      downloadVersions.forEach(function (el) {
+        el.textContent = version;
+      });
+
+      if (win) {
+        downloadWin.href = win.browser_download_url;
+        downloadSizeWin.textContent = humanSize(win.size);
+      } else {
+        downloadSizeWin.textContent = t("download.error");
+      }
+
+      if (linux) {
+        downloadLinux.href = linux.browser_download_url;
+        downloadSizeLinux.textContent = humanSize(linux.size);
+      } else {
+        downloadSizeLinux.textContent = t("download.error");
+      }
+    } catch (_) {
+      downloadVersions.forEach(function (el) {
+        el.textContent = "";
+      });
+      downloadSizeWin.textContent = t("download.error");
+      downloadSizeLinux.textContent = t("download.error");
+    }
+  }
+
   // ---- Scroll-spy ----
   const links = Array.from(document.querySelectorAll(".nav a[href^='#']"));
   const sections = links
@@ -391,5 +483,6 @@
 
   loadLang();
   loadTheme();
+  loadDownload();
   onScroll();
 })();
