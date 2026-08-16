@@ -66,6 +66,31 @@
   </div>
 </section>
 
+<!-- Actualizaciones -->
+<section class="card">
+  <h2>{{ "updates.title" | t }}</h2>
+  <div class="actions">
+    <button
+      class="btn"
+      (click)="updater.checkForUpdates()"
+      [disabled]="updater.checking() || updater.downloading()"
+    >
+      <span *ngIf="updater.checking()" class="spinner"></span>
+      <span *ngIf="!updater.checking()" class="nf nf-download"></span>
+      {{ updater.checking() ? ("updates.checking" | t) : ("updates.check" | t) }}
+    </button>
+    <button
+      *ngIf="updater.status() === 'available'"
+      class="btn btn-primary"
+      (click)="updater.downloadAndInstall()"
+    >
+      <span class="nf nf-update"></span>
+      {{ "updates.install" | t }}
+    </button>
+  </div>
+  <p *ngIf="updateStatusLabel" class="muted">{{ updateStatusLabel }}</p>
+</section>
+
 <!-- Modal: Wizard de configuración -->
 <div class="modal-backdrop" *ngIf="showWizard" (mousedown)="onBackdrop($event)">
   <div class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="wizard-title">

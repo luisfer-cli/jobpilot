@@ -4,6 +4,7 @@ import { FormsModule } from "@angular/forms";
 import { AiService } from "../../core/ai.service";
 import { SettingsService } from "../../core/settings.service";
 import { I18nService, type Lang } from "../../core/i18n.service";
+import { UpdaterService } from "../../core/updater.service";
 import { TranslatePipe } from "../../core/translate.pipe";
 import { AI_PROVIDERS } from "../../core/models";
 
@@ -44,6 +45,7 @@ export class SettingsComponent {
     public settings: SettingsService,
     private ai: AiService,
     public i18n: I18nService,
+    public updater: UpdaterService,
   ) {
     this.settings.load().then(() => {
       const s = this.settings.settings();
@@ -56,6 +58,25 @@ export class SettingsComponent {
 
   get isConfigured(): boolean {
     return this.settings.isConfigured;
+  }
+
+  get updateStatusLabel(): string {
+    switch (this.updater.status()) {
+      case "checking":
+        return this.i18n.t("updates.checking");
+      case "up-to-date":
+        return this.i18n.t("updates.upToDate");
+      case "available":
+        return this.i18n.t("updates.available", { version: this.updater.availableVersion() });
+      case "downloading":
+        return this.i18n.t("updates.downloading", { p: this.updater.progress() });
+      case "installed":
+        return this.i18n.t("updates.installed");
+      case "error":
+        return this.i18n.t("updates.error");
+      default:
+        return "";
+    }
   }
 
   get currentLang(): Lang {

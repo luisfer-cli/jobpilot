@@ -466,6 +466,20 @@ const MESSAGES: Record<string, Record<Lang, string>> = {
     en: "Enter the provider base URL.",
   },
   "settings.wizard.errModelsKey": { es: "Introduce la API key.", en: "Enter the API key." },
+
+  // ---- Actualizaciones ----
+  "updates.title": { es: "Actualizaciones", en: "Updates" },
+  "updates.check": { es: "Buscar actualizaciones", en: "Check for updates" },
+  "updates.checking": { es: "Comprobando actualizaciones...", en: "Checking for updates..." },
+  "updates.upToDate": { es: "Estás al día.", en: "You're up to date." },
+  "updates.available": { es: "Nueva versión disponible: {version}", en: "New version available: {version}" },
+  "updates.install": { es: "Actualizar ahora", en: "Update now" },
+  "updates.downloading": { es: "Descargando... {p}%", en: "Downloading... {p}%" },
+  "updates.installed": { es: "Actualización instalada. Reiniciando...", en: "Update installed. Restarting..." },
+  "updates.error": {
+    es: "No se pudo comprobar las actualizaciones.",
+    en: "Could not check for updates.",
+  },
 };
 
 @Injectable({ providedIn: "root" })
