@@ -65,8 +65,8 @@ impl AiProvider for OpenAiCompatible {
             .post(&url)
             .header("Authorization", format!("Bearer {}", req.api_key))
             .header("Content-Type", "application/json")
-            .header("HTTP-Referer", "https://jobpilot.local")
-            .header("X-Title", "JobPilot")
+            .header("HTTP-Referer", "https://librejob.local")
+            .header("X-Title", "LibreJob")
             .json(&body)
             .send()
             .await

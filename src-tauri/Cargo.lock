@@ -2275,22 +2275,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "jobpilot"
-version = "0.1.0"
-dependencies = [
- "reqwest",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-dialog",
- "tauri-plugin-opener",
- "tauri-plugin-process",
- "tauri-plugin-sql",
- "tauri-plugin-updater",
-]
-
-[[package]]
 name = "jobserver"
 version = "0.1.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2418,6 +2402,22 @@ dependencies = [
  "libc",
  "plain",
  "redox_syscall 0.9.2",
+]
+
+[[package]]
+name = "librejob"
+version = "0.1.0"
+dependencies = [
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-dialog",
+ "tauri-plugin-opener",
+ "tauri-plugin-process",
+ "tauri-plugin-sql",
+ "tauri-plugin-updater",
 ]
 
 [[package]]

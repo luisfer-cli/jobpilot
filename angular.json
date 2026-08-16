@@ -6,7 +6,7 @@
     "analytics": false
   },
   "projects": {
-    "jobpilot": {
+    "librejob": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -64,10 +64,10 @@
           },
           "configurations": {
             "production": {
-              "buildTarget": "jobpilot:build:production"
+              "buildTarget": "librejob:build:production"
             },
             "development": {
-              "buildTarget": "jobpilot:build:development"
+              "buildTarget": "librejob:build:development"
             }
           },
           "defaultConfiguration": "development"

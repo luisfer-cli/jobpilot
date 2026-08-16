@@ -1,4 +1,4 @@
-# JobPilot
+# LibreJob
 
 A Tauri 2 desktop app for AI-assisted job hunting. Parse job offers, generate tailored CVs and cover letters, practice with technical tests, and analyze your ATS fit — all from a single window.
 
@@ -48,7 +48,7 @@ bun run tauri dev
 - Frontend ↔ backend communication goes through Tauri `invoke` → Rust `#[tauri::command]`. The TS side lives in `src/app/core/ai.service.ts` and `db.service.ts`; the Rust side in `src-tauri/src/commands.rs`.
 - All AI calls go through the Rust backend (`src-tauri/src/ai/openai_compatible.rs`, `reqwest` with rustls) to any OpenAI-compatible API.
 - AI responses are requested as JSON with retries and lenient parsing (tolerates markdown fences and corrupted prefixes).
-- Data is stored in SQLite (`sqlite:jobpilot.db`). Migrations live in `src-tauri/src/db.rs` — append a new `Migration` version, never edit an existing one.
+- Data is stored in SQLite (`sqlite:librejob.db`). Migrations live in `src-tauri/src/db.rs` — append a new `Migration` version, never edit an existing one.
 - Settings (provider, base URL, API key, model, theme) persist in the `settings` SQLite table.
 
 ## Project structure

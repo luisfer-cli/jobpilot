@@ -2,7 +2,7 @@
 
 ## Project
 
-JobPilot — a Tauri 2 desktop app for AI-assisted job hunting (parse offers, generate tailored CVs/cover letters, technical tests, ATS analysis).
+LibreJob — a Tauri 2 desktop app for AI-assisted job hunting (parse offers, generate tailored CVs/cover letters, technical tests, ATS analysis).
 
 - `src/` — Angular 20 frontend (standalone components, no NgModules)
 - `src-tauri/` — Rust backend (Tauri commands, AI client, SQLite migrations)
@@ -13,7 +13,7 @@ JobPilot — a Tauri 2 desktop app for AI-assisted job hunting (parse offers, ge
 - `bun run tauri dev` — full dev: starts Angular dev server (`bun run start`) then launches the Tauri window.
 - `bun run tauri build` — production desktop build.
 - `bun run start` — Angular dev server only, on port **1420** (not the default 4200).
-- `bun run build` — Angular production build → `dist/jobpilot/browser` (path hardcoded in `src-tauri/tauri.conf.json`).
+- `bun run build` — Angular production build → `dist/librejob/browser` (path hardcoded in `src-tauri/tauri.conf.json`).
 - `cargo test` (run inside `src-tauri/`) — the only real test suite (unit tests in `src-tauri/src/commands.rs`).
 - No lint/format scripts are configured in `package.json`.
 
@@ -23,7 +23,7 @@ JobPilot — a Tauri 2 desktop app for AI-assisted job hunting (parse offers, ge
 - **All AI calls go through the Rust backend** (OpenAI-compatible client in `src-tauri/src/ai/openai_compatible.rs`; `reqwest` with rustls). Default provider is OpenRouter; provider list is in `src/app/core/models.ts` (`AI_PROVIDERS` / `baseUrlForProvider`).
 - Adding an AI feature: add a `#[tauri::command]` in `commands.rs` → register it in `src-tauri/src/lib.rs` `invoke_handler` → add a wrapper method in `ai.service.ts`.
 - `commands.rs` uses `ask_json` + `parse_json_lenient`: retries up to 3× and tolerates markdown fences/corrupted prefixes when the model returns non-JSON. Reuse these for new commands.
-- Data: SQLite via `tauri-plugin-sql`, DB URL `sqlite:jobpilot.db`. Migrations live in `src-tauri/src/db.rs` — **append a new `Migration` version, never edit an existing one**. The DB is also opened from TS (`DbService` → `Database.load("sqlite:jobpilot.db")`).
+- Data: SQLite via `tauri-plugin-sql`, DB URL `sqlite:librejob.db`. Migrations live in `src-tauri/src/db.rs` — **append a new `Migration` version, never edit an existing one**. The DB is also opened from TS (`DbService` → `Database.load("sqlite:librejob.db")`).
 - Settings (`provider`, `base_url`, `api_key`, `model`, `theme`) are persisted in the `settings` SQLite table (API key stored plaintext). Frontend state is a signal in `SettingsService`.
 - Routes are lazy-loaded via `loadComponent` in `src/app/app.routes.ts`. Component selector prefix is `app`.
 
@@ -51,10 +51,10 @@ JobPilot — a Tauri 2 desktop app for AI-assisted job hunting (parse offers, ge
 
 ## Auto-update (Tauri updater)
 
-- Signing keys live at `~/.tauri/jobpilot.key` (private) and `~/.tauri/jobpilot.key.pub` (public, embedded in `src-tauri/tauri.conf.json` → `plugins.updater.pubkey`). **Never commit the private key.**
+- Signing keys live at `~/.tauri/librejob.key` (private) and `~/.tauri/librejob.key.pub` (public, embedded in `src-tauri/tauri.conf.json` → `plugins.updater.pubkey`). **Never commit the private key.**
 - The private key must be set as GitHub secret `TAURI_SIGNING_PRIVATE_KEY` (and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` if a password was used). The key was generated without a password.
 - `bundle.createUpdaterArtifacts: true` makes `tauri build` emit signed `.tar.gz`/`.zip` updater bundles + `.sig`; `tauri-action` assembles `latest.json` from them.
-- Update endpoint: `https://github.com/luisfer-cli/jobpilot/releases/latest/download/latest.json` (served per release).
+- Update endpoint: `https://github.com/luisfer-cli/librejob/releases/latest/download/latest.json` (served per release).
 - Frontend: `src/app/core/updater.service.ts` (`check()` / `downloadAndInstall()` / `relaunch()`). Startup check in `app.component.ts`, manual button in `settings.component.ts`.
 - Linux updater only supports **AppImage** (not `.deb`/`.rpm`). Windows uses **NSIS** (`updaterJsonPreferNsis: true`). macOS auto-update is not enabled (needs Apple code-signing/notarization).
 - If the private key is lost/regenerated, previously installed apps can no longer update.

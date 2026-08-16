@@ -1,18 +1,18 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "jobpilot",
+  "productName": "LibreJob",
   "version": "0.1.0",
-  "identifier": "dev.luisfer.jobpilot",
+  "identifier": "dev.luisfer.librejob",
   "build": {
     "beforeDevCommand": "bun run start",
     "devUrl": "http://localhost:1420",
     "beforeBuildCommand": "bun run build",
-    "frontendDist": "../dist/jobpilot/browser"
+    "frontendDist": "../dist/librejob/browser"
   },
   "app": {
     "windows": [
       {
-        "title": "JobPilot",
+        "title": "LibreJob",
         "width": 1200,
         "height": 800
       }
@@ -23,12 +23,12 @@
   },
   "plugins": {
     "sql": {
-      "preload": ["sqlite:jobpilot.db"]
+      "preload": ["sqlite:librejob.db"]
     },
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEIyQjE3MTQ2NzRDRENBRkMKUldUOHlzMTBSbkd4c2t4WHI3dXRMVVFPVFcyMmJPNlRLb3RWT215c3lIWUlzMjhDRENyMkhqOVMK",
       "endpoints": [
-        "https://github.com/luisfer-cli/jobpilot/releases/latest/download/latest.json"
+        "https://github.com/luisfer-cli/librejob/releases/latest/download/latest.json"
       ]
     }
   },

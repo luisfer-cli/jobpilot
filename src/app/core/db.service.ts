@@ -24,7 +24,7 @@ export class DbService {
 
   async init(): Promise<void> {
     if (!this.db) {
-      this.db = await Database.load("sqlite:jobpilot.db");
+      this.db = await Database.load("sqlite:librejob.db");
     }
   }
 
