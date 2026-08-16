@@ -1,28 +1,25 @@
 <div class="page-header">
-  <h1>Pruebas técnicas</h1>
+  <h1>{{ "tests.title" | t }}</h1>
   <button class="btn btn-primary" (click)="openNew()">
-    <span class="nf nf-plus"></span> Nueva prueba
+    <span class="nf nf-plus"></span> {{ "tests.new" | t }}
   </button>
 </div>
 
 <div *ngIf="showNew" class="card">
-  <h2>Nueva prueba de práctica</h2>
-  <p class="muted">
-    Escribe un puesto o tema (p. ej. "Backend Node.js mid-level") y la IA generará una prueba
-    interactiva con distintos tipos de preguntas.
-  </p>
+  <h2>{{ "tests.newTitle" | t }}</h2>
+  <p class="muted">{{ "tests.desc" | t }}</p>
   <div *ngIf="error" class="alert alert-error">{{ error }}</div>
   <div class="field">
-    <label>Tema / puesto</label>
-    <input [(ngModel)]="topic" placeholder="Ej. Frontend React senior" />
+    <label>{{ "tests.topic" | t }}</label>
+    <input [(ngModel)]="topic" [placeholder]="'tests.topicPlaceholder' | t" />
   </div>
   <div class="actions">
     <button class="btn btn-primary" (click)="generate()" [disabled]="generating">
       <span *ngIf="generating" class="spinner"></span>
       <span *ngIf="!generating" class="nf nf-flask"></span>
-      {{ generating ? "Generando..." : "Generar con IA" }}
+      {{ generating ? ("common.generating" | t) : ("tests.generate" | t) }}
     </button>
-    <button class="btn" (click)="cancel()">Cancelar</button>
+    <button class="btn" (click)="cancel()">{{ "common.cancel" | t }}</button>
   </div>
 </div>
 
@@ -31,15 +28,15 @@
     <div class="test-row-main">
       <a [routerLink]="['/tests', t.id]" class="test-row-title">{{ t.title }}</a>
       <span class="muted test-row-sub">
-        {{ t.jobOfferId == null ? "Independiente" : "De oferta" }}
+        {{ t.jobOfferId == null ? ("tests.standalone" | t) : ("tests.fromOffer" | t) }}
         <ng-container *ngIf="t.createdAt"> · {{ t.createdAt }}</ng-container>
       </span>
     </div>
     <div class="test-row-actions">
       <a class="btn btn-sm btn-primary" [routerLink]="['/tests', t.id]">
-        <span class="nf nf-clipboard"></span> Hacer
+        <span class="nf nf-clipboard"></span> {{ "tests.do" | t }}
       </a>
-      <button class="btn btn-sm btn-ghost btn-icon" (click)="remove(t.id)" title="Eliminar">
+      <button class="btn btn-sm btn-ghost btn-icon" (click)="remove(t.id)" [title]="'common.delete' | t">
         <span class="nf nf-delete"></span>
       </button>
     </div>
@@ -48,5 +45,5 @@
 
 <p class="empty" *ngIf="!showNew && !tests.length">
   <span class="nf nf-book"></span>
-  Aún no hay pruebas. Crea una desde aquí o usa el botón "Prueba técnica mágica" dentro de una oferta.
+  {{ "tests.empty" | t }}
 </p>

@@ -2,26 +2,19 @@ import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { DbService } from "../../core/db.service";
+import { TranslatePipe } from "../../core/translate.pipe";
 import type { JobOffer, OfferStatus } from "../../core/models";
 
 const COLUMNS: OfferStatus[] = ["guardada", "aplicada", "entrevista", "oferta", "rechazada"];
-const STATUS_LABELS: Record<OfferStatus, string> = {
-  guardada: "Guardada",
-  aplicada: "Aplicada",
-  entrevista: "Entrevista",
-  oferta: "Oferta",
-  rechazada: "Rechazada",
-};
 
 @Component({
   selector: "app-dashboard",
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
   templateUrl: "./dashboard.component.html",
   styleUrl: "./dashboard.component.css",
 })
 export class DashboardComponent implements OnInit {
   columns = COLUMNS;
-  statusLabels = STATUS_LABELS;
   offers: JobOffer[] = [];
   dragId: number | null = null;
   dragOverColumn: OfferStatus | null = null;

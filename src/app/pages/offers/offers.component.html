@@ -1,17 +1,15 @@
 <div class="page-header">
-  <h1>Ofertas de trabajo</h1>
+  <h1>{{ "offers.title" | t }}</h1>
   <button class="btn btn-primary" (click)="openNew()">
-    <span class="nf nf-plus"></span> Nueva oferta
+    <span class="nf nf-plus"></span> {{ "offers.new" | t }}
   </button>
 </div>
 
 <!-- Lista -->
 <div *ngIf="!showNew && offers.length" class="card list-card">
-  <div class="offer-row" *ngFor="let o of offers">
+  <div class="offer-row" *ngFor="let o of offers" (click)="openOffer(o.id)">
     <div class="offer-row-main">
-      <a [routerLink]="['/offers', o.id]" class="offer-row-title">
-        {{ o.title || "Sin título" }}
-      </a>
+      <span class="offer-row-title">{{ o.title || ("offers.noTitle" | t) }}</span>
       <span class="offer-row-sub">
         <ng-container *ngIf="o.company">{{ o.company }}</ng-container>
         <ng-container *ngIf="o.location"> · {{ o.location }}</ng-container>
@@ -19,8 +17,12 @@
       </span>
     </div>
     <div class="offer-row-right">
-      <span class="badge" [class]="'badge-' + o.status">{{ statusLabels[o.status] }}</span>
-      <button class="btn btn-sm btn-ghost btn-icon" (click)="remove(o.id)" title="Eliminar">
+      <span class="badge" [class]="'badge-' + o.status">{{ "status." + o.status | t }}</span>
+      <button
+        class="btn btn-sm btn-ghost btn-icon"
+        (click)="remove(o.id); $event.stopPropagation()"
+        [title]="'common.delete' | t"
+      >
         <span class="nf nf-delete"></span>
       </button>
     </div>
@@ -29,20 +31,18 @@
 
 <p *ngIf="!showNew && !offers.length" class="empty">
   <span class="nf nf-briefcase"></span>
-  Aún no hay ofertas. Pega tu primera oferta para empezar.
+  {{ "offers.empty" | t }}
 </p>
 
 <!-- Nueva oferta -->
 <div *ngIf="showNew" class="card">
   <div class="new-head">
-    <h2>Nueva oferta</h2>
-    <button class="btn btn-ghost btn-icon" (click)="cancel()" title="Cancelar">
+    <h2>{{ "offers.new" | t }}</h2>
+    <button class="btn btn-ghost btn-icon" (click)="cancel()" [title]="'common.cancel' | t">
       <span class="nf nf-close"></span>
     </button>
   </div>
-  <p class="muted new-desc">
-    Pega el texto de la oferta copiado desde tu navegador. La IA extraerá los datos.
-  </p>
+  <p class="muted new-desc">{{ "offers.pasteDesc" | t }}</p>
 
   <div *ngIf="error" class="alert alert-error">{{ error }}</div>
 
@@ -51,68 +51,68 @@
     [(ngModel)]="rawText"
     class="paste-input"
     rows="12"
-    placeholder="Pega aquí el contenido completo de la oferta de trabajo..."
+    [placeholder]="'offers.pastePlaceholder' | t"
   ></textarea>
 
   <div class="actions">
     <button class="btn btn-primary" (click)="process()" [disabled]="loading">
       <span *ngIf="loading" class="spinner"></span>
       <span *ngIf="!loading" class="nf nf-flask"></span>
-      {{ loading ? "Procesando..." : "Procesar con IA" }}
+      {{ loading ? ("common.processing" | t) : ("offers.process" | t) }}
     </button>
-    <button class="btn" (click)="cancel()">Cancelar</button>
+    <button class="btn" (click)="cancel()">{{ "common.cancel" | t }}</button>
   </div>
 
   <!-- Resultado tras procesar -->
   <div *ngIf="parsed" class="result">
     <div class="result-head">
       <span class="nf nf-check-circle"></span>
-      <h3>Datos extraídos</h3>
+      <h3>{{ "offers.extracted" | t }}</h3>
     </div>
     <div class="grid grid-2">
       <div class="field">
-        <label>Título</label>
+        <label>{{ "offers.field.title" | t }}</label>
         <input [(ngModel)]="form.title" />
       </div>
       <div class="field">
-        <label>Empresa</label>
+        <label>{{ "offers.field.company" | t }}</label>
         <input [(ngModel)]="form.company" />
       </div>
       <div class="field">
-        <label>Ubicación</label>
+        <label>{{ "offers.field.location" | t }}</label>
         <input [(ngModel)]="form.location" />
       </div>
       <div class="field">
-        <label>Salario</label>
+        <label>{{ "offers.field.salary" | t }}</label>
         <input [(ngModel)]="form.salary" />
       </div>
       <div class="field">
-        <label>Tipo de contrato</label>
+        <label>{{ "offers.field.jobType" | t }}</label>
         <input [(ngModel)]="form.jobType" />
       </div>
       <div class="field">
-        <label>Seniority</label>
+        <label>{{ "offers.field.seniority" | t }}</label>
         <input [(ngModel)]="form.seniority" />
       </div>
       <div class="field" style="grid-column: 1 / -1">
-        <label>URL de aplicación</label>
+        <label>{{ "offers.field.url" | t }}</label>
         <input [(ngModel)]="form.applicationUrl" />
       </div>
     </div>
 
     <div class="grid grid-2">
       <div class="field">
-        <label>Requisitos</label>
+        <label>{{ "offers.field.requirements" | t }}</label>
         <textarea [(ngModel)]="requirementsText" rows="4"></textarea>
       </div>
       <div class="field">
-        <label>Responsabilidades</label>
+        <label>{{ "offers.field.responsibilities" | t }}</label>
         <textarea [(ngModel)]="responsibilitiesText" rows="4"></textarea>
       </div>
     </div>
 
     <button class="btn btn-primary" (click)="save()" [disabled]="saving">
-      <span class="nf nf-save"></span> Guardar oferta
+      <span class="nf nf-save"></span> {{ "offers.save" | t }}
     </button>
   </div>
 </div>

@@ -1,6 +1,6 @@
 <div class="paper">
   <header class="cv-header">
-    <h1 class="cv-name">{{ cv.fullName || "Currículum" }}</h1>
+    <h1 class="cv-name">{{ cv.fullName || labels.resume }}</h1>
     <p class="cv-job" *ngIf="cv.jobTitle">{{ cv.jobTitle }}</p>
     <p class="cv-contact" *ngIf="contactItems.length">
       <ng-container *ngFor="let item of contactItems; let i = index">
@@ -13,13 +13,13 @@
   </header>
 
   <section class="cv-section" *ngIf="cv.summary">
-    <h2 class="sec-title">Resumen</h2>
+    <h2 class="sec-title">{{ labels.summary }}</h2>
     <div class="rule"></div>
     <p class="body">{{ cv.summary }}</p>
   </section>
 
   <section class="cv-section" *ngIf="cv.experiences.length">
-    <h2 class="sec-title">Experiencia</h2>
+    <h2 class="sec-title">{{ labels.experience }}</h2>
     <div class="rule"></div>
     <div class="entry" *ngFor="let e of cv.experiences">
       <div class="entry-head">
@@ -34,7 +34,7 @@
   </section>
 
   <section class="cv-section" *ngIf="cv.education.length">
-    <h2 class="sec-title">Educación</h2>
+    <h2 class="sec-title">{{ labels.education }}</h2>
     <div class="rule"></div>
     <div class="entry" *ngFor="let e of cv.education">
       <div class="entry-head">
@@ -46,25 +46,25 @@
   </section>
 
   <section class="cv-section" *ngIf="cv.skills.length">
-    <h2 class="sec-title">Competencias</h2>
+    <h2 class="sec-title">{{ labels.skills }}</h2>
     <div class="rule"></div>
     <p class="body">{{ cv.skills.join(", ") }}</p>
   </section>
 
   <section class="cv-section" *ngIf="cv.languages.length">
-    <h2 class="sec-title">Idiomas</h2>
+    <h2 class="sec-title">{{ labels.languages }}</h2>
     <div class="rule"></div>
     <p class="body">{{ formatLanguages(cv.languages) }}</p>
   </section>
 
   <section class="cv-section" *ngIf="cv.certifications.length">
-    <h2 class="sec-title">Certificaciones</h2>
+    <h2 class="sec-title">{{ labels.certifications }}</h2>
     <div class="rule"></div>
     <p class="body">{{ formatCertifications(cv.certifications) }}</p>
   </section>
 
   <section class="cv-section" *ngIf="cv.projects.length">
-    <h2 class="sec-title">Proyectos</h2>
+    <h2 class="sec-title">{{ labels.projects }}</h2>
     <div class="rule"></div>
     <div class="entry" *ngFor="let p of cv.projects">
       <strong class="entry-title">{{ p.name }}</strong>

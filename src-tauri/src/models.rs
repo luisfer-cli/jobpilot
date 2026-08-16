@@ -298,6 +298,13 @@ pub struct AtsAnalysis {
     pub suggestions: Vec<String>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct AnswerEvaluation {
+    pub correct: bool,
+    pub feedback: String,
+}
+
 #[cfg(test)]
 mod tests {
     use super::WorkExperience;

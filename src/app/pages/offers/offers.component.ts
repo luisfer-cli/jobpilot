@@ -1,23 +1,18 @@
 import { CommonModule } from "@angular/common";
 import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { RouterLink } from "@angular/router";
+import { Router } from "@angular/router";
 import { AiService } from "../../core/ai.service";
 import { DbService } from "../../core/db.service";
 import { SettingsService } from "../../core/settings.service";
-import type { JobOffer, JobOfferStructured, OfferStatus } from "../../core/models";
-
-const STATUS_LABELS: Record<OfferStatus, string> = {
-  guardada: "Guardada",
-  aplicada: "Aplicada",
-  entrevista: "Entrevista",
-  oferta: "Oferta",
-  rechazada: "Rechazada",
-};
+import { ConfirmService } from "../../core/confirm.service";
+import { I18nService } from "../../core/i18n.service";
+import { TranslatePipe } from "../../core/translate.pipe";
+import type { JobOffer, JobOfferStructured } from "../../core/models";
 
 @Component({
   selector: "app-offers",
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: "./offers.component.html",
   styleUrl: "./offers.component.css",
 })
@@ -25,7 +20,6 @@ export class OffersComponent implements OnInit {
   @ViewChild("pasteInput") pasteInput?: ElementRef<HTMLTextAreaElement>;
 
   offers: JobOffer[] = [];
-  statusLabels = STATUS_LABELS;
 
   showNew = false;
   loading = false;
@@ -61,10 +55,17 @@ export class OffersComponent implements OnInit {
     private db: DbService,
     private ai: AiService,
     private settings: SettingsService,
+    private router: Router,
+    private confirm: ConfirmService,
+    private i18n: I18nService,
   ) {}
 
   async ngOnInit(): Promise<void> {
     await this.load();
+  }
+
+  openOffer(id: number): void {
+    this.router.navigate(["/offers", id]);
   }
 
   private emptyForm(): JobOfferStructured {
@@ -103,11 +104,11 @@ export class OffersComponent implements OnInit {
 
   async process(): Promise<void> {
     if (!this.settings.isConfigured) {
-      this.error = "Configura tu proveedor de IA y API key en Ajustes primero.";
+      this.error = this.i18n.t("error.configureAi");
       return;
     }
     if (!this.rawText.trim()) {
-      this.error = "Pega el texto de la oferta primero.";
+      this.error = this.i18n.t("error.pasteFirst");
       return;
     }
     this.loading = true;
@@ -124,7 +125,7 @@ export class OffersComponent implements OnInit {
 
   async save(): Promise<void> {
     if (!this.form.title.trim() && !this.form.company.trim()) {
-      this.error = "Introduce al menos el título o la empresa.";
+      this.error = this.i18n.t("error.titleOrCompany");
       return;
     }
     this.saving = true;
@@ -147,9 +148,13 @@ export class OffersComponent implements OnInit {
   }
 
   async remove(id: number): Promise<void> {
-    if (confirm("¿Eliminar esta oferta y todo lo generado para ella?")) {
-      await this.db.deleteOffer(id);
-      await this.load();
-    }
+    const ok = await this.confirm.confirm({
+      title: this.i18n.t("confirm.deleteOfferTitle"),
+      message: this.i18n.t("confirm.deleteOffer"),
+      confirmText: this.i18n.t("common.delete"),
+    });
+    if (!ok) return;
+    await this.db.deleteOffer(id);
+    await this.load();
   }
 }

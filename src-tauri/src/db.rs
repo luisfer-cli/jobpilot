@@ -137,5 +137,11 @@ ALTER TABLE technical_tests_new RENAME TO technical_tests;
 "#,
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 3,
+            description: "job_offers_ats_analysis",
+            sql: "ALTER TABLE job_offers ADD COLUMN ats_analysis TEXT NOT NULL DEFAULT '';",
+            kind: MigrationKind::Up,
+        },
     ]
 }

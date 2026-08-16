@@ -1,29 +1,31 @@
 <div *ngIf="!test" class="card">
-  <p class="muted">Prueba no encontrada.</p>
-  <a routerLink="/tests">Volver a pruebas</a>
+  <p class="muted">{{ "taketest.notFound" | t }}</p>
+  <a routerLink="/tests">{{ "taketest.back" | t }}</a>
 </div>
 
 <div *ngIf="test">
   <div class="page-header">
     <div>
       <a routerLink="/tests" class="muted back">
-        <span class="nf nf-arrow-left"></span> Pruebas
+        <span class="nf nf-arrow-left"></span> {{ "nav.tests" | t }}
       </a>
-      <h1>{{ test.title || "Prueba técnica" }}</h1>
-      <p class="muted" *ngIf="test.estimatedTime">Tiempo estimado: {{ test.estimatedTime }}</p>
+      <h1>{{ test.title || ("taketest.title" | t) }}</h1>
+      <p class="muted" *ngIf="test.estimatedTime">{{ "taketest.estTime" | t }} {{ test.estimatedTime }}</p>
     </div>
   </div>
 
+  <div *ngIf="reviewError" class="alert alert-error">{{ reviewError }}</div>
+
   <div class="card" *ngIf="test.instructions">
-    <h2>Instrucciones</h2>
+    <h2>{{ "taketest.instructions" | t }}</h2>
     <p>{{ test.instructions }}</p>
   </div>
 
   <!-- Barra de progreso -->
   <div class="card progress-card">
     <div class="progress-info">
-      <span>{{ answeredCount }} de {{ total }} respondidas</span>
-      <span *ngIf="allRevealed">Aciertos: {{ correctCount }}/{{ autoCount }} ({{ score }}%)</span>
+      <span>{{ answeredLabel }}</span>
+      <span *ngIf="allRevealed">{{ correctLabel }}</span>
     </div>
     <div class="progress-bar">
       <div class="progress-fill" [style.width.%]="total ? (answeredCount / total) * 100 : 0"></div>
@@ -34,7 +36,7 @@
   <div class="card question" *ngFor="let q of test.questions; let i = index">
     <div class="q-head">
       <span class="q-num">{{ i + 1 }}</span>
-      <span class="badge q-type">{{ typeLabels[q.questionType] }}</span>
+      <span class="badge q-type">{{ "qtype." + q.questionType | t }}</span>
     </div>
 
     <p class="q-text">{{ q.question }}</p>
@@ -74,34 +76,34 @@
 
     <!-- Respuesta corta -->
     <div *ngIf="q.questionType === 'short_answer'">
-      <textarea [(ngModel)]="answers[i]" rows="3" placeholder="Escribe tu respuesta..."></textarea>
+      <textarea [(ngModel)]="answers[i]" rows="3" [placeholder]="'taketest.shortPlaceholder' | t"></textarea>
     </div>
 
     <!-- Programación -->
     <div *ngIf="q.questionType === 'coding'">
-      <textarea class="code-input" [(ngModel)]="answers[i]" rows="8" placeholder="Escribe tu solución..."></textarea>
+      <textarea class="code-input" [(ngModel)]="answers[i]" rows="8" [placeholder]="'taketest.codePlaceholder' | t"></textarea>
     </div>
 
     <div class="q-actions">
       <button *ngIf="!revealed[i]" class="btn btn-sm" (click)="reveal(i)" [disabled]="!answered(i)">
-        Revisar respuesta
+        {{ "taketest.review" | t }}
       </button>
       <button *ngIf="q.hint && !hints[i]" class="btn btn-sm" (click)="toggleHint(i)">
-        Mostrar pista
+        {{ "taketest.showHint" | t }}
       </button>
       <span *ngIf="revealed[i] && isAutoGraded(q)" class="result" [class.ok]="isCorrect(i)" [class.ko]="!isCorrect(i)">
         <span class="nf" [class.nf-check]="isCorrect(i)" [class.nf-close]="!isCorrect(i)"></span>
-        {{ isCorrect(i) ? "Correcto" : "Incorrecto" }}
+        {{ isCorrect(i) ? ("taketest.correctLabel" | t) : ("taketest.incorrectLabel" | t) }}
       </span>
     </div>
 
     <div *ngIf="hints[i] && q.hint" class="explanation hint-box">
-      <p class="muted"><strong>Pista:</strong> {{ q.hint }}</p>
+      <p class="muted"><strong>{{ "taketest.hint" | t }}</strong> {{ q.hint }}</p>
     </div>
 
     <div *ngIf="revealed[i]" class="explanation">
       <p *ngIf="q.correctAnswers.length" class="answer-ref">
-        <strong>Respuesta:</strong>
+        <strong>{{ "taketest.answer" | t }}</strong>
         <ng-container *ngIf="q.questionType === 'short_answer' || q.questionType === 'coding'">
           <pre class="ref">{{ q.correctAnswers[0] }}</pre>
         </ng-container>
@@ -111,23 +113,43 @@
       </p>
       <p *ngIf="q.explanation" class="explanation-text">{{ q.explanation }}</p>
     </div>
+
+    <ng-container *ngIf="revealed[i] && isFreeText(q)">
+      <button
+        *ngIf="!reviews[i]"
+        class="btn btn-sm"
+        (click)="deepReview(i)"
+        [disabled]="reviewing[i]"
+      >
+        <span *ngIf="reviewing[i]" class="spinner"></span>
+        <span *ngIf="!reviewing[i]" class="nf nf-send"></span>
+        {{ reviewing[i] ? ("taketest.reviewing" | t) : ("taketest.deepReview" | t) }}
+      </button>
+      <div *ngIf="reviews[i]" class="explanation review-result">
+        <span class="result" [class.ok]="reviews[i].correct" [class.ko]="!reviews[i].correct">
+          <span class="nf" [class.nf-check]="reviews[i].correct" [class.nf-close]="!reviews[i].correct"></span>
+          {{ reviews[i].correct ? ("taketest.correctLabel" | t) : ("taketest.incorrectLabel" | t) }}
+        </span>
+        <p class="explanation-text" *ngIf="reviews[i].feedback">{{ reviews[i].feedback }}</p>
+      </div>
+    </ng-container>
   </div>
 
   <!-- Acciones finales -->
   <div class="card final-card" *ngIf="total">
     <div *ngIf="allRevealed" class="final-score">
       <span class="big">{{ score }}%</span>
-      <span class="muted">de aciertos en preguntas automáticas ({{ correctCount }}/{{ autoCount }})</span>
+      <span class="muted">{{ scoreLabel }}</span>
     </div>
     <div class="final-actions">
       <button *ngIf="!allRevealed" class="btn btn-primary" (click)="revealAll()">
-        <span class="nf nf-chart"></span> Terminar y ver resultados
+        <span class="nf nf-chart"></span> {{ "taketest.finish" | t }}
       </button>
       <button *ngIf="allRevealed" class="btn" (click)="reset()">
-        <span class="nf nf-check-circle"></span> Reintentar
+        <span class="nf nf-check-circle"></span> {{ "taketest.retry" | t }}
       </button>
       <a class="btn" routerLink="/tests">
-        <span class="nf nf-book"></span> Volver a pruebas
+        <span class="nf nf-book"></span> {{ "taketest.back" | t }}
       </a>
     </div>
   </div>

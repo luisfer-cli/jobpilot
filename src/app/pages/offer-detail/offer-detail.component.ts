@@ -1,14 +1,16 @@
 import { CommonModule } from "@angular/common";
-import { Component, HostListener, OnInit } from "@angular/core";
+import { Component, HostListener, OnDestroy, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, RouterLink } from "@angular/router";
 import { invoke } from "@tauri-apps/api/core";
-import { openPath } from "@tauri-apps/plugin-opener";
 import { save } from "@tauri-apps/plugin-dialog";
 import { AiService } from "../../core/ai.service";
 import { DbService } from "../../core/db.service";
 import { PdfService } from "../../core/pdf.service";
 import { SettingsService } from "../../core/settings.service";
+import { ConfirmService } from "../../core/confirm.service";
+import { I18nService } from "../../core/i18n.service";
+import { TranslatePipe } from "../../core/translate.pipe";
 import { parseTechnicalTest as parseTest } from "../../core/test-utils";
 import { CvPreviewComponent } from "../../components/cv-preview/cv-preview.component";
 import type {
@@ -23,62 +25,64 @@ import type {
 } from "../../core/models";
 
 const STATUSES: OfferStatus[] = ["guardada", "aplicada", "entrevista", "oferta", "rechazada"];
-const STATUS_LABELS: Record<OfferStatus, string> = {
-  guardada: "Guardada",
-  aplicada: "Aplicada",
-  entrevista: "Entrevista",
-  oferta: "Oferta",
-  rechazada: "Rechazada",
+
+const LANGUAGES: { value: string; labelKey: string }[] = [
+  { value: "", labelKey: "lang.auto" },
+  { value: "español", labelKey: "lang.es" },
+  { value: "inglés", labelKey: "lang.en" },
+  { value: "francés", labelKey: "lang.fr" },
+  { value: "alemán", labelKey: "lang.de" },
+  { value: "italiano", labelKey: "lang.it" },
+  { value: "portugués", labelKey: "lang.pt" },
+];
+
+const QUESTION_COUNTS: { value: string; labelKey: string }[] = [
+  { value: "", labelKey: "test.auto58" },
+  { value: "5", labelKey: "test.5q" },
+  { value: "8", labelKey: "test.8q" },
+  { value: "10", labelKey: "test.10q" },
+];
+
+const DIFFICULTIES: { value: string; labelKey: string }[] = [
+  { value: "", labelKey: "test.auto" },
+  { value: "junior", labelKey: "test.junior" },
+  { value: "medio", labelKey: "test.mid" },
+  { value: "senior", labelKey: "test.senior" },
+];
+
+const ESTIMATED_TIMES: { value: string; labelKey: string }[] = [
+  { value: "", labelKey: "test.auto" },
+  { value: "15", labelKey: "test.15m" },
+  { value: "30", labelKey: "test.30m" },
+  { value: "60", labelKey: "test.60m" },
+];
+
+const LANGUAGE_LABEL_KEYS: Record<string, string> = {
+  "": "lang.auto",
+  español: "lang.es",
+  inglés: "lang.en",
+  francés: "lang.fr",
+  alemán: "lang.de",
+  italiano: "lang.it",
+  portugués: "lang.pt",
 };
 
-const LANGUAGES: { value: string; label: string }[] = [
-  { value: "", label: "Auto (idioma del perfil)" },
-  { value: "español", label: "Español" },
-  { value: "inglés", label: "Inglés" },
-  { value: "francés", label: "Francés" },
-  { value: "alemán", label: "Alemán" },
-  { value: "italiano", label: "Italiano" },
-  { value: "portugués", label: "Portugués" },
-];
-
-const QUESTION_COUNTS: { value: string; label: string }[] = [
-  { value: "", label: "Auto (5–8)" },
-  { value: "5", label: "5 preguntas" },
-  { value: "8", label: "8 preguntas" },
-  { value: "10", label: "10 preguntas" },
-];
-
-const DIFFICULTIES: { value: string; label: string }[] = [
-  { value: "", label: "Auto" },
-  { value: "junior", label: "Junior" },
-  { value: "medio", label: "Medio" },
-  { value: "senior", label: "Senior" },
-];
-
-const ESTIMATED_TIMES: { value: string; label: string }[] = [
-  { value: "", label: "Auto" },
-  { value: "15", label: "15 minutos" },
-  { value: "30", label: "30 minutos" },
-  { value: "60", label: "60 minutos" },
-];
-
-const BUSY_CV = "Generando CV...";
-const BUSY_LETTER = "Generando carta...";
-const BUSY_TEST = "Generando prueba técnica...";
-const BUSY_ATS = "Analizando encaje ATS...";
-const BUSY_PDF = "Generando PDF...";
+interface CvEntry {
+  id: number;
+  cv: GeneratedCv;
+  createdAt: string;
+}
 
 @Component({
   selector: "app-offer-detail",
-  imports: [CommonModule, FormsModule, RouterLink, CvPreviewComponent],
+  imports: [CommonModule, FormsModule, RouterLink, CvPreviewComponent, TranslatePipe],
   templateUrl: "./offer-detail.component.html",
   styleUrl: "./offer-detail.component.css",
 })
-export class OfferDetailComponent implements OnInit {
+export class OfferDetailComponent implements OnInit, OnDestroy {
   offer: JobOffer | null = null;
   structured: JobOfferStructured | null = null;
   statuses = STATUSES;
-  statusLabels = STATUS_LABELS;
   languages = LANGUAGES;
   cvLanguage = "";
   letterLanguage = "";
@@ -92,21 +96,45 @@ export class OfferDetailComponent implements OnInit {
 
   busy = "";
   error = "";
+  toast = "";
+  toastLeaving = false;
+  private toastTimer: ReturnType<typeof setTimeout> | null = null;
 
-  readonly busyCv = BUSY_CV;
-  readonly busyLetter = BUSY_LETTER;
-  readonly busyTest = BUSY_TEST;
-  readonly busyAts = BUSY_ATS;
-  readonly busyPdf = BUSY_PDF;
+  get busyCv(): string {
+    return this.i18n.t("busy.cv");
+  }
+  get busyLetter(): string {
+    return this.i18n.t("busy.letter");
+  }
+  get busyTest(): string {
+    return this.i18n.t("busy.test");
+  }
+  get busyAts(): string {
+    return this.i18n.t("busy.ats");
+  }
+  get busyPdf(): string {
+    return this.i18n.t("busy.pdf");
+  }
 
   showCvModal = false;
   showLetterModal = false;
   showTestModal = false;
 
-  cv: GeneratedCv | null = null;
+  cvs: CvEntry[] = [];
+  previewCv: GeneratedCv | null = null;
+  showCvPreview = false;
+  editCvId: number | null = null;
+  cvDraft: GeneratedCv | null = null;
+  showCvEdit = false;
   letter: CoverLetter | null = null;
+  letterId: number | null = null;
+  editingLetter = false;
+  letterDraft: CoverLetter | null = null;
   test: TechnicalTest | null = null;
   ats: AtsAnalysis | null = null;
+
+  notesDraft = "";
+  savingNotes = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -114,6 +142,8 @@ export class OfferDetailComponent implements OnInit {
     private ai: AiService,
     private settings: SettingsService,
     private pdf: PdfService,
+    private confirm: ConfirmService,
+    private i18n: I18nService,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -121,14 +151,19 @@ export class OfferDetailComponent implements OnInit {
     this.offer = (await this.db.getOffer(id)) ?? null;
     if (this.offer) {
       this.structured = this.parseStructured(this.offer.structured);
-      const cvs = await this.db.listGeneratedCvs(id);
-      if (cvs.length) this.cv = this.parseCv(cvs[0].structured);
+      this.notesDraft = this.offer.notes;
+      const rows = await this.db.listGeneratedCvs(id);
+      this.cvs = rows.map((r) => ({ id: r.id, cv: this.parseCv(r.structured), createdAt: r.createdAt }));
       const letters = await this.db.listCoverLetters(id);
-      if (letters.length) this.letter = JSON.parse(letters[0].content);
+      if (letters.length) {
+        this.letterId = letters[0].id;
+        this.letter = JSON.parse(letters[0].content);
+      }
       const tests = await this.db.listTechnicalTests(id);
       if (tests.length) {
         this.test = { ...this.parseTechnicalTest(tests[0].content), id: tests[0].id, jobOfferId: id };
       }
+      this.ats = await this.db.getAtsAnalysis(id);
     }
   }
 
@@ -181,32 +216,74 @@ export class OfferDetailComponent implements OnInit {
 
   private requireKey(): boolean {
     if (!this.settings.isConfigured) {
-      this.error = "Configura tu proveedor de IA y API key en Ajustes primero.";
+      this.error = this.i18n.t("error.configureAi");
       return false;
     }
     return true;
+  }
+
+  private clearMessages(): void {
+    this.error = "";
+    this.toast = "";
+    this.toastLeaving = false;
+    if (this.toastTimer) {
+      clearTimeout(this.toastTimer);
+      this.toastTimer = null;
+    }
+  }
+
+  private showToast(message: string): void {
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+    this.toast = message;
+    this.toastLeaving = false;
+    this.toastTimer = setTimeout(() => {
+      this.toastLeaving = true;
+      this.toastTimer = setTimeout(() => {
+        this.toast = "";
+        this.toastLeaving = false;
+        this.toastTimer = null;
+      }, 160);
+    }, 3200);
+  }
+
+  ngOnDestroy(): void {
+    if (this.toastTimer) clearTimeout(this.toastTimer);
   }
 
   async changeStatus(): Promise<void> {
     if (this.offer) await this.db.updateOfferStatus(this.offer.id, this.offer.status);
   }
 
+  async saveNotes(): Promise<void> {
+    if (!this.offer || this.savingNotes) return;
+    this.savingNotes = true;
+    try {
+      await this.db.updateOfferNotes(this.offer.id, this.notesDraft);
+      this.offer.notes = this.notesDraft;
+      this.showToast(this.i18n.t("offer.notesSaved"));
+    } catch (e) {
+      this.error = String(e);
+    } finally {
+      this.savingNotes = false;
+    }
+  }
+
   // --- Modales de generación ---
   openCvModal(): void {
     if (this.busy) return;
-    this.error = "";
+    this.clearMessages();
     this.showCvModal = true;
   }
 
   openLetterModal(): void {
     if (this.busy) return;
-    this.error = "";
+    this.clearMessages();
     this.showLetterModal = true;
   }
 
   openTestModal(): void {
     if (this.busy) return;
-    this.error = "";
+    this.clearMessages();
     this.showTestModal = true;
   }
 
@@ -215,6 +292,11 @@ export class OfferDetailComponent implements OnInit {
     this.showCvModal = false;
     this.showLetterModal = false;
     this.showTestModal = false;
+    this.showCvPreview = false;
+    this.previewCv = null;
+    this.showCvEdit = false;
+    this.editCvId = null;
+    this.cvDraft = null;
   }
 
   onBackdropClick(event: MouseEvent): void {
@@ -228,14 +310,17 @@ export class OfferDetailComponent implements OnInit {
 
   async confirmGenerateCv(): Promise<void> {
     if (!this.requireKey() || !this.structured) return;
-    this.busy = BUSY_CV;
-    this.error = "";
+    this.busy = this.busyCv;
+    this.clearMessages();
     try {
       const cvData = await this.db.getCvData();
       const result = await this.ai.generateCv(cvData, this.structured, this.cvLanguage);
-      this.cv = result;
-      await this.db.addGeneratedCv(this.offer!.id, JSON.stringify(result));
+      result.language = this.cvLanguage;
+      const id = await this.db.addGeneratedCv(this.offer!.id, JSON.stringify(result));
+      this.cvs = [{ id, cv: result, createdAt: "" }, ...this.cvs];
       this.showCvModal = false;
+      this.previewCv = result;
+      this.showCvPreview = true;
     } catch (e) {
       this.error = String(e);
     } finally {
@@ -243,15 +328,101 @@ export class OfferDetailComponent implements OnInit {
     }
   }
 
+  // --- Gestión de CVs generados ---
+  formatDate(createdAt: string): string {
+    if (!createdAt) return "";
+    const m = createdAt.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
+    if (m) return `${m[3]}/${m[2]}/${m[1]} · ${m[4]}:${m[5]}`;
+    return createdAt;
+  }
+
+  cvMeta(entry: CvEntry): string {
+    const parts: string[] = [];
+    if (entry.cv.language) parts.push(this.i18n.t(LANGUAGE_LABEL_KEYS[entry.cv.language] ?? "lang.es"));
+    if (entry.createdAt) parts.push(this.formatDate(entry.createdAt));
+    return parts.join(" · ");
+  }
+
+  previewCvEntry(entry: CvEntry): void {
+    this.previewCv = entry.cv;
+    this.showCvPreview = true;
+  }
+
+  startEditCv(entry: CvEntry): void {
+    this.editCvId = entry.id;
+    this.cvDraft = JSON.parse(JSON.stringify(entry.cv)) as GeneratedCv;
+    this.showCvEdit = true;
+  }
+
+  cancelEditCv(): void {
+    this.editCvId = null;
+    this.cvDraft = null;
+    this.showCvEdit = false;
+  }
+
+  async saveCv(): Promise<void> {
+    if (!this.cvDraft || this.editCvId == null) return;
+    const id = this.editCvId;
+    const draft = this.cvDraft;
+    const entry = this.cvs.find((c) => c.id === id);
+    if (entry) entry.cv = draft;
+    this.showCvEdit = false;
+    this.editCvId = null;
+    this.cvDraft = null;
+    try {
+      await this.db.updateGeneratedCv(id, JSON.stringify(draft));
+      this.showToast(this.i18n.t("offer.cvSaved"));
+    } catch (e) {
+      this.error = String(e);
+    }
+  }
+
+  async deleteCv(entry: CvEntry): Promise<void> {
+    if (this.busy) return;
+    const ok = await this.confirm.confirm({
+      title: this.i18n.t("confirm.deleteCvTitle"),
+      message: this.i18n.t("confirm.deleteCv"),
+      confirmText: this.i18n.t("common.delete"),
+    });
+    if (!ok) return;
+    await this.db.deleteGeneratedCv(entry.id);
+    this.cvs = this.cvs.filter((c) => c.id !== entry.id);
+  }
+
+  skillsText(value: string[]): string {
+    return (value || []).join(", ");
+  }
+
+  setSkillsText(value: string): string[] {
+    return value
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+
+  expDesc(desc: string[]): string {
+    return (desc || []).join("\n");
+  }
+
+  setExpDesc(desc: string[], value: string): void {
+    const items = value
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    desc.length = 0;
+    items.forEach((s) => desc.push(s));
+  }
+
   async confirmGenerateLetter(): Promise<void> {
     if (!this.requireKey() || !this.structured) return;
-    this.busy = BUSY_LETTER;
-    this.error = "";
+    this.busy = this.busyLetter;
+    this.clearMessages();
     try {
       const cvData = await this.db.getCvData();
       const result = await this.ai.generateCoverLetter(cvData, this.structured, this.letterLanguage);
       this.letter = result;
-      await this.db.addCoverLetter(this.offer!.id, JSON.stringify(result));
+      this.letterId = await this.db.addCoverLetter(this.offer!.id, JSON.stringify(result));
+      this.editingLetter = false;
       this.showLetterModal = false;
     } catch (e) {
       this.error = String(e);
@@ -260,10 +431,35 @@ export class OfferDetailComponent implements OnInit {
     }
   }
 
+  startEditLetter(): void {
+    if (!this.letter) return;
+    this.letterDraft = { ...this.letter };
+    this.editingLetter = true;
+  }
+
+  cancelEditLetter(): void {
+    this.letterDraft = null;
+    this.editingLetter = false;
+  }
+
+  async saveLetter(): Promise<void> {
+    if (!this.letterDraft) return;
+    this.letter = { ...this.letterDraft };
+    this.editingLetter = false;
+    this.letterDraft = null;
+    if (this.letterId != null) {
+      try {
+        await this.db.updateCoverLetter(this.letterId, JSON.stringify(this.letter));
+      } catch (e) {
+        this.error = String(e);
+      }
+    }
+  }
+
   async confirmGenerateTest(): Promise<void> {
     if (!this.requireKey() || !this.structured) return;
-    this.busy = BUSY_TEST;
-    this.error = "";
+    this.busy = this.busyTest;
+    this.clearMessages();
     try {
       const result = await this.ai.generateTechnicalTest(this.structured, {
         questionCount: this.questionCount,
@@ -282,11 +478,15 @@ export class OfferDetailComponent implements OnInit {
 
   async analyzeAts(): Promise<void> {
     if (!this.requireKey() || !this.structured) return;
-    this.busy = BUSY_ATS;
-    this.error = "";
+    this.busy = this.busyAts;
+    this.clearMessages();
     try {
       const cvData = await this.db.getCvData();
-      this.ats = await this.ai.analyzeAts(cvData, this.structured);
+      const result = await this.ai.analyzeAts(cvData, this.structured);
+      this.ats = result;
+      if (this.offer) {
+        await this.db.saveAtsAnalysis(this.offer.id, result);
+      }
     } catch (e) {
       this.error = String(e);
     } finally {
@@ -294,19 +494,19 @@ export class OfferDetailComponent implements OnInit {
     }
   }
 
-  async exportCv(): Promise<void> {
-    if (!this.cv) return;
-    this.busy = BUSY_PDF;
-    this.error = "";
+  async exportCv(cv: GeneratedCv): Promise<void> {
+    if (!cv) return;
+    this.busy = this.busyPdf;
+    this.clearMessages();
     try {
       const path = await save({
-        defaultPath: `${this.cv.fullName || "cv"}-${this.structured?.company || "oferta"}.pdf`,
+        defaultPath: `${cv.fullName || "cv"}-${this.structured?.company || "oferta"}.pdf`,
         filters: [{ name: "PDF", extensions: ["pdf"] }],
       });
       if (!path) return;
-      const bytes = await this.pdf.buildCv(this.cv);
-      const out = await invoke<string>("save_file", { path, bytes });
-      await openPath(out);
+      const bytes = await this.pdf.buildCv(cv);
+      await invoke<string>("save_file", { path, bytes });
+      this.showToast(this.i18n.t("offer.cvExported", { path }));
     } catch (e) {
       this.error = String(e);
     } finally {
@@ -316,8 +516,8 @@ export class OfferDetailComponent implements OnInit {
 
   async exportLetter(): Promise<void> {
     if (!this.letter) return;
-    this.busy = BUSY_PDF;
-    this.error = "";
+    this.busy = this.busyPdf;
+    this.clearMessages();
     try {
       const path = await save({
         defaultPath: `carta-${this.structured?.company || "oferta"}.pdf`,
@@ -325,8 +525,8 @@ export class OfferDetailComponent implements OnInit {
       });
       if (!path) return;
       const bytes = await this.pdf.buildCoverLetter(this.letter);
-      const out = await invoke<string>("save_file", { path, bytes });
-      await openPath(out);
+      await invoke<string>("save_file", { path, bytes });
+      this.showToast(this.i18n.t("offer.letterExported", { path }));
     } catch (e) {
       this.error = String(e);
     } finally {

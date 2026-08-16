@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { invoke } from "@tauri-apps/api/core";
 import { SettingsService } from "./settings.service";
 import type {
+  AnswerEvaluation,
   AtsAnalysis,
   CoverLetter,
   CvData,
@@ -9,6 +10,7 @@ import type {
   JobOfferStructured,
   TechnicalTest,
   TestConfig,
+  TestQuestion,
 } from "./models";
 
 @Injectable({ providedIn: "root" })
@@ -78,5 +80,13 @@ export class AiService {
   ): Promise<AtsAnalysis> {
     const { baseUrl, apiKey, model } = this.ctx();
     return invoke<AtsAnalysis>("analyze_ats", { baseUrl, apiKey, model, cvData, offer });
+  }
+
+  async evaluateAnswer(
+    question: TestQuestion,
+    userAnswer: string,
+  ): Promise<AnswerEvaluation> {
+    const { baseUrl, apiKey, model } = this.ctx();
+    return invoke<AnswerEvaluation>("evaluate_answer", { baseUrl, apiKey, model, question, userAnswer });
   }
 }

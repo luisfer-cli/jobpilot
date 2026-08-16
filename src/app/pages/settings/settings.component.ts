@@ -1,19 +1,29 @@
 import { CommonModule } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, HostListener } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { AiService } from "../../core/ai.service";
 import { SettingsService } from "../../core/settings.service";
+import { I18nService, type Lang } from "../../core/i18n.service";
+import { TranslatePipe } from "../../core/translate.pipe";
 import { AI_PROVIDERS } from "../../core/models";
 
 @Component({
   selector: "app-settings",
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: "./settings.component.html",
   styleUrl: "./settings.component.css",
 })
 export class SettingsComponent {
   providers = AI_PROVIDERS;
+  steps = [
+    "settings.wizard.provider",
+    "settings.wizard.credentials",
+    "settings.wizard.model",
+    "settings.wizard.verify",
+  ];
 
+  step = 0;
+  showWizard = false;
   provider = "openrouter";
   baseUrl = "";
   apiKey = "";
@@ -21,7 +31,6 @@ export class SettingsComponent {
 
   models: string[] = [];
   loadingModels = false;
-  modelsLoaded = false;
   modelsError = "";
 
   saving = false;
@@ -29,10 +38,12 @@ export class SettingsComponent {
   testing = false;
   testResult = "";
   testError = "";
+  error = "";
 
   constructor(
     public settings: SettingsService,
     private ai: AiService,
+    public i18n: I18nService,
   ) {
     this.settings.load().then(() => {
       const s = this.settings.settings();
@@ -43,30 +54,100 @@ export class SettingsComponent {
     });
   }
 
-  onProviderChange(): void {
-    const p = this.providers.find((x) => x.key === this.provider);
+  get isConfigured(): boolean {
+    return this.settings.isConfigured;
+  }
+
+  get currentLang(): Lang {
+    return this.i18n.lang();
+  }
+
+  async setLanguage(lang: Lang): Promise<void> {
+    await this.i18n.setLanguage(lang);
+  }
+
+  get currentProviderName(): string {
+    return this.providers.find((p) => p.key === this.settings.settings().provider)?.name ?? "";
+  }
+
+  get loadedModelsLabel(): string {
+    return this.i18n.t("settings.wizard.modelsLoaded", { n: this.models.length });
+  }
+
+  openWizard(): void {
+    this.step = 0;
+    this.error = "";
+    this.testResult = "";
+    this.testError = "";
+    this.saved = false;
+    this.showWizard = true;
+  }
+
+  closeWizard(): void {
+    this.showWizard = false;
+  }
+
+  onBackdrop(event: MouseEvent): void {
+    if (event.target === event.currentTarget) this.closeWizard();
+  }
+
+  @HostListener("document:keydown.escape")
+  onEscape(): void {
+    if (this.showWizard) this.closeWizard();
+  }
+
+  selectProvider(key: string): void {
+    this.provider = key;
+    const p = this.providers.find((x) => x.key === key);
     if (p && p.baseUrl) {
       this.baseUrl = p.baseUrl;
     }
     this.models = [];
-    this.modelsLoaded = false;
+    this.testResult = "";
+    this.testError = "";
+    this.error = "";
+  }
+
+  next(): void {
+    if (this.step === 1) {
+      if (!this.baseUrl.trim()) {
+        this.error = this.i18n.t("settings.wizard.errBaseUrl");
+        return;
+      }
+      if (!this.apiKey.trim()) {
+        this.error = this.i18n.t("settings.wizard.errApiKey");
+        return;
+      }
+    } else if (this.step === 2) {
+      if (!this.model.trim()) {
+        this.error = this.i18n.t("settings.wizard.errModel");
+        return;
+      }
+    }
+    this.error = "";
+    this.testResult = "";
+    this.testError = "";
+    if (this.step < this.steps.length - 1) this.step++;
+  }
+
+  prev(): void {
+    if (this.step > 0) this.step--;
+    this.error = "";
   }
 
   async loadModels(): Promise<void> {
     if (!this.baseUrl.trim()) {
-      this.modelsError = "Introduce la URL base del proveedor.";
+      this.modelsError = this.i18n.t("settings.wizard.errModelsUrl");
       return;
     }
     if (!this.apiKey.trim()) {
-      this.modelsError = "Introduce la API key.";
+      this.modelsError = this.i18n.t("settings.wizard.errModelsKey");
       return;
     }
     this.loadingModels = true;
     this.modelsError = "";
-    this.modelsLoaded = false;
     try {
       this.models = await this.ai.listModels(this.baseUrl.trim(), this.apiKey.trim());
-      this.modelsLoaded = true;
     } catch (e) {
       this.modelsError = String(e);
     } finally {
@@ -74,20 +155,11 @@ export class SettingsComponent {
     }
   }
 
-  async save(): Promise<void> {
-    this.saving = true;
-    this.saved = false;
-    await this.settings.setProvider(this.provider);
-    await this.settings.setBaseUrl(this.baseUrl.trim());
-    await this.settings.setApiKey(this.apiKey.trim());
-    await this.settings.setModel(this.model.trim());
-    this.saving = false;
-    this.saved = true;
-    setTimeout(() => (this.saved = false), 2500);
-  }
-
   async testConnection(): Promise<void> {
-    await this.save();
+    if (!this.model.trim()) {
+      this.testError = this.i18n.t("settings.wizard.errModelFirst");
+      return;
+    }
     this.testing = true;
     this.testResult = "";
     this.testError = "";
@@ -101,6 +173,23 @@ export class SettingsComponent {
       this.testError = String(e);
     } finally {
       this.testing = false;
+    }
+  }
+
+  async save(): Promise<void> {
+    this.saving = true;
+    this.saved = false;
+    this.error = "";
+    try {
+      await this.settings.setProvider(this.provider);
+      await this.settings.setBaseUrl(this.baseUrl.trim());
+      await this.settings.setApiKey(this.apiKey.trim());
+      await this.settings.setModel(this.model.trim());
+      this.saved = true;
+      this.showWizard = false;
+      setTimeout(() => (this.saved = false), 3000);
+    } finally {
+      this.saving = false;
     }
   }
 }

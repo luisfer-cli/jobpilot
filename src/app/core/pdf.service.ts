@@ -3,6 +3,7 @@ import * as pdfMakeImport from "pdfmake/build/pdfmake";
 import vfs from "pdfmake/build/vfs_fonts";
 import type { Content, TDocumentDefinitions } from "pdfmake/interfaces";
 import { robotoBoldBase64 } from "./roboto-bold";
+import { labelsFor } from "./cv-labels";
 import type { CoverLetter, GeneratedCv } from "./models";
 
 type PdfMake = typeof pdfMakeImport;
@@ -62,10 +63,11 @@ export class PdfService {
   }
 
   buildCv(cv: GeneratedCv): Promise<number[]> {
+    const labels = labelsFor(cv.language);
     const content: Content[] = [];
 
     // Cabecera.
-    content.push({ text: cv.fullName || "Currículum", style: "name" });
+    content.push({ text: cv.fullName || labels.resume, style: "name" });
     if (cv.jobTitle) content.push({ text: cv.jobTitle, style: "jobTitle" });
 
     const contactItems: Content[] = [];
@@ -79,7 +81,7 @@ export class PdfService {
       contactItems.push({ text: "LinkedIn", link: normalizeUrl(cv.linkedin), style: "link" });
     }
     if (cv.website) {
-      contactItems.push({ text: "Portafolio", link: normalizeUrl(cv.website), style: "link" });
+      contactItems.push({ text: labels.portfolio, link: normalizeUrl(cv.website), style: "link" });
     }
 
     if (contactItems.length) {
@@ -94,19 +96,19 @@ export class PdfService {
     content.push(rule([0, 2, 0, 12]));
 
     if (cv.summary) {
-      content.push({ text: "RESUMEN", style: "sectionHeader" });
+      content.push({ text: labels.summary, style: "sectionHeader" });
       content.push(rule());
       content.push({ text: cv.summary, style: "body", margin: [0, 8, 0, 0] });
     }
 
     if (cv.experiences.length) {
-      content.push({ text: "EXPERIENCIA", style: "sectionHeader" });
+      content.push({ text: labels.experience, style: "sectionHeader" });
       content.push(rule());
       for (const e of cv.experiences) {
         content.push({
           columns: [
-            { text: `${e.role || "Rol"} — ${e.company || "Empresa"}`, style: "entryTitle" },
-            { text: this.dateRange(e.startDate, e.endDate, e.current), style: "date", alignment: "right" },
+            { text: `${e.role || labels.role} — ${e.company || labels.company}`, style: "entryTitle" },
+            { text: this.dateRange(e.startDate, e.endDate, e.current, labels.current), style: "date", alignment: "right" },
           ],
           margin: [0, 8, 0, 0],
         });
@@ -120,13 +122,13 @@ export class PdfService {
     }
 
     if (cv.education.length) {
-      content.push({ text: "EDUCACIÓN", style: "sectionHeader" });
+      content.push({ text: labels.education, style: "sectionHeader" });
       content.push(rule());
       for (const e of cv.education) {
         content.push({
           columns: [
-            { text: `${e.degree || "Título"} — ${e.institution || "Institución"}`, style: "entryTitle" },
-            { text: this.dateRange(e.startDate, e.endDate, false), style: "date", alignment: "right" },
+            { text: `${e.degree || labels.degree} — ${e.institution || labels.institution}`, style: "entryTitle" },
+            { text: this.dateRange(e.startDate, e.endDate, false, labels.current), style: "date", alignment: "right" },
           ],
           margin: [0, 8, 0, 0],
         });
@@ -137,13 +139,13 @@ export class PdfService {
     }
 
     if (cv.skills.length) {
-      content.push({ text: "COMPETENCIAS", style: "sectionHeader" });
+      content.push({ text: labels.skills, style: "sectionHeader" });
       content.push(rule());
       content.push({ text: cv.skills.join(", "), style: "body", margin: [0, 8, 0, 0] });
     }
 
     if (cv.languages.length) {
-      content.push({ text: "IDIOMAS", style: "sectionHeader" });
+      content.push({ text: labels.languages, style: "sectionHeader" });
       content.push(rule());
       content.push({
         text: cv.languages
@@ -155,7 +157,7 @@ export class PdfService {
     }
 
     if (cv.certifications.length) {
-      content.push({ text: "CERTIFICACIONES", style: "sectionHeader" });
+      content.push({ text: labels.certifications, style: "sectionHeader" });
       content.push(rule());
       content.push({
         text: cv.certifications
@@ -171,7 +173,7 @@ export class PdfService {
     }
 
     if (cv.projects.length) {
-      content.push({ text: "PROYECTOS", style: "sectionHeader" });
+      content.push({ text: labels.projects, style: "sectionHeader" });
       content.push(rule());
       for (const p of cv.projects) {
         content.push({ text: p.name, style: "entryTitle", margin: [0, 8, 0, 0] });
@@ -223,8 +225,8 @@ export class PdfService {
     });
   }
 
-  private dateRange(start: string, end: string, current: boolean): string {
-    const e = current ? "Actualidad" : end;
+  private dateRange(start: string, end: string, current: boolean, currentLabel: string): string {
+    const e = current ? currentLabel : end;
     if (!start && !e) return "";
     if (!start) return e;
     if (!e) return start;

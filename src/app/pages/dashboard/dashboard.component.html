@@ -1,7 +1,7 @@
 <div class="page-header">
-  <h1>Resumen</h1>
+  <h1>{{ "dashboard.title" | t }}</h1>
   <a class="btn btn-primary" routerLink="/offers">
-    <span class="nf nf-plus"></span> Nueva oferta
+    <span class="nf nf-plus"></span> {{ "dashboard.newOffer" | t }}
   </a>
 </div>
 
@@ -10,33 +10,33 @@
     <span class="stat-icon nf nf-briefcase"></span>
     <div class="stat-body">
       <span class="stat-num">{{ offers.length }}</span>
-      <span class="stat-label">Ofertas totales</span>
+      <span class="stat-label">{{ "dashboard.total" | t }}</span>
     </div>
   </div>
   <div class="stat card">
     <span class="stat-icon nf nf-account-group"></span>
     <div class="stat-body">
       <span class="stat-num">{{ offersBy("entrevista").length }}</span>
-      <span class="stat-label">En entrevista</span>
+      <span class="stat-label">{{ "dashboard.interviews" | t }}</span>
     </div>
   </div>
   <div class="stat card">
     <span class="stat-icon nf nf-trophy"></span>
     <div class="stat-body">
       <span class="stat-num">{{ offersBy("oferta").length }}</span>
-      <span class="stat-label">Ofertas recibidas</span>
+      <span class="stat-label">{{ "dashboard.received" | t }}</span>
     </div>
   </div>
   <div class="stat card">
     <span class="stat-icon nf nf-send"></span>
     <div class="stat-body">
       <span class="stat-num">{{ offersBy("aplicada").length }}</span>
-      <span class="stat-label">Aplicadas</span>
+      <span class="stat-label">{{ "dashboard.applied" | t }}</span>
     </div>
   </div>
 </div>
 
-<p class="muted hint">Arrastra las tarjetas entre columnas para actualizar el estado.</p>
+<p class="muted hint">{{ "dashboard.dragHint" | t }}</p>
 
 <div class="kanban">
   <div
@@ -48,7 +48,7 @@
     (drop)="onDrop($event, col)"
   >
     <div class="col-head">
-      <span class="badge" [class]="'badge-' + col">{{ statusLabels[col] }}</span>
+      <span class="badge" [class]="'badge-' + col">{{ "status." + col | t }}</span>
       <span class="col-count">{{ offersBy(col).length }}</span>
     </div>
     <div class="col-body">
@@ -58,10 +58,10 @@
         draggable="true"
         (dragstart)="onDragStart($event, o.id)"
       >
-        <a [routerLink]="['/offers', o.id]">{{ o.title || "Sin título" }}</a>
+        <a [routerLink]="['/offers', o.id]">{{ o.title || ("offers.noTitle" | t) }}</a>
         <span class="muted">{{ o.company }}</span>
       </div>
-      <p *ngIf="!offersBy(col).length" class="empty">Sin ofertas</p>
+      <p *ngIf="!offersBy(col).length" class="empty">{{ "dashboard.empty" | t }}</p>
     </div>
   </div>
 </div>

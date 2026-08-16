@@ -47,13 +47,8 @@
   height: 30px;
   flex-shrink: 0;
   border-radius: 8px;
-  background: var(--sidebar-active-bg);
-  color: var(--sidebar-active-text);
-  display: grid;
-  place-items: center;
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: -0.02em;
+  object-fit: cover;
+  display: block;
 }
 
 .brand-name {

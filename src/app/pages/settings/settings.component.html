@@ -1,73 +1,59 @@
 <div class="page-header">
-  <h1>Ajustes</h1>
+  <h1>{{ "settings.title" | t }}</h1>
 </div>
 
+<!-- Proveedor de IA -->
 <section class="card">
-  <h2>Proveedor de IA</h2>
+  <div class="section-head">
+    <h2>{{ "settings.aiProvider" | t }}</h2>
+    <span class="status-pill" [class.configured]="isConfigured" [class.unconfigured]="!isConfigured">
+      <span class="nf" [class.nf-check-circle]="isConfigured" [class.nf-close-circle]="!isConfigured"></span>
+      {{ isConfigured ? ("settings.configured" | t) : ("settings.unconfigured" | t) }}
+    </span>
+  </div>
+
   <p class="muted">
-    Elige un proveedor compatible con la API de OpenAI, pega tu API key y carga los modelos
-    disponibles directamente desde el proveedor.
+    <ng-container *ngIf="isConfigured">
+      <strong>{{ currentProviderName }}</strong>
+      <ng-container *ngIf="settings.settings().model"> · {{ settings.settings().model }}</ng-container>
+    </ng-container>
+    <ng-container *ngIf="!isConfigured">{{ "settings.needsKey" | t }}</ng-container>
   </p>
 
-  <div class="grid grid-2">
-    <div class="field">
-      <label>Proveedor</label>
-      <select [(ngModel)]="provider" (ngModelChange)="onProviderChange()">
-        <option *ngFor="let p of providers" [value]="p.key">{{ p.name }}</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>URL base de la API</label>
-      <input [(ngModel)]="baseUrl" placeholder="https://api.openai.com/v1" />
-    </div>
-  </div>
-
-  <div class="field">
-    <label>API key</label>
-    <input type="password" [(ngModel)]="apiKey" placeholder="sk-..." />
-  </div>
-
-  <div class="field">
-    <label>Modelo</label>
-    <div class="model-row">
-      <input
-        [(ngModel)]="model"
-        list="modelOptions"
-        placeholder="Selecciona o escribe un modelo..."
-      />
-      <button class="btn" (click)="loadModels()" [disabled]="loadingModels">
-        <span *ngIf="loadingModels" class="spinner"></span>
-        <span *ngIf="!loadingModels" class="nf nf-download"></span>
-        {{ loadingModels ? "Cargando..." : "Cargar modelos" }}
-      </button>
-    </div>
-    <datalist id="modelOptions">
-      <option *ngFor="let m of models" [value]="m"></option>
-    </datalist>
-    <p *ngIf="modelsLoaded" class="muted hint">
-      <span class="nf nf-check-circle"></span> Se cargaron {{ models.length }} modelos.
-    </p>
-    <p *ngIf="modelsError" class="alert alert-error">{{ modelsError }}</p>
-  </div>
+  <div *ngIf="saved" class="alert alert-success">{{ "settings.saved" | t }}</div>
 
   <div class="actions">
-    <button class="btn btn-primary" (click)="save()" [disabled]="saving">
-      <span class="nf nf-save"></span> Guardar
-    </button>
-    <button class="btn" (click)="testConnection()" [disabled]="testing">
-      <span *ngIf="testing" class="spinner"></span>
-      <span *ngIf="!testing" class="nf nf-send"></span>
-      {{ testing ? "Probando..." : "Probar conexión" }}
+    <button class="btn btn-primary" (click)="openWizard()">
+      <span class="nf nf-cog"></span>
+      {{ isConfigured ? ("settings.changeConfig" | t) : ("settings.configureAi" | t) }}
     </button>
   </div>
-
-  <div *ngIf="saved" class="alert alert-success">Configuración guardada.</div>
-  <div *ngIf="testResult" class="alert alert-success">{{ testResult }}</div>
-  <div *ngIf="testError" class="alert alert-error">{{ testError }}</div>
 </section>
 
+<!-- Idioma -->
 <section class="card">
-  <h2>Apariencia</h2>
+  <h2>{{ "settings.language" | t }}</h2>
+  <div class="actions">
+    <button
+      class="btn lang-btn"
+      [class.btn-primary]="currentLang === 'es'"
+      (click)="setLanguage('es')"
+    >
+      Español
+    </button>
+    <button
+      class="btn lang-btn"
+      [class.btn-primary]="currentLang === 'en'"
+      (click)="setLanguage('en')"
+    >
+      English
+    </button>
+  </div>
+</section>
+
+<!-- Apariencia -->
+<section class="card">
+  <h2>{{ "settings.appearance" | t }}</h2>
   <div class="actions">
     <button class="btn" (click)="settings.toggleTheme()">
       <span
@@ -75,7 +61,130 @@
         [class.nf-sun]="settings.settings().theme === 'dark'"
         [class.nf-moon]="settings.settings().theme !== 'dark'"
       ></span>
-      {{ settings.settings().theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro" }}
+      {{ settings.settings().theme === "dark" ? ("theme.light" | t) : ("theme.dark" | t) }}
     </button>
   </div>
 </section>
+
+<!-- Modal: Wizard de configuración -->
+<div class="modal-backdrop" *ngIf="showWizard" (mousedown)="onBackdrop($event)">
+  <div class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="wizard-title">
+    <div class="modal-head">
+      <span class="modal-icon nf nf-cog"></span>
+      <h2 id="wizard-title">{{ "settings.wizard.title" | t }}</h2>
+      <button class="btn btn-icon btn-ghost" (click)="closeWizard()" aria-label="Cerrar">
+        <span class="nf nf-close"></span>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Stepper -->
+      <div class="stepper">
+        <div
+          class="step"
+          *ngFor="let s of steps; let i = index"
+          [class.active]="i === step"
+          [class.done]="i < step"
+          (click)="i < step && (step = i)"
+        >
+          <span class="step-dot">
+            <span class="nf nf-check" *ngIf="i < step"></span>
+            <ng-container *ngIf="i >= step">{{ i + 1 }}</ng-container>
+          </span>
+          <span class="step-label">{{ s | t }}</span>
+        </div>
+      </div>
+
+      <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+
+      <!-- Paso 0: Proveedor -->
+      <ng-container *ngIf="step === 0">
+        <p class="muted">{{ "settings.wizard.chooseProvider" | t }}</p>
+        <div class="provider-grid">
+          <button
+            class="provider-tile"
+            *ngFor="let p of providers"
+            [class.selected]="provider === p.key"
+            (click)="selectProvider(p.key)"
+          >
+            <span class="provider-name">{{ p.name }}</span>
+            <span class="provider-url" *ngIf="p.baseUrl">{{ p.baseUrl }}</span>
+          </button>
+        </div>
+      </ng-container>
+
+      <!-- Paso 1: Credenciales -->
+      <ng-container *ngIf="step === 1">
+        <p class="muted">{{ "settings.wizard.enterCreds" | t }}</p>
+        <div class="field">
+          <label>{{ "settings.wizard.baseUrl" | t }}</label>
+          <input [(ngModel)]="baseUrl" placeholder="https://api.openai.com/v1" />
+        </div>
+        <div class="field">
+          <label>{{ "settings.wizard.apiKey" | t }}</label>
+          <input type="password" [(ngModel)]="apiKey" placeholder="sk-..." />
+        </div>
+      </ng-container>
+
+      <!-- Paso 2: Modelo -->
+      <ng-container *ngIf="step === 2">
+        <p class="muted">{{ "settings.wizard.loadModels" | t }}</p>
+        <div class="field">
+          <label>{{ "settings.wizard.modelLabel" | t }}</label>
+          <div class="model-row">
+            <input
+              [(ngModel)]="model"
+              list="modelOptions"
+              [placeholder]="'settings.wizard.modelPlaceholder' | t"
+            />
+            <button class="btn" (click)="loadModels()" [disabled]="loadingModels">
+              <span *ngIf="loadingModels" class="spinner"></span>
+              <span *ngIf="!loadingModels" class="nf nf-download"></span>
+              {{ loadingModels ? ("common.loading" | t) : ("settings.wizard.loadModelsBtn" | t) }}
+            </button>
+          </div>
+          <datalist id="modelOptions">
+            <option *ngFor="let m of models" [value]="m"></option>
+          </datalist>
+          <p *ngIf="modelsError" class="alert alert-error">{{ modelsError }}</p>
+          <p *ngIf="models.length && !modelsError" class="muted hint">
+            <span class="nf nf-check-circle"></span> {{ loadedModelsLabel }}
+          </p>
+        </div>
+      </ng-container>
+
+      <!-- Paso 3: Verificar -->
+      <ng-container *ngIf="step === 3">
+        <p class="muted">{{ "settings.wizard.verifyDesc" | t }}</p>
+        <div class="verify-row">
+          <button class="btn" (click)="testConnection()" [disabled]="testing">
+            <span *ngIf="testing" class="spinner"></span>
+            <span *ngIf="!testing" class="nf nf-send"></span>
+            {{ testing ? ("common.testing" | t) : ("settings.wizard.test" | t) }}
+          </button>
+        </div>
+        <div *ngIf="testResult" class="alert alert-success">{{ testResult }}</div>
+        <div *ngIf="testError" class="alert alert-error">{{ testError }}</div>
+      </ng-container>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn" (click)="prev()" [disabled]="step === 0">
+        <span class="nf nf-chevron-left"></span> {{ "common.back" | t }}
+      </button>
+      <button *ngIf="step < steps.length - 1" class="btn btn-primary" (click)="next()">
+        {{ "common.next" | t }} <span class="nf nf-chevron-right"></span>
+      </button>
+      <button
+        *ngIf="step === steps.length - 1"
+        class="btn btn-primary"
+        (click)="save()"
+        [disabled]="saving"
+      >
+        <span *ngIf="saving" class="spinner"></span>
+        <span *ngIf="!saving" class="nf nf-save"></span>
+        {{ saving ? ("common.saving" | t) : ("settings.wizard.save" | t) }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -3,6 +3,9 @@ import { Component, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { RouterLink } from "@angular/router";
 import { DbService } from "../../core/db.service";
+import { ConfirmService } from "../../core/confirm.service";
+import { I18nService } from "../../core/i18n.service";
+import { TranslatePipe } from "../../core/translate.pipe";
 import type {
   Certification,
   Education,
@@ -38,20 +41,20 @@ const emptyProject = (): Project => ({ name: "", description: "", link: "" });
 
 @Component({
   selector: "app-cv",
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   templateUrl: "./cv.component.html",
   styleUrl: "./cv.component.css",
 })
 export class CvComponent implements OnInit {
   steps = [
-    "Datos personales",
-    "Experiencia",
-    "Educación",
-    "Competencias",
-    "Idiomas",
-    "Certificaciones",
-    "Proyectos",
-    "Resumen",
+    "cvw.step.personal",
+    "cvw.step.experience",
+    "cvw.step.education",
+    "cvw.step.skills",
+    "cvw.step.languages",
+    "cvw.step.certs",
+    "cvw.step.projects",
+    "cvw.step.summary",
   ];
   step = 0;
   saving = false;
@@ -95,7 +98,11 @@ export class CvComponent implements OnInit {
   projectForm: Project = emptyProject();
   projectEditId: number | null = null;
 
-  constructor(private db: DbService) {}
+  constructor(
+    private db: DbService,
+    private confirm: ConfirmService,
+    private i18n: I18nService,
+  ) {}
 
   async ngOnInit(): Promise<void> {
     await this.loadAll();
@@ -186,7 +193,16 @@ export class CvComponent implements OnInit {
     this.newAchievement = "";
   }
 
+  private confirmDelete(itemKey: string): Promise<boolean> {
+    return this.confirm.confirm({
+      title: this.i18n.t("confirm.deleteTitle"),
+      message: this.i18n.t("confirm.deleteItem", { item: this.i18n.t(itemKey) }),
+      confirmText: this.i18n.t("common.delete"),
+    });
+  }
+
   async removeExperience(id: number): Promise<void> {
+    if (!(await this.confirmDelete("item.experience"))) return;
     await this.db.deleteExperience(id);
     this.experiences = await this.db.listExperiences();
   }
@@ -209,6 +225,7 @@ export class CvComponent implements OnInit {
   }
 
   async removeEducation(id: number): Promise<void> {
+    if (!(await this.confirmDelete("item.education"))) return;
     await this.db.deleteEducation(id);
     this.education = await this.db.listEducation();
   }
@@ -231,6 +248,7 @@ export class CvComponent implements OnInit {
   }
 
   async removeSkill(id: number): Promise<void> {
+    if (!(await this.confirmDelete("item.skill"))) return;
     await this.db.deleteSkill(id);
     this.skills = await this.db.listSkills();
   }
@@ -253,6 +271,7 @@ export class CvComponent implements OnInit {
   }
 
   async removeLanguage(id: number): Promise<void> {
+    if (!(await this.confirmDelete("item.language"))) return;
     await this.db.deleteLanguage(id);
     this.languages = await this.db.listLanguages();
   }
@@ -275,6 +294,7 @@ export class CvComponent implements OnInit {
   }
 
   async removeCertification(id: number): Promise<void> {
+    if (!(await this.confirmDelete("item.certification"))) return;
     await this.db.deleteCertification(id);
     this.certifications = await this.db.listCertifications();
   }
@@ -297,6 +317,7 @@ export class CvComponent implements OnInit {
   }
 
   async removeProject(id: number): Promise<void> {
+    if (!(await this.confirmDelete("item.project"))) return;
     await this.db.deleteProject(id);
     this.projects = await this.db.listProjects();
   }

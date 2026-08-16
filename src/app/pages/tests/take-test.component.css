@@ -153,6 +153,13 @@
   margin-bottom: 6px;
 }
 
+.review-result .result {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
 .explanation-text {
   color: var(--text-muted);
 }

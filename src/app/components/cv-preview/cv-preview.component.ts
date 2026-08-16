@@ -1,5 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, Input } from "@angular/core";
+import { labelsFor, type CvLabels } from "../../core/cv-labels";
 import type { Certification, GeneratedCv, Language } from "../../core/models";
 
 export interface ContactItem {
@@ -17,13 +18,17 @@ export interface ContactItem {
 export class CvPreviewComponent {
   @Input() cv!: GeneratedCv;
 
+  get labels(): CvLabels {
+    return labelsFor(this.cv.language);
+  }
+
   get contactItems(): ContactItem[] {
     const items: ContactItem[] = [];
     if (this.cv.email) items.push({ text: this.cv.email });
     if (this.cv.phone) items.push({ text: this.cv.phone });
     if (this.cv.location) items.push({ text: this.cv.location });
     if (this.cv.linkedin) items.push({ label: "LinkedIn", link: this.normalizeUrl(this.cv.linkedin) });
-    if (this.cv.website) items.push({ label: "Portafolio", link: this.normalizeUrl(this.cv.website) });
+    if (this.cv.website) items.push({ label: this.labels.portfolio, link: this.normalizeUrl(this.cv.website) });
     return items;
   }
 
@@ -40,7 +45,7 @@ export class CvPreviewComponent {
   }
 
   dateRange(start: string, end: string, current: boolean): string {
-    const e = current ? "Actualidad" : end;
+    const e = current ? this.labels.current : end;
     if (!start && !e) return "";
     if (!start) return e;
     if (!e) return start;

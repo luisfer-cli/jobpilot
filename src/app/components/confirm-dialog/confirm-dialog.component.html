@@ -1,0 +1,22 @@
+<div class="modal-backdrop" *ngIf="options() as opts" (mousedown)="onBackdrop($event)">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+    <div class="modal-head">
+      <span class="modal-icon nf nf-delete"></span>
+      <h2 id="confirm-title">{{ opts.title || ("common.confirm" | t) }}</h2>
+      <button class="btn btn-icon btn-ghost" (click)="confirmService.resolve(false)" aria-label="Cerrar">
+        <span class="nf nf-close"></span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>{{ opts.message }}</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" (click)="confirmService.resolve(false)">
+        {{ opts.cancelText || ("common.cancel" | t) }}
+      </button>
+      <button class="btn btn-primary" (click)="confirmService.resolve(true)">
+        {{ opts.confirmText || ("common.confirm" | t) }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,6 @@
 <div class="page-header">
-  <h1>Mi Currículum</h1>
-  <span class="muted">Completa los datos por pasos. Se usan para generar CVs especializados.</span>
+  <h1>{{ "cvw.title" | t }}</h1>
+  <span class="muted">{{ "cvw.subtitle" | t }}</span>
 </div>
 
 <!-- Stepper -->
@@ -16,99 +16,99 @@
       <span class="nf nf-check" *ngIf="i < step"></span>
       <ng-container *ngIf="i >= step">{{ i + 1 }}</ng-container>
     </span>
-    <span class="step-label">{{ s }}</span>
+    <span class="step-label">{{ s | t }}</span>
   </button>
 </div>
 
 <div class="card wizard-body">
   <!-- Paso 0: Datos personales -->
   <ng-container *ngIf="step === 0">
-    <h2>Datos personales</h2>
+    <h2>{{ "cvw.step.personal" | t }}</h2>
     <div class="grid grid-2">
       <div class="field">
-        <label>Nombre completo</label>
+        <label>{{ "cvw.fullName" | t }}</label>
         <input [(ngModel)]="profile.fullName" placeholder="Ana García Pérez" />
       </div>
       <div class="field">
-        <label>Título / Puesto actual</label>
+        <label>{{ "cvw.jobTitle" | t }}</label>
         <input [(ngModel)]="profile.jobTitle" placeholder="Desarrolladora Frontend" />
       </div>
       <div class="field">
-        <label>Email</label>
+        <label>{{ "cvw.email" | t }}</label>
         <input [(ngModel)]="profile.email" placeholder="ana@email.com" />
       </div>
       <div class="field">
-        <label>Teléfono</label>
+        <label>{{ "cvw.phone" | t }}</label>
         <input [(ngModel)]="profile.phone" placeholder="+34 600 000 000" />
       </div>
       <div class="field">
-        <label>Ubicación</label>
+        <label>{{ "cvw.location" | t }}</label>
         <input [(ngModel)]="profile.location" placeholder="Madrid, España" />
       </div>
       <div class="field">
-        <label>LinkedIn</label>
+        <label>{{ "cvw.linkedin" | t }}</label>
         <input [(ngModel)]="profile.linkedin" placeholder="linkedin.com/in/ana" />
       </div>
       <div class="field">
-        <label>Sitio web / Portfolio</label>
+        <label>{{ "cvw.website" | t }}</label>
         <input [(ngModel)]="profile.website" placeholder="ana.dev" />
       </div>
     </div>
     <div class="field">
-      <label>Resumen profesional</label>
-      <textarea [(ngModel)]="profile.summary" placeholder="2-3 frases sobre tu perfil y experiencia..."></textarea>
+      <label>{{ "cvw.professionalSummary" | t }}</label>
+      <textarea [(ngModel)]="profile.summary" [placeholder]="'cvw.summaryPlaceholder' | t"></textarea>
     </div>
   </ng-container>
 
   <!-- Paso 1: Experiencia -->
   <ng-container *ngIf="step === 1">
-    <h2>Experiencia laboral</h2>
+    <h2>{{ "cvw.experienceTitle" | t }}</h2>
     <div class="list-panel">
       <div class="item" *ngFor="let e of experiences">
         <div class="item-body">
-          <strong>{{ e.role || "Sin cargo" }}</strong> en {{ e.company || "Sin empresa" }}
+          <strong>{{ e.role || ("cvw.noRole" | t) }}</strong> {{ "cvw.in" | t }} {{ e.company || ("cvw.noCompany" | t) }}
           <span class="muted" *ngIf="e.startDate || e.endDate">
-            · {{ e.startDate }} – {{ e.current ? "Actualidad" : e.endDate }}
+            · {{ e.startDate }} – {{ e.current ? ("cvw.current" | t) : e.endDate }}
           </span>
         </div>
         <div class="item-actions">
-          <button class="btn btn-sm" (click)="editExperience(e)">Editar</button>
-          <button class="btn btn-sm btn-danger" (click)="removeExperience(e.id!)">Eliminar</button>
+          <button class="btn btn-sm" (click)="editExperience(e)">{{ "common.edit" | t }}</button>
+          <button class="btn btn-sm btn-danger" (click)="removeExperience(e.id!)">{{ "common.delete" | t }}</button>
         </div>
       </div>
-      <p *ngIf="!experiences.length" class="muted">Aún no has añadido experiencia.</p>
+      <p *ngIf="!experiences.length" class="muted">{{ "cvw.noExperiences" | t }}</p>
     </div>
 
     <div class="mini-form">
-      <h3>{{ expEditId != null ? "Editando experiencia" : "Añadir experiencia" }}</h3>
+      <h3>{{ expEditId != null ? ("cvw.editingExperience" | t) : ("cvw.addExperience" | t) }}</h3>
       <div class="grid grid-2">
         <div class="field">
-          <label>Empresa</label>
+          <label>{{ "cvw.company" | t }}</label>
           <input [(ngModel)]="expForm.company" />
         </div>
         <div class="field">
-          <label>Cargo</label>
+          <label>{{ "cvw.role" | t }}</label>
           <input [(ngModel)]="expForm.role" />
         </div>
         <div class="field">
-          <label>Ubicación</label>
+          <label>{{ "cvw.location" | t }}</label>
           <input [(ngModel)]="expForm.location" />
         </div>
         <div class="field">
-          <label>Periodo</label>
+          <label>{{ "cvw.period" | t }}</label>
           <div class="row">
-            <input [(ngModel)]="expForm.startDate" placeholder="Inicio (2020-01)" />
-            <input [(ngModel)]="expForm.endDate" placeholder="Fin (2024-06)" />
+            <input [(ngModel)]="expForm.startDate" [placeholder]="'cvw.start' | t" />
+            <input [(ngModel)]="expForm.endDate" [placeholder]="'cvw.end' | t" />
           </div>
         </div>
       </div>
       <div class="field">
         <label class="inline">
-          <input type="checkbox" [(ngModel)]="expForm.current" /> Puesto actual
+          <input type="checkbox" [(ngModel)]="expForm.current" /> {{ "cvw.currentRole" | t }}
         </label>
       </div>
       <div class="field">
-        <label>Descripción / logros</label>
+        <label>{{ "cvw.description" | t }}</label>
         <ul class="achievement-list" *ngIf="expForm.description.length">
           <li *ngFor="let item of expForm.description; let i = index">
             <span>{{ item }}</span>
@@ -118,70 +118,70 @@
         <div class="row">
           <input
             [(ngModel)]="newAchievement"
-            placeholder="Añade un logro o responsabilidad..."
+            [placeholder]="'cvw.addAchievement' | t"
             (keyup.enter)="addAchievement()"
           />
-          <button type="button" class="btn btn-sm" (click)="addAchievement()">Añadir</button>
+          <button type="button" class="btn btn-sm" (click)="addAchievement()">{{ "cvw.add" | t }}</button>
         </div>
       </div>
       <div class="row">
         <button class="btn btn-primary" (click)="saveExperience()">
-          {{ expEditId != null ? "Guardar cambios" : "Añadir" }}
+          {{ expEditId != null ? ("cvw.saveChanges" | t) : ("cvw.add" | t) }}
         </button>
-        <button *ngIf="expEditId != null" class="btn" (click)="cancelExpEdit()">Cancelar</button>
+        <button *ngIf="expEditId != null" class="btn" (click)="cancelExpEdit()">{{ "common.cancel" | t }}</button>
       </div>
     </div>
   </ng-container>
 
   <!-- Paso 2: Educación -->
   <ng-container *ngIf="step === 2">
-    <h2>Educación</h2>
+    <h2>{{ "cvw.step.education" | t }}</h2>
     <div class="list-panel">
       <div class="item" *ngFor="let e of education">
         <div class="item-body">
-          <strong>{{ e.degree || "Sin título" }}</strong> — {{ e.institution || "Sin institución" }}
+          <strong>{{ e.degree || ("cvedit.degree" | t) }}</strong> — {{ e.institution || ("cvedit.institution" | t) }}
           <span class="muted" *ngIf="e.startDate || e.endDate"> · {{ e.startDate }} – {{ e.endDate }}</span>
         </div>
         <div class="item-actions">
-          <button class="btn btn-sm" (click)="editEducation(e)">Editar</button>
-          <button class="btn btn-sm btn-danger" (click)="removeEducation(e.id!)">Eliminar</button>
+          <button class="btn btn-sm" (click)="editEducation(e)">{{ "common.edit" | t }}</button>
+          <button class="btn btn-sm btn-danger" (click)="removeEducation(e.id!)">{{ "common.delete" | t }}</button>
         </div>
       </div>
-      <p *ngIf="!education.length" class="muted">Aún no has añadido formación.</p>
+      <p *ngIf="!education.length" class="muted">{{ "cvw.noEducation" | t }}</p>
     </div>
 
     <div class="mini-form">
-      <h3>{{ eduEditId != null ? "Editando formación" : "Añadir formación" }}</h3>
+      <h3>{{ eduEditId != null ? ("cvw.editingEducation" | t) : ("cvw.addEducation" | t) }}</h3>
       <div class="grid grid-2">
         <div class="field">
-          <label>Institución</label>
+          <label>{{ "cvw.institution" | t }}</label>
           <input [(ngModel)]="eduForm.institution" />
         </div>
         <div class="field">
-          <label>Título</label>
+          <label>{{ "cvw.degree" | t }}</label>
           <input [(ngModel)]="eduForm.degree" />
         </div>
         <div class="field">
-          <label>Área de estudio</label>
+          <label>{{ "cvw.field" | t }}</label>
           <input [(ngModel)]="eduForm.field" />
         </div>
         <div class="field">
-          <label>Periodo</label>
+          <label>{{ "cvw.period" | t }}</label>
           <div class="row">
-            <input [(ngModel)]="eduForm.startDate" placeholder="Inicio" />
-            <input [(ngModel)]="eduForm.endDate" placeholder="Fin" />
+            <input [(ngModel)]="eduForm.startDate" [placeholder]="'cvw.start' | t" />
+            <input [(ngModel)]="eduForm.endDate" [placeholder]="'cvw.end' | t" />
           </div>
         </div>
       </div>
       <button class="btn btn-primary" (click)="saveEducation()">
-        {{ eduEditId != null ? "Guardar cambios" : "Añadir" }}
+        {{ eduEditId != null ? ("cvw.saveChanges" | t) : ("cvw.add" | t) }}
       </button>
     </div>
   </ng-container>
 
   <!-- Paso 3: Competencias -->
   <ng-container *ngIf="step === 3">
-    <h2>Competencias</h2>
+    <h2>{{ "cvw.step.skills" | t }}</h2>
     <div class="list-panel">
       <div class="item" *ngFor="let s of skills">
         <div class="item-body">
@@ -190,36 +190,36 @@
           <span class="badge" *ngIf="s.category">{{ s.category }}</span>
         </div>
         <div class="item-actions">
-          <button class="btn btn-sm" (click)="editSkill(s)">Editar</button>
-          <button class="btn btn-sm btn-danger" (click)="removeSkill(s.id!)">Eliminar</button>
+          <button class="btn btn-sm" (click)="editSkill(s)">{{ "common.edit" | t }}</button>
+          <button class="btn btn-sm btn-danger" (click)="removeSkill(s.id!)">{{ "common.delete" | t }}</button>
         </div>
       </div>
-      <p *ngIf="!skills.length" class="muted">Aún no has añadido competencias.</p>
+      <p *ngIf="!skills.length" class="muted">{{ "cvw.noSkills" | t }}</p>
     </div>
 
     <div class="mini-form">
-      <h3>Añadir competencia</h3>
+      <h3>{{ "cvw.addSkill" | t }}</h3>
       <div class="grid grid-3">
         <div class="field">
-          <label>Competencia</label>
+          <label>{{ "cvw.skill" | t }}</label>
           <input [(ngModel)]="skillForm.name" placeholder="Angular" />
         </div>
         <div class="field">
-          <label>Nivel</label>
+          <label>{{ "cvw.level" | t }}</label>
           <input [(ngModel)]="skillForm.level" placeholder="Avanzado" />
         </div>
         <div class="field">
-          <label>Categoría</label>
+          <label>{{ "cvw.category" | t }}</label>
           <input [(ngModel)]="skillForm.category" placeholder="Frontend" />
         </div>
       </div>
-      <button class="btn btn-primary" (click)="saveSkill()">Añadir</button>
+      <button class="btn btn-primary" (click)="saveSkill()">{{ "cvw.add" | t }}</button>
     </div>
   </ng-container>
 
   <!-- Paso 4: Idiomas -->
   <ng-container *ngIf="step === 4">
-    <h2>Idiomas</h2>
+    <h2>{{ "cvw.step.languages" | t }}</h2>
     <div class="list-panel">
       <div class="item" *ngFor="let l of languages">
         <div class="item-body">
@@ -227,32 +227,32 @@
           <span class="muted"> · {{ l.level }}</span>
         </div>
         <div class="item-actions">
-          <button class="btn btn-sm" (click)="editLanguage(l)">Editar</button>
-          <button class="btn btn-sm btn-danger" (click)="removeLanguage(l.id!)">Eliminar</button>
+          <button class="btn btn-sm" (click)="editLanguage(l)">{{ "common.edit" | t }}</button>
+          <button class="btn btn-sm btn-danger" (click)="removeLanguage(l.id!)">{{ "common.delete" | t }}</button>
         </div>
       </div>
-      <p *ngIf="!languages.length" class="muted">Aún no has añadido idiomas.</p>
+      <p *ngIf="!languages.length" class="muted">{{ "cvw.noLanguages" | t }}</p>
     </div>
 
     <div class="mini-form">
-      <h3>Añadir idioma</h3>
+      <h3>{{ "cvw.addLanguage" | t }}</h3>
       <div class="grid grid-2">
         <div class="field">
-          <label>Idioma</label>
+          <label>{{ "cvw.language" | t }}</label>
           <input [(ngModel)]="langForm.name" placeholder="Inglés" />
         </div>
         <div class="field">
-          <label>Nivel</label>
+          <label>{{ "cvw.level" | t }}</label>
           <input [(ngModel)]="langForm.level" placeholder="C1" />
         </div>
       </div>
-      <button class="btn btn-primary" (click)="saveLanguage()">Añadir</button>
+      <button class="btn btn-primary" (click)="saveLanguage()">{{ "cvw.add" | t }}</button>
     </div>
   </ng-container>
 
   <!-- Paso 5: Certificaciones -->
   <ng-container *ngIf="step === 5">
-    <h2>Certificaciones</h2>
+    <h2>{{ "cvw.step.certs" | t }}</h2>
     <div class="list-panel">
       <div class="item" *ngFor="let c of certifications">
         <div class="item-body">
@@ -260,36 +260,36 @@
           <span class="muted"> · {{ c.issuer }} · {{ c.date }}</span>
         </div>
         <div class="item-actions">
-          <button class="btn btn-sm" (click)="editCertification(c)">Editar</button>
-          <button class="btn btn-sm btn-danger" (click)="removeCertification(c.id!)">Eliminar</button>
+          <button class="btn btn-sm" (click)="editCertification(c)">{{ "common.edit" | t }}</button>
+          <button class="btn btn-sm btn-danger" (click)="removeCertification(c.id!)">{{ "common.delete" | t }}</button>
         </div>
       </div>
-      <p *ngIf="!certifications.length" class="muted">Aún no has añadido certificaciones.</p>
+      <p *ngIf="!certifications.length" class="muted">{{ "cvw.noCerts" | t }}</p>
     </div>
 
     <div class="mini-form">
-      <h3>Añadir certificación</h3>
+      <h3>{{ "cvw.addCert" | t }}</h3>
       <div class="grid grid-3">
         <div class="field">
-          <label>Nombre</label>
+          <label>{{ "cvw.name" | t }}</label>
           <input [(ngModel)]="certForm.name" />
         </div>
         <div class="field">
-          <label>Emisor</label>
+          <label>{{ "cvw.issuer" | t }}</label>
           <input [(ngModel)]="certForm.issuer" />
         </div>
         <div class="field">
-          <label>Fecha</label>
+          <label>{{ "cvw.date" | t }}</label>
           <input [(ngModel)]="certForm.date" />
         </div>
       </div>
-      <button class="btn btn-primary" (click)="saveCertification()">Añadir</button>
+      <button class="btn btn-primary" (click)="saveCertification()">{{ "cvw.add" | t }}</button>
     </div>
   </ng-container>
 
   <!-- Paso 6: Proyectos -->
   <ng-container *ngIf="step === 6">
-    <h2>Proyectos</h2>
+    <h2>{{ "cvw.step.projects" | t }}</h2>
     <div class="list-panel">
       <div class="item" *ngFor="let p of projects">
         <div class="item-body">
@@ -297,30 +297,30 @@
           <span class="muted" *ngIf="p.link"> · {{ p.link }}</span>
         </div>
         <div class="item-actions">
-          <button class="btn btn-sm" (click)="editProject(p)">Editar</button>
-          <button class="btn btn-sm btn-danger" (click)="removeProject(p.id!)">Eliminar</button>
+          <button class="btn btn-sm" (click)="editProject(p)">{{ "common.edit" | t }}</button>
+          <button class="btn btn-sm btn-danger" (click)="removeProject(p.id!)">{{ "common.delete" | t }}</button>
         </div>
       </div>
-      <p *ngIf="!projects.length" class="muted">Aún no has añadido proyectos.</p>
+      <p *ngIf="!projects.length" class="muted">{{ "cvw.noProjects" | t }}</p>
     </div>
 
     <div class="mini-form">
-      <h3>Añadir proyecto</h3>
+      <h3>{{ "cvw.addProject" | t }}</h3>
       <div class="grid grid-2">
         <div class="field">
-          <label>Nombre</label>
+          <label>{{ "cvw.name" | t }}</label>
           <input [(ngModel)]="projectForm.name" />
         </div>
         <div class="field">
-          <label>Enlace</label>
+          <label>{{ "cvw.link" | t }}</label>
           <input [(ngModel)]="projectForm.link" />
         </div>
       </div>
       <div class="field">
-        <label>Descripción</label>
+        <label>{{ "cvw.descriptionField" | t }}</label>
         <textarea [(ngModel)]="projectForm.description"></textarea>
       </div>
-      <button class="btn btn-primary" (click)="saveProject()">Añadir</button>
+      <button class="btn btn-primary" (click)="saveProject()">{{ "cvw.add" | t }}</button>
     </div>
   </ng-container>
 
@@ -328,49 +328,49 @@
   <ng-container *ngIf="step === 7">
     <div *ngIf="finished" class="done-state">
       <div class="done-check"><span class="nf nf-check-circle"></span></div>
-      <h2>¡Currículum guardado!</h2>
-      <p class="muted">Tus datos están completos y guardados correctamente.</p>
-      <a class="btn btn-primary" routerLink="/dashboard">Ir al resumen</a>
+      <h2>{{ "cvw.done" | t }}</h2>
+      <p class="muted">{{ "cvw.doneMsg" | t }}</p>
+      <a class="btn btn-primary" routerLink="/dashboard">{{ "cvw.goDashboard" | t }}</a>
     </div>
 
     <ng-container *ngIf="!finished">
-      <h2>Resumen</h2>
-      <p class="muted">Revisa tu currículum. Estos datos se usarán para generar CVs especializados.</p>
+      <h2>{{ "cvw.step.summary" | t }}</h2>
+      <p class="muted">{{ "cvw.reviewHint" | t }}</p>
       <div class="summary">
         <div class="summary-row">
-          <span class="label">Nombre</span>
+          <span class="label">{{ "cvw.summary.name" | t }}</span>
           <span>{{ profile.fullName || "—" }}</span>
         </div>
         <div class="summary-row">
-          <span class="label">Puesto</span>
+          <span class="label">{{ "cvw.summary.role" | t }}</span>
           <span>{{ profile.jobTitle || "—" }}</span>
         </div>
         <div class="summary-row">
-          <span class="label">Email</span>
+          <span class="label">{{ "cvw.summary.email" | t }}</span>
           <span>{{ profile.email || "—" }}</span>
         </div>
         <div class="summary-row">
-          <span class="label">Experiencia</span>
-          <span>{{ experiences.length }} puesto(s)</span>
+          <span class="label">{{ "cvw.summary.experience" | t }}</span>
+          <span>{{ experiences.length }} {{ "cvw.summary.positions" | t }}</span>
         </div>
         <div class="summary-row">
-          <span class="label">Educación</span>
-          <span>{{ education.length }} registro(s)</span>
+          <span class="label">{{ "cvw.summary.education" | t }}</span>
+          <span>{{ education.length }} {{ "cvw.summary.records" | t }}</span>
         </div>
         <div class="summary-row">
-          <span class="label">Competencias</span>
+          <span class="label">{{ "cvw.summary.skills" | t }}</span>
           <span>{{ skills.length }}</span>
         </div>
         <div class="summary-row">
-          <span class="label">Idiomas</span>
+          <span class="label">{{ "cvw.summary.languages" | t }}</span>
           <span>{{ languages.length }}</span>
         </div>
         <div class="summary-row">
-          <span class="label">Certificaciones</span>
+          <span class="label">{{ "cvw.summary.certs" | t }}</span>
           <span>{{ certifications.length }}</span>
         </div>
         <div class="summary-row">
-          <span class="label">Proyectos</span>
+          <span class="label">{{ "cvw.summary.projects" | t }}</span>
           <span>{{ projects.length }}</span>
         </div>
       </div>
@@ -380,7 +380,7 @@
   <!-- Navegación -->
   <div class="nav-row" *ngIf="step !== 7 || !finished">
     <button class="btn" (click)="prev()" [disabled]="step === 0 || saving">
-      <span class="nf nf-chevron-left"></span> Anterior
+      <span class="nf nf-chevron-left"></span> {{ "cvw.previous" | t }}
     </button>
     <button
       *ngIf="step < steps.length - 1"
@@ -388,7 +388,7 @@
       (click)="next()"
       [disabled]="saving"
     >
-      {{ saving ? "Guardando..." : "Siguiente" }}
+      {{ saving ? ("common.saving" | t) : ("cvw.next" | t) }}
       <span class="nf nf-chevron-right"></span>
     </button>
     <button
@@ -397,7 +397,7 @@
       (click)="finish()"
       [disabled]="saving"
     >
-      {{ saving ? "Guardando..." : "Guardar y finalizar" }}
+      {{ saving ? ("common.saving" | t) : ("cvw.finish" | t) }}
       <span class="nf nf-check"></span>
     </button>
   </div>

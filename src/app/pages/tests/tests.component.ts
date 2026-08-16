@@ -5,12 +5,15 @@ import { Router, RouterLink } from "@angular/router";
 import { AiService } from "../../core/ai.service";
 import { DbService } from "../../core/db.service";
 import { SettingsService } from "../../core/settings.service";
+import { ConfirmService } from "../../core/confirm.service";
+import { I18nService } from "../../core/i18n.service";
+import { TranslatePipe } from "../../core/translate.pipe";
 import { parseTechnicalTest } from "../../core/test-utils";
 import type { StoredTest } from "../../core/models";
 
 @Component({
   selector: "app-tests",
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   templateUrl: "./tests.component.html",
   styleUrl: "./tests.component.css",
 })
@@ -26,6 +29,8 @@ export class TestsComponent implements OnInit {
     private ai: AiService,
     private settings: SettingsService,
     private router: Router,
+    private confirm: ConfirmService,
+    private i18n: I18nService,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -37,7 +42,7 @@ export class TestsComponent implements OnInit {
     this.tests = rows.map((r) => ({
       id: r.id,
       jobOfferId: r.jobOfferId,
-      title: r.title || parseTechnicalTest(r.content).title || "Prueba técnica",
+      title: r.title || parseTechnicalTest(r.content).title || this.i18n.t("taketest.title"),
       content: r.content,
       createdAt: r.createdAt,
     }));
@@ -55,11 +60,11 @@ export class TestsComponent implements OnInit {
 
   async generate(): Promise<void> {
     if (!this.settings.isConfigured) {
-      this.error = "Configura tu proveedor de IA y API key en Ajustes primero.";
+      this.error = this.i18n.t("error.configureAi");
       return;
     }
     if (!this.topic.trim()) {
-      this.error = "Escribe el tema o puesto de la prueba.";
+      this.error = this.i18n.t("tests.errTopic");
       return;
     }
     this.generating = true;
@@ -77,9 +82,13 @@ export class TestsComponent implements OnInit {
   }
 
   async remove(id: number): Promise<void> {
-    if (confirm("¿Eliminar esta prueba técnica?")) {
-      await this.db.deleteTechnicalTest(id);
-      await this.load();
-    }
+    const ok = await this.confirm.confirm({
+      title: this.i18n.t("confirm.deleteTestTitle"),
+      message: this.i18n.t("confirm.deleteTest"),
+      confirmText: this.i18n.t("common.delete"),
+    });
+    if (!ok) return;
+    await this.db.deleteTechnicalTest(id);
+    await this.load();
   }
 }

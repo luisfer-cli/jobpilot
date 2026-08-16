@@ -2,18 +2,32 @@ import { Component, HostListener, OnInit } from "@angular/core";
 import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { CommonModule } from "@angular/common";
 import { SettingsService } from "./core/settings.service";
+import { I18nService } from "./core/i18n.service";
+import { TranslatePipe } from "./core/translate.pipe";
+import { ConfirmDialogComponent } from "./components/confirm-dialog/confirm-dialog.component";
 
 @Component({
   selector: "app-root",
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    TranslatePipe,
+    ConfirmDialogComponent,
+  ],
   templateUrl: "./app.component.html",
   styleUrl: "./app.component.css",
 })
 export class AppComponent implements OnInit {
-  constructor(public settings: SettingsService) {}
+  constructor(
+    public settings: SettingsService,
+    private i18n: I18nService,
+  ) {}
 
   ngOnInit(): void {
     void this.settings.load();
+    void this.i18n.load();
   }
 
   @HostListener("window:keydown", ["$event"])

@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import Database from "@tauri-apps/plugin-sql";
 import type {
+  AtsAnalysis,
   Certification,
   CvData,
   Education,
@@ -444,6 +445,38 @@ export class DbService {
     ]);
   }
 
+  async updateOfferNotes(id: number, notes: string): Promise<void> {
+    const db = await this.d();
+    await db.execute("UPDATE job_offers SET notes = $1, updated_at = datetime('now') WHERE id = $2", [
+      notes,
+      id,
+    ]);
+  }
+
+  async getAtsAnalysis(offerId: number): Promise<AtsAnalysis | null> {
+    const db = await this.d();
+    const rows = await db.select<Array<Record<string, unknown>>>(
+      "SELECT ats_analysis FROM job_offers WHERE id = $1",
+      [offerId],
+    );
+    if (rows.length === 0) return null;
+    const raw = (rows[0]["ats_analysis"] as string) ?? "";
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw) as AtsAnalysis;
+    } catch {
+      return null;
+    }
+  }
+
+  async saveAtsAnalysis(offerId: number, analysis: AtsAnalysis): Promise<void> {
+    const db = await this.d();
+    await db.execute(
+      "UPDATE job_offers SET ats_analysis = $1, updated_at = datetime('now') WHERE id = $2",
+      [JSON.stringify(analysis), offerId],
+    );
+  }
+
   async deleteOffer(id: number): Promise<void> {
     const db = await this.d();
     await db.execute("DELETE FROM generated_cvs WHERE job_offer_id = $1", [id]);
@@ -475,6 +508,16 @@ export class DbService {
     }));
   }
 
+  async updateGeneratedCv(id: number, structured: string): Promise<void> {
+    const db = await this.d();
+    await db.execute("UPDATE generated_cvs SET structured = $1 WHERE id = $2", [structured, id]);
+  }
+
+  async deleteGeneratedCv(id: number): Promise<void> {
+    const db = await this.d();
+    await db.execute("DELETE FROM generated_cvs WHERE id = $1", [id]);
+  }
+
   // ----- Cartas -----
   async addCoverLetter(jobOfferId: number, content: string): Promise<number> {
     const db = await this.d();
@@ -483,6 +526,11 @@ export class DbService {
       [jobOfferId, content],
     );
     return res.lastInsertId as number;
+  }
+
+  async updateCoverLetter(id: number, content: string): Promise<void> {
+    const db = await this.d();
+    await db.execute("UPDATE cover_letters SET content = $1 WHERE id = $2", [content, id]);
   }
 
   async listCoverLetters(jobOfferId: number): Promise<Array<{ id: number; content: string; createdAt: string }>> {

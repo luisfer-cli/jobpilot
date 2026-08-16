@@ -1,21 +1,21 @@
 <div *ngIf="!offer" class="card">
-  <p class="muted">Oferta no encontrada.</p>
-  <a routerLink="/offers">Volver a ofertas</a>
+  <p class="muted">{{ "offer.notFound" | t }}</p>
+  <a routerLink="/offers">{{ "offer.backToOffers" | t }}</a>
 </div>
 
 <div *ngIf="offer">
   <div class="page-header">
     <div>
       <a routerLink="/offers" class="muted back">
-        <span class="nf nf-arrow-left"></span> Ofertas
+        <span class="nf nf-arrow-left"></span> {{ "nav.offers" | t }}
       </a>
-      <h1>{{ offer.title || "Sin título" }}</h1>
+      <h1>{{ offer.title || ("offers.noTitle" | t) }}</h1>
       <p class="muted">{{ offer.company }} · {{ offer.location }} · {{ offer.salary }}</p>
     </div>
     <div class="status-box">
-      <label>Estado</label>
+      <label>{{ "offer.status" | t }}</label>
       <select [(ngModel)]="offer.status" (ngModelChange)="changeStatus()">
-        <option *ngFor="let s of statuses" [value]="s">{{ statusLabels[s] }}</option>
+        <option *ngFor="let s of statuses" [value]="s">{{ "status." + s | t }}</option>
       </select>
     </div>
   </div>
@@ -25,16 +25,16 @@
   <!-- Acciones IA -->
   <section class="card">
     <div class="ai-head">
-      <h2>Herramientas IA</h2>
-      <span class="muted">Genera contenido adaptado a esta oferta.</span>
+      <h2>{{ "offer.aiTools" | t }}</h2>
+      <span class="muted">{{ "offer.aiToolsDesc" | t }}</span>
     </div>
 
     <div class="actions-grid">
       <button class="action-tile primary" (click)="openCvModal()" [disabled]="!!busy">
         <span class="tile-icon nf nf-file"></span>
         <span class="tile-body">
-          <span class="tile-title">Generar CV especializado</span>
-          <span class="tile-desc">Adapta tu currículum a esta oferta</span>
+          <span class="tile-title">{{ "offer.cvTile" | t }}</span>
+          <span class="tile-desc">{{ "offer.cvTileDesc" | t }}</span>
         </span>
         <span class="tile-state" *ngIf="busy === busyCv"><span class="spinner"></span></span>
         <span class="tile-arrow nf nf-chevron-right" *ngIf="busy !== busyCv"></span>
@@ -43,8 +43,8 @@
       <button class="action-tile" (click)="openLetterModal()" [disabled]="!!busy">
         <span class="tile-icon nf nf-email"></span>
         <span class="tile-body">
-          <span class="tile-title">Carta de presentación</span>
-          <span class="tile-desc">Redacta una carta personalizada</span>
+          <span class="tile-title">{{ "offer.letterTile" | t }}</span>
+          <span class="tile-desc">{{ "offer.letterTileDesc" | t }}</span>
         </span>
         <span class="tile-state" *ngIf="busy === busyLetter"><span class="spinner"></span></span>
         <span class="tile-arrow nf nf-chevron-right" *ngIf="busy !== busyLetter"></span>
@@ -53,8 +53,8 @@
       <button class="action-tile" (click)="openTestModal()" [disabled]="!!busy">
         <span class="tile-icon nf nf-flask"></span>
         <span class="tile-body">
-          <span class="tile-title">Prueba técnica</span>
-          <span class="tile-desc">Genera una prueba de práctica</span>
+          <span class="tile-title">{{ "offer.testTile" | t }}</span>
+          <span class="tile-desc">{{ "offer.testTileDesc" | t }}</span>
         </span>
         <span class="tile-state" *ngIf="busy === busyTest"><span class="spinner"></span></span>
         <span class="tile-arrow nf nf-chevron-right" *ngIf="busy !== busyTest"></span>
@@ -63,8 +63,8 @@
       <button class="action-tile" (click)="analyzeAts()" [disabled]="!!busy">
         <span class="tile-icon nf nf-chart"></span>
         <span class="tile-body">
-          <span class="tile-title">Análisis ATS</span>
-          <span class="tile-desc">Evalúa tu encaje con la oferta</span>
+          <span class="tile-title">{{ "offer.atsTile" | t }}</span>
+          <span class="tile-desc">{{ "offer.atsTileDesc" | t }}</span>
         </span>
         <span class="tile-state" *ngIf="busy === busyAts"><span class="spinner"></span></span>
       </button>
@@ -76,38 +76,38 @@
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cv-modal-title">
       <div class="modal-head">
         <span class="modal-icon nf nf-file"></span>
-        <h2 id="cv-modal-title">Generar CV especializado</h2>
+        <h2 id="cv-modal-title">{{ "cvmodal.title" | t }}</h2>
         <button
           class="btn btn-icon btn-ghost"
           (click)="closeModals()"
           [disabled]="!!busy"
-          aria-label="Cerrar"
+          [attr.aria-label]="'common.close' | t"
         >
           <span class="nf nf-close"></span>
         </button>
       </div>
 
       <div class="modal-body">
-        <p class="muted">Adapta tu currículum a esta oferta eligiendo el idioma de salida.</p>
+        <p class="muted">{{ "cvmodal.desc" | t }}</p>
         <div class="offer-summary">
-          <span class="muted">Oferta</span>
-          <strong>{{ offer.title || "Sin título" }}</strong>
+          <span class="muted">{{ "cvmodal.offer" | t }}</span>
+          <strong>{{ offer.title || ("offers.noTitle" | t) }}</strong>
         </div>
         <div class="field">
-          <label for="cv-language">Idioma del CV</label>
+          <label for="cv-language">{{ "cvmodal.language" | t }}</label>
           <select id="cv-language" [(ngModel)]="cvLanguage" [disabled]="!!busy">
-            <option *ngFor="let l of languages" [value]="l.value">{{ l.label }}</option>
+            <option *ngFor="let l of languages" [value]="l.value">{{ l.labelKey | t }}</option>
           </select>
         </div>
         <div *ngIf="error" class="alert alert-error">{{ error }}</div>
       </div>
 
       <div class="modal-foot">
-        <button class="btn" (click)="closeModals()" [disabled]="!!busy">Cancelar</button>
+        <button class="btn" (click)="closeModals()" [disabled]="!!busy">{{ "common.cancel" | t }}</button>
         <button class="btn btn-primary" (click)="confirmGenerateCv()" [disabled]="!!busy">
           <span *ngIf="busy === busyCv" class="spinner"></span>
           <span *ngIf="busy !== busyCv" class="nf nf-file"></span>
-          {{ busy === busyCv ? "Generando..." : "Generar" }}
+          {{ busy === busyCv ? ("common.generating" | t) : ("cvmodal.generate" | t) }}
         </button>
       </div>
     </div>
@@ -118,38 +118,38 @@
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="letter-modal-title">
       <div class="modal-head">
         <span class="modal-icon nf nf-email"></span>
-        <h2 id="letter-modal-title">Carta de presentación</h2>
+        <h2 id="letter-modal-title">{{ "lettermodal.title" | t }}</h2>
         <button
           class="btn btn-icon btn-ghost"
           (click)="closeModals()"
           [disabled]="!!busy"
-          aria-label="Cerrar"
+          [attr.aria-label]="'common.close' | t"
         >
           <span class="nf nf-close"></span>
         </button>
       </div>
 
       <div class="modal-body">
-        <p class="muted">Redacta una carta personalizada eligiendo el idioma de salida.</p>
+        <p class="muted">{{ "lettermodal.desc" | t }}</p>
         <div class="offer-summary">
-          <span class="muted">Oferta</span>
-          <strong>{{ offer.title || "Sin título" }}</strong>
+          <span class="muted">{{ "cvmodal.offer" | t }}</span>
+          <strong>{{ offer.title || ("offers.noTitle" | t) }}</strong>
         </div>
         <div class="field">
-          <label for="letter-language">Idioma de la carta</label>
+          <label for="letter-language">{{ "lettermodal.language" | t }}</label>
           <select id="letter-language" [(ngModel)]="letterLanguage" [disabled]="!!busy">
-            <option *ngFor="let l of languages" [value]="l.value">{{ l.label }}</option>
+            <option *ngFor="let l of languages" [value]="l.value">{{ l.labelKey | t }}</option>
           </select>
         </div>
         <div *ngIf="error" class="alert alert-error">{{ error }}</div>
       </div>
 
       <div class="modal-foot">
-        <button class="btn" (click)="closeModals()" [disabled]="!!busy">Cancelar</button>
+        <button class="btn" (click)="closeModals()" [disabled]="!!busy">{{ "common.cancel" | t }}</button>
         <button class="btn btn-primary" (click)="confirmGenerateLetter()" [disabled]="!!busy">
           <span *ngIf="busy === busyLetter" class="spinner"></span>
           <span *ngIf="busy !== busyLetter" class="nf nf-email"></span>
-          {{ busy === busyLetter ? "Generando..." : "Generar" }}
+          {{ busy === busyLetter ? ("common.generating" | t) : ("cvmodal.generate" | t) }}
         </button>
       </div>
     </div>
@@ -160,52 +160,52 @@
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="test-modal-title">
       <div class="modal-head">
         <span class="modal-icon nf nf-flask"></span>
-        <h2 id="test-modal-title">Prueba técnica</h2>
+        <h2 id="test-modal-title">{{ "testmodal.title" | t }}</h2>
         <button
           class="btn btn-icon btn-ghost"
           (click)="closeModals()"
           [disabled]="!!busy"
-          aria-label="Cerrar"
+          [attr.aria-label]="'common.close' | t"
         >
           <span class="nf nf-close"></span>
         </button>
       </div>
 
       <div class="modal-body">
-        <p class="muted">Configura el tamaño y el nivel de la prueba de práctica.</p>
+        <p class="muted">{{ "testmodal.desc" | t }}</p>
         <div class="offer-summary">
-          <span class="muted">Oferta</span>
-          <strong>{{ offer.title || "Sin título" }}</strong>
+          <span class="muted">{{ "cvmodal.offer" | t }}</span>
+          <strong>{{ offer.title || ("offers.noTitle" | t) }}</strong>
         </div>
         <div class="grid grid-2">
           <div class="field">
-            <label for="test-count">Número de preguntas</label>
+            <label for="test-count">{{ "testmodal.count" | t }}</label>
             <select id="test-count" [(ngModel)]="questionCount" [disabled]="!!busy">
-              <option *ngFor="let c of questionCounts" [value]="c.value">{{ c.label }}</option>
+              <option *ngFor="let c of questionCounts" [value]="c.value">{{ c.labelKey | t }}</option>
             </select>
           </div>
           <div class="field">
-            <label for="test-difficulty">Nivel</label>
+            <label for="test-difficulty">{{ "testmodal.level" | t }}</label>
             <select id="test-difficulty" [(ngModel)]="difficulty" [disabled]="!!busy">
-              <option *ngFor="let d of difficulties" [value]="d.value">{{ d.label }}</option>
+              <option *ngFor="let d of difficulties" [value]="d.value">{{ d.labelKey | t }}</option>
             </select>
           </div>
         </div>
         <div class="field">
-          <label for="test-time">Duración estimada</label>
+          <label for="test-time">{{ "testmodal.duration" | t }}</label>
           <select id="test-time" [(ngModel)]="estimatedTime" [disabled]="!!busy">
-            <option *ngFor="let t of estimatedTimes" [value]="t.value">{{ t.label }}</option>
+            <option *ngFor="let t of estimatedTimes" [value]="t.value">{{ t.labelKey | t }}</option>
           </select>
         </div>
         <div *ngIf="error" class="alert alert-error">{{ error }}</div>
       </div>
 
       <div class="modal-foot">
-        <button class="btn" (click)="closeModals()" [disabled]="!!busy">Cancelar</button>
+        <button class="btn" (click)="closeModals()" [disabled]="!!busy">{{ "common.cancel" | t }}</button>
         <button class="btn btn-primary" (click)="confirmGenerateTest()" [disabled]="!!busy">
           <span *ngIf="busy === busyTest" class="spinner"></span>
           <span *ngIf="busy !== busyTest" class="nf nf-flask"></span>
-          {{ busy === busyTest ? "Generando..." : "Generar" }}
+          {{ busy === busyTest ? ("common.generating" | t) : ("cvmodal.generate" | t) }}
         </button>
       </div>
     </div>
@@ -213,25 +213,25 @@
 
   <!-- Detalle oferta -->
   <section class="card" *ngIf="structured">
-    <h2>Detalles de la oferta</h2>
+    <h2>{{ "offer.details" | t }}</h2>
     <div class="meta">
-      <span *ngIf="structured.jobType"><strong>Tipo:</strong> {{ structured.jobType }}</span>
-      <span *ngIf="structured.seniority"><strong>Seniority:</strong> {{ structured.seniority }}</span>
+      <span *ngIf="structured.jobType"><strong>{{ "offer.type" | t }}</strong> {{ structured.jobType }}</span>
+      <span *ngIf="structured.seniority"><strong>{{ "offers.field.seniority" | t }}:</strong> {{ structured.seniority }}</span>
       <span *ngIf="structured.applicationUrl">
-        <strong>URL:</strong> <a [href]="structured.applicationUrl" target="_blank">{{ structured.applicationUrl }}</a>
+        <strong>{{ "offer.url" | t }}</strong> <a [href]="structured.applicationUrl" target="_blank">{{ structured.applicationUrl }}</a>
       </span>
     </div>
     <p *ngIf="structured.description" class="desc">{{ structured.description }}</p>
 
     <div class="grid grid-2">
       <div *ngIf="structured.requirements.length">
-        <h3>Requisitos</h3>
+        <h3>{{ "offer.requirements" | t }}</h3>
         <ul>
           <li *ngFor="let r of structured.requirements">{{ r }}</li>
         </ul>
       </div>
       <div *ngIf="structured.responsibilities.length">
-        <h3>Responsabilidades</h3>
+        <h3>{{ "offer.responsibilities" | t }}</h3>
         <ul>
           <li *ngFor="let r of structured.responsibilities">{{ r }}</li>
         </ul>
@@ -239,80 +239,282 @@
     </div>
   </section>
 
+  <!-- Notas -->
+  <section class="card">
+    <div class="section-head">
+      <h2>{{ "offer.notes" | t }}</h2>
+      <span class="muted">{{ "offer.notesDesc" | t }}</span>
+    </div>
+    <textarea
+      [(ngModel)]="notesDraft"
+      rows="5"
+      [placeholder]="'offer.notesPlaceholder' | t"
+    ></textarea>
+    <div class="notes-foot">
+      <button class="btn btn-primary" (click)="saveNotes()" [disabled]="savingNotes">
+        <span *ngIf="savingNotes" class="spinner"></span>
+        <span *ngIf="!savingNotes" class="nf nf-save"></span>
+        {{ savingNotes ? ("common.saving" | t) : ("offer.saveNotes" | t) }}
+      </button>
+    </div>
+  </section>
+
   <!-- Análisis ATS -->
   <section class="card" *ngIf="ats">
-    <h2>Análisis ATS</h2>
+    <h2>{{ "offer.atsTile" | t }}</h2>
     <div class="score">
       <div class="score-ring" [style.--pct]="ats.score">
         <span>{{ ats.score }}</span>
       </div>
       <div>
-        <h3>Encaje con la oferta</h3>
-        <p class="muted">Puntuación estimada de 0 a 100.</p>
+        <h3>{{ "offer.atsFit" | t }}</h3>
+        <p class="muted">{{ "offer.atsScore" | t }}</p>
       </div>
     </div>
     <div class="grid grid-2">
       <div>
-        <h3>Keywords presentes</h3>
+        <h3>{{ "offer.atsMatched" | t }}</h3>
         <div class="chips">
           <span class="chip ok" *ngFor="let k of ats.matchedKeywords">{{ k }}</span>
         </div>
       </div>
       <div>
-        <h3>Keywords que faltan</h3>
+        <h3>{{ "offer.atsMissing" | t }}</h3>
         <div class="chips">
           <span class="chip miss" *ngFor="let k of ats.missingKeywords">{{ k }}</span>
         </div>
       </div>
     </div>
     <div *ngIf="ats.suggestions.length">
-      <h3>Sugerencias</h3>
+      <h3>{{ "offer.atsSuggestions" | t }}</h3>
       <ul>
         <li *ngFor="let s of ats.suggestions">{{ s }}</li>
       </ul>
     </div>
   </section>
 
-  <!-- CV generado -->
-  <section class="card" *ngIf="cv">
+  <!-- CVs generados -->
+  <section class="card" *ngIf="cvs.length">
     <div class="section-head">
-      <h2>CV especializado</h2>
-      <button class="btn btn-primary" (click)="exportCv()" [disabled]="!!busy">
-        <span *ngIf="busy === busyPdf" class="spinner"></span>
-        <span *ngIf="busy !== busyPdf" class="nf nf-download"></span>
-        Exportar PDF
-      </button>
+      <h2>{{ "offer.cvsTitle" | t }}</h2>
+      <span class="muted">{{ cvs.length }} {{ "offer.cvCount" | t }}</span>
     </div>
 
-    <app-cv-preview [cv]="cv" />
+    <div class="cv-grid">
+      <div class="cv-card" *ngFor="let c of cvs">
+        <div class="cv-card-main">
+          <div class="cv-card-title-row">
+            <span class="cv-card-title">{{ c.cv.fullName || ("offers.noTitle" | t) }}</span>
+            <span class="cv-card-sub" *ngIf="c.cv.jobTitle">{{ c.cv.jobTitle }}</span>
+          </div>
+          <span class="cv-card-meta">{{ cvMeta(c) }}</span>
+        </div>
+        <div class="cv-card-actions">
+          <button class="btn btn-ghost btn-icon" (click)="previewCvEntry(c)" [disabled]="!!busy" [title]="'common.view' | t">
+            <span class="nf nf-file"></span>
+          </button>
+          <button class="btn btn-ghost btn-icon" (click)="startEditCv(c)" [disabled]="!!busy" [title]="'common.edit' | t">
+            <span class="nf nf-pencil"></span>
+          </button>
+          <button class="btn btn-ghost btn-icon" (click)="exportCv(c.cv)" [disabled]="!!busy" [title]="'offer.exportPdf' | t">
+            <span class="nf nf-download"></span>
+          </button>
+          <button class="btn btn-ghost btn-icon" (click)="deleteCv(c)" [disabled]="!!busy" [title]="'common.delete' | t">
+            <span class="nf nf-delete"></span>
+          </button>
+        </div>
+      </div>
+    </div>
   </section>
+
+  <!-- Modal: Previsualizar CV -->
+  <div class="modal-backdrop" *ngIf="showCvPreview" (mousedown)="onBackdropClick($event)">
+    <div class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="cv-preview-title">
+      <div class="modal-head">
+        <span class="modal-icon nf nf-file"></span>
+        <h2 id="cv-preview-title">{{ "cvpreview.title" | t }}</h2>
+        <button class="btn btn-icon btn-ghost" (click)="closeModals()" [attr.aria-label]="'common.close' | t">
+          <span class="nf nf-close"></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <app-cv-preview *ngIf="previewCv" [cv]="previewCv" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Editar CV -->
+  <div class="modal-backdrop" *ngIf="showCvEdit" (mousedown)="onBackdropClick($event)">
+    <div class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="cv-edit-title">
+      <div class="modal-head">
+        <span class="modal-icon nf nf-pencil"></span>
+        <h2 id="cv-edit-title">{{ "cvedit.title" | t }}</h2>
+        <button class="btn btn-icon btn-ghost" (click)="cancelEditCv()" [attr.aria-label]="'common.close' | t">
+          <span class="nf nf-close"></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ng-container *ngIf="cvDraft">
+          <div class="grid grid-2">
+            <div class="field">
+              <label>{{ "cvedit.fullName" | t }}</label>
+              <input [(ngModel)]="cvDraft.fullName" />
+            </div>
+            <div class="field">
+              <label>{{ "cvedit.jobTitle" | t }}</label>
+              <input [(ngModel)]="cvDraft.jobTitle" />
+            </div>
+            <div class="field">
+              <label>{{ "cvedit.email" | t }}</label>
+              <input [(ngModel)]="cvDraft.email" />
+            </div>
+            <div class="field">
+              <label>{{ "cvedit.phone" | t }}</label>
+              <input [(ngModel)]="cvDraft.phone" />
+            </div>
+            <div class="field">
+              <label>{{ "cvedit.location" | t }}</label>
+              <input [(ngModel)]="cvDraft.location" />
+            </div>
+            <div class="field">
+              <label>{{ "cvedit.linkedin" | t }}</label>
+              <input [(ngModel)]="cvDraft.linkedin" />
+            </div>
+          </div>
+          <div class="field">
+            <label>{{ "cvedit.website" | t }}</label>
+            <input [(ngModel)]="cvDraft.website" />
+          </div>
+          <div class="field">
+            <label>{{ "cvedit.summary" | t }}</label>
+            <textarea [(ngModel)]="cvDraft.summary" rows="4"></textarea>
+          </div>
+          <div class="field">
+            <label>{{ "cvedit.skills" | t }}</label>
+            <input
+              [ngModel]="skillsText(cvDraft.skills)"
+              (ngModelChange)="cvDraft.skills = setSkillsText($event)"
+            />
+          </div>
+
+          <div class="edit-section" *ngIf="cvDraft.experiences.length">
+            <h3>{{ "cvedit.experience" | t }}</h3>
+            <div class="edit-entry" *ngFor="let exp of cvDraft.experiences">
+              <div class="grid grid-2">
+                <div class="field">
+                  <label>{{ "cvedit.role" | t }}</label>
+                  <input [(ngModel)]="exp.role" />
+                </div>
+                <div class="field">
+                  <label>{{ "cvedit.company" | t }}</label>
+                  <input [(ngModel)]="exp.company" />
+                </div>
+              </div>
+              <div class="field">
+                <label>{{ "cvedit.achievements" | t }}</label>
+                <textarea
+                  rows="3"
+                  [ngModel]="expDesc(exp.description)"
+                  (ngModelChange)="setExpDesc(exp.description, $event)"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="edit-section" *ngIf="cvDraft.education.length">
+            <h3>{{ "cvedit.education" | t }}</h3>
+            <div class="edit-entry" *ngFor="let edu of cvDraft.education">
+              <div class="grid grid-3">
+                <div class="field">
+                  <label>{{ "cvedit.degree" | t }}</label>
+                  <input [(ngModel)]="edu.degree" />
+                </div>
+                <div class="field">
+                  <label>{{ "cvedit.institution" | t }}</label>
+                  <input [(ngModel)]="edu.institution" />
+                </div>
+                <div class="field">
+                  <label>{{ "cvedit.field" | t }}</label>
+                  <input [(ngModel)]="edu.field" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" (click)="cancelEditCv()">{{ "common.cancel" | t }}</button>
+        <button class="btn btn-primary" (click)="saveCv()" [disabled]="!!busy">
+          <span class="nf nf-save"></span> {{ "common.save" | t }}
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Carta -->
   <section class="card" *ngIf="letter">
     <div class="section-head">
-      <h2>Carta de presentación</h2>
-      <button class="btn btn-primary" (click)="exportLetter()" [disabled]="!!busy">
-        <span *ngIf="busy === busyPdf" class="spinner"></span>
-        <span *ngIf="busy !== busyPdf" class="nf nf-download"></span>
-        Exportar PDF
-      </button>
+      <h2>{{ "lettermodal.title" | t }}</h2>
+      <div class="section-actions">
+        <button *ngIf="!editingLetter" class="btn" (click)="startEditLetter()" [disabled]="!!busy">
+          <span class="nf nf-pencil"></span> {{ "common.edit" | t }}
+        </button>
+        <button class="btn btn-primary" (click)="exportLetter()" [disabled]="!!busy">
+          <span *ngIf="busy === busyPdf" class="spinner"></span>
+          <span *ngIf="busy !== busyPdf" class="nf nf-download"></span>
+          {{ "offer.exportPdf" | t }}
+        </button>
+      </div>
     </div>
-    <p *ngIf="letter.subject" class="muted"><strong>Asunto:</strong> {{ letter.subject }}</p>
-    <p>{{ letter.greeting }}</p>
-    <p *ngFor="let p of splitBody(letter.body)">{{ p }}</p>
-    <p>{{ letter.closing }}</p>
+
+    <ng-container *ngIf="!editingLetter">
+      <p *ngIf="letter.subject" class="muted"><strong>{{ "offer.letter.subject" | t }}</strong> {{ letter.subject }}</p>
+      <p>{{ letter.greeting }}</p>
+      <p *ngFor="let p of splitBody(letter.body)">{{ p }}</p>
+      <p>{{ letter.closing }}</p>
+    </ng-container>
+
+    <ng-container *ngIf="editingLetter && letterDraft">
+      <div class="field">
+        <label>{{ "letter.subject" | t }}</label>
+        <input [(ngModel)]="letterDraft.subject" />
+      </div>
+      <div class="field">
+        <label>{{ "letter.greeting" | t }}</label>
+        <input [(ngModel)]="letterDraft.greeting" />
+      </div>
+      <div class="field">
+        <label>{{ "letter.body" | t }}</label>
+        <textarea [(ngModel)]="letterDraft.body" rows="10"></textarea>
+      </div>
+      <div class="field">
+        <label>{{ "letter.closing" | t }}</label>
+        <input [(ngModel)]="letterDraft.closing" />
+      </div>
+      <div class="section-actions">
+        <button class="btn btn-primary" (click)="saveLetter()" [disabled]="!!busy">
+          <span class="nf nf-save"></span> {{ "common.save" | t }}
+        </button>
+        <button class="btn" (click)="cancelEditLetter()" [disabled]="!!busy">{{ "common.cancel" | t }}</button>
+      </div>
+    </ng-container>
   </section>
 
   <!-- Prueba técnica -->
   <section class="card" *ngIf="test">
     <div class="section-head">
-      <h2>Prueba técnica</h2>
+      <h2>{{ "testmodal.title" | t }}</h2>
       <a class="btn btn-primary" [routerLink]="['/tests', test.id]">
-        <span class="nf nf-clipboard"></span> Hacer prueba interactiva
+        <span class="nf nf-clipboard"></span> {{ "offer.takeTest" | t }}
       </a>
     </div>
     <p *ngIf="test.title"><strong>{{ test.title }}</strong></p>
-    <p *ngIf="test.estimatedTime" class="muted">Tiempo estimado: {{ test.estimatedTime }}</p>
-    <p class="muted">{{ test.questions.length }} pregunta(s)</p>
+    <p *ngIf="test.estimatedTime" class="muted">{{ "offer.estTime" | t }} {{ test.estimatedTime }}</p>
+    <p class="muted">{{ test.questions.length }} {{ "offer.questions" | t }}</p>
   </section>
+</div>
+
+<div class="toast" *ngIf="toast" [class.leaving]="toastLeaving" role="status">
+  <span class="nf nf-check-circle"></span>
+  <span>{{ toast }}</span>
 </div>

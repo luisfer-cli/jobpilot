@@ -1,6 +1,7 @@
 use crate::ai::{AiProvider, OpenAiCompatible};
 use crate::models::{
-    AtsAnalysis, CoverLetter, CvData, GeneratedCv, JobOfferStructured, TechnicalTest,
+    AnswerEvaluation, AtsAnalysis, CoverLetter, CvData, GeneratedCv, JobOfferStructured,
+    TechnicalTest, TestQuestion,
 };
 
 async fn ask_json(
@@ -117,9 +118,12 @@ pub async fn generate_cv(
     language: String,
 ) -> Result<GeneratedCv, String> {
     let lang_instruction = if language.trim().is_empty() {
-        "Mantén el idioma en que esté redactado el perfil del candidato.".to_string()
+        "Mantén el idioma en que esté redactado el perfil del candidato, traduciendo también los títulos de los puestos, la formación académica, las certificaciones y los proyectos."
+            .to_string()
     } else {
-        format!("Redacta el currículum completo en {language}.")
+        format!(
+            "Redacta el currículum completo en {language}. Traduce TODOS los campos a {language}: el resumen, el título del puesto (jobTitle), el cargo de cada experiencia (role), las descripciones de experiencia, la formación académica (degree, field e institution), las certificaciones, los proyectos y los idiomas. Conserva los nombres propios de empresas e instituciones tal cual."
+        )
     };
     let mut system = r#"Eres un redactor de currículums experto y optimizador ATS. Recibes (1) el perfil completo del candidato y (2) una oferta de trabajo. Crea un currículum especializado y enfocado en esa oferta: reescribe el resumen profesional y las descripciones de experiencia para resaltar los logros y habilidades más relevantes al puesto, reordena y prioriza las competencias. NO inventes experiencia que no exista; solo adapta y enfatiza lo que ya tiene el candidato. Responde SIEMPRE con JSON válido con exactamente esta estructura, sin texto adicional:
 {"fullName":"","jobTitle":"","email":"","phone":"","location":"","linkedin":"","website":"","summary":"","experiences":[{"company":"","role":"","location":"","startDate":"","endDate":"","current":false,"description":[""]}],"education":[{"institution":"","degree":"","field":"","startDate":"","endDate":""}],"skills":[""],"languages":[{"name":"","level":""}],"certifications":[{"name":"","issuer":"","date":""}],"projects":[{"name":"","description":"","link":""}]}
@@ -251,6 +255,30 @@ pub async fn analyze_ats(
     );
     let v = ask_json(&base_url, &api_key, &model, system, &user).await?;
     serde_json::from_value(v).map_err(|e| format!("No se pudo interpretar el análisis: {e}"))
+}
+
+#[tauri::command]
+pub async fn evaluate_answer(
+    base_url: String,
+    api_key: String,
+    model: String,
+    question: TestQuestion,
+    user_answer: String,
+) -> Result<AnswerEvaluation, String> {
+    let system = r#"Eres un evaluador experto de respuestas en pruebas técnicas. Recibes una pregunta, una respuesta de referencia y la respuesta del usuario. Evalúa si la respuesta del usuario es correcta o equivalente a la referencia: permite variaciones de redacción equivalentes y sinónimos, y para código comprueba que sea correcto y resuelva lo pedido. Responde SIEMPRE con JSON válido con exactamente esta estructura, sin texto adicional:
+{"correct":true,"feedback":""}
+"correct" es un booleano. "feedback" es una explicación breve (1-3 frases) de por qué la respuesta es correcta o incorrecta, en el idioma de la pregunta."#;
+    let reference = if question.correct_answers.is_empty() {
+        "(sin respuesta de referencia)".to_string()
+    } else {
+        question.correct_answers.join("\n")
+    };
+    let user = format!(
+        "Pregunta:\n{}\n\nRespuesta de referencia:\n{}\n\nRespuesta del usuario:\n{}\n\nEvalúa si la respuesta del usuario es correcta.",
+        question.question, reference, user_answer
+    );
+    let v = ask_json(&base_url, &api_key, &model, system, &user).await?;
+    serde_json::from_value(v).map_err(|e| format!("No se pudo interpretar la evaluación: {e}"))
 }
 
 #[tauri::command]

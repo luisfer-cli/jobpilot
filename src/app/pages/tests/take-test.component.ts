@@ -2,28 +2,37 @@ import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, RouterLink } from "@angular/router";
+import { AiService } from "../../core/ai.service";
 import { DbService } from "../../core/db.service";
-import { QUESTION_TYPE_LABELS, parseTechnicalTest } from "../../core/test-utils";
-import type { TechnicalTest, TestQuestion } from "../../core/models";
+import { SettingsService } from "../../core/settings.service";
+import { I18nService } from "../../core/i18n.service";
+import { TranslatePipe } from "../../core/translate.pipe";
+import { parseTechnicalTest } from "../../core/test-utils";
+import type { AnswerEvaluation, TechnicalTest, TestQuestion } from "../../core/models";
 
 @Component({
   selector: "app-take-test",
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   templateUrl: "./take-test.component.html",
   styleUrl: "./take-test.component.css",
 })
 export class TakeTestComponent implements OnInit {
   test: TechnicalTest | null = null;
-  typeLabels = QUESTION_TYPE_LABELS;
 
   answers: Record<number, string | string[]> = {};
   revealed: Record<number, boolean> = {};
   hints: Record<number, boolean> = {};
+  reviews: Record<number, AnswerEvaluation> = {};
+  reviewing: Record<number, boolean> = {};
+  reviewError = "";
   allRevealed = false;
 
   constructor(
     private route: ActivatedRoute,
     private db: DbService,
+    private i18n: I18nService,
+    private ai: AiService,
+    private settings: SettingsService,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -45,6 +54,33 @@ export class TakeTestComponent implements OnInit {
       q.questionType === "multiple_choice" ||
       q.questionType === "true_false"
     );
+  }
+
+  isFreeText(q: TestQuestion): boolean {
+    return q.questionType === "short_answer" || q.questionType === "coding";
+  }
+
+  async deepReview(i: number): Promise<void> {
+    if (!this.test || !this.revealed[i]) return;
+    const q = this.test.questions[i];
+    const a = this.answers[i];
+    const answer = Array.isArray(a) ? a.join("\n") : (a ?? "");
+    if (!answer.trim()) return;
+
+    if (!this.settings.isConfigured) {
+      this.reviewError = this.i18n.t("error.configureAi");
+      return;
+    }
+
+    this.reviewing[i] = true;
+    this.reviewError = "";
+    try {
+      this.reviews[i] = await this.ai.evaluateAnswer(q, answer);
+    } catch (e) {
+      this.reviewError = String(e);
+    } finally {
+      this.reviewing[i] = false;
+    }
   }
 
   selectSingle(i: number, opt: string): void {
@@ -107,6 +143,9 @@ export class TakeTestComponent implements OnInit {
     this.answers = {};
     this.revealed = {};
     this.hints = {};
+    this.reviews = {};
+    this.reviewing = {};
+    this.reviewError = "";
     this.allRevealed = false;
   }
 
@@ -144,5 +183,17 @@ export class TakeTestComponent implements OnInit {
   get autoCount(): number {
     if (!this.test) return 0;
     return this.test.questions.filter((q) => this.isAutoGraded(q)).length;
+  }
+
+  get answeredLabel(): string {
+    return this.i18n.t("taketest.answered", { a: this.answeredCount, t: this.total });
+  }
+
+  get correctLabel(): string {
+    return this.i18n.t("taketest.correct", { c: this.correctCount, a: this.autoCount, s: this.score });
+  }
+
+  get scoreLabel(): string {
+    return this.i18n.t("taketest.score", { c: this.correctCount, a: this.autoCount });
   }
 }

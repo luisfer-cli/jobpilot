@@ -24,6 +24,7 @@ pub fn run() {
             commands::generate_technical_test,
             commands::generate_test_from_topic,
             commands::analyze_ats,
+            commands::evaluate_answer,
             commands::save_file,
         ])
         .run(tauri::generate_context!())

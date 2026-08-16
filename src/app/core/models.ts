@@ -107,6 +107,7 @@ export interface JobOffer {
 export interface GeneratedCv {
   id?: number;
   jobOfferId?: number;
+  language?: string;
   fullName: string;
   jobTitle: string;
   email: string;
@@ -173,6 +174,11 @@ export interface AtsAnalysis {
   matchedKeywords: string[];
   missingKeywords: string[];
   suggestions: string[];
+}
+
+export interface AnswerEvaluation {
+  correct: boolean;
+  feedback: string;
 }
 
 export interface TestConfig {
