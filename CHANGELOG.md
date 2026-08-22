@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/luisfer-cli/librejob/compare/v0.3.0...v0.3.1) (2026-08-22)
+
+
+### Bug Fixes
+
+* sync Cargo.lock and document release build steps ([f955e41](https://github.com/luisfer-cli/librejob/commit/f955e41e2d0a1f1dd28ea717836ff0dfee88188c))
+
 ## [0.3.0](https://github.com/luisfer-cli/librejob/compare/v0.2.1...v0.3.0) (2026-08-16)
 
 
