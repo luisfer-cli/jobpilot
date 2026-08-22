@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+
   workflow_dispatch:
     inputs:
       tagName:
@@ -19,62 +20,209 @@ jobs:
   release-please:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
+
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
+
     steps:
       - uses: googleapis/release-please-action@v4
         id: release
+
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
   build:
     needs: release-please
-    if: "!cancelled() && ((github.event_name == 'workflow_dispatch' && github.event.inputs.tagName != '') || (needs.release-please.result == 'success' && needs.release-please.outputs.release_created == 'true'))"
+
+    if: >-
+      !cancelled() &&
+      (
+        (
+          github.event_name == 'workflow_dispatch' &&
+          github.event.inputs.tagName != ''
+        )
+        ||
+        (
+          needs.release-please.result == 'success' &&
+          needs.release-please.outputs.release_created == 'true'
+        )
+      )
+
     strategy:
       fail-fast: false
+
       matrix:
         include:
           - platform: ubuntu-22.04
-            args: ""
+            os: linux
+
           - platform: windows-latest
-            args: ""
+            os: windows
 
     runs-on: ${{ matrix.platform }}
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
         with:
           ref: ${{ github.event.inputs.tagName || github.ref }}
 
-      - uses: oven-sh/setup-bun@v2
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
         with:
           bun-version: latest
 
-      - uses: dtolnay/rust-toolchain@stable
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Install Linux dependencies
-        if: matrix.platform == 'ubuntu-22.04'
+        if: matrix.os == 'linux'
+
         run: |
           sudo apt-get update
+
           sudo apt-get install -y \
             libwebkit2gtk-4.1-dev \
             libappindicator3-dev \
             librsvg2-dev \
             patchelf \
-            xdg-utils
+            xdg-utils \
+            squashfs-tools
 
       - name: Install frontend dependencies
         run: bun install --frozen-lockfile
 
-      - uses: tauri-apps/tauri-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+      # ============================================================
+      # Linux
+      # ============================================================
+
+      - name: Build Linux AppImage
+        if: matrix.os == 'linux'
+
+        run: |
+          bun run tauri build --bundles appimage
+
+      - name: Fix Linux AppImage
+        if: matrix.os == 'linux'
+
+        shell: bash
+
+        run: |
+          set -euo pipefail
+
+          BUNDLE_DIR="src-tauri/target/release/bundle/appimage"
+
+          APPIMAGE="$(find "$BUNDLE_DIR" \
+            -maxdepth 1 \
+            -type f \
+            -name '*.AppImage' \
+            | head -n 1)"
+
+          if [ -z "$APPIMAGE" ]; then
+            echo "::error::No AppImage found."
+            exit 1
+          fi
+
+          echo "Original AppImage:"
+          echo "$APPIMAGE"
+
+          WORKDIR="$(mktemp -d)"
+
+          echo "Extracting AppImage..."
+
+          (
+            cd "$WORKDIR"
+            "$GITHUB_WORKSPACE/$APPIMAGE" --appimage-extract
+          )
+
+          APPDIR="$WORKDIR/squashfs-root"
+
+          echo ""
+          echo "Bundled Wayland libraries:"
+          find "$APPDIR/usr/lib" \
+            -maxdepth 1 \
+            -type f \
+            -name 'libwayland-*' \
+            -print || true
+
+          echo ""
+          echo "Removing bundled Wayland libraries..."
+
+          rm -f "$APPDIR/usr/lib/libwayland-client.so.0"
+          rm -f "$APPDIR/usr/lib/libwayland-cursor.so.0"
+          rm -f "$APPDIR/usr/lib/libwayland-egl.so.1"
+          rm -f "$APPDIR/usr/lib/libwayland-server.so.0"
+
+          echo ""
+          echo "Remaining Wayland libraries:"
+          find "$APPDIR/usr/lib" \
+            -maxdepth 1 \
+            -type f \
+            -name 'libwayland-*' \
+            -print || true
+
+          echo ""
+          echo "Downloading appimagetool..."
+
+          APPIMAGETOOL="$WORKDIR/appimagetool"
+
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            --location \
+            --output "$APPIMAGETOOL" \
+            "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
+
+          chmod +x "$APPIMAGETOOL"
+
+          echo ""
+          echo "Rebuilding AppImage..."
+
+          rm -f "$APPIMAGE"
+
+          ARCH=x86_64 \
+            "$APPIMAGETOOL" \
+            "$APPDIR" \
+            "$APPIMAGE"
+
+          chmod +x "$APPIMAGE"
+
+          echo ""
+          echo "Final AppImage:"
+          ls -lh "$APPIMAGE"
+
+      # ============================================================
+      # Windows
+      # ============================================================
+
+      - name: Build Windows
+        if: matrix.os == 'windows'
+
+        run: |
+          bun run tauri build
+
+      # ============================================================
+      # Upload artifacts
+      # ============================================================
+
+      - name: Upload Linux AppImage
+        if: matrix.os == 'linux'
+
+        uses: actions/upload-artifact@v4
+
         with:
-          tagName: ${{ github.event.inputs.tagName || needs.release-please.outputs.tag_name }}
-          releaseDraft: false
-          prerelease: false
-          updaterJsonPreferNsis: true
-          tauriScript: bun run tauri
-          args: ${{ matrix.args }}
+          name: LibreJob-Linux-AppImage
+          path: src-tauri/target/release/bundle/appimage/*.AppImage
+
+      - name: Upload Windows bundles
+        if: matrix.os == 'windows'
+
+        uses: actions/upload-artifact@v4
+
+        with:
+          name: LibreJob-Windows
+          path: src-tauri/target/release/bundle/**
